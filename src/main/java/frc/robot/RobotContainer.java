@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -23,14 +24,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.ControllerPatroller;
-import frc.lib.SendableXBoxController;
 import frc.lib.SendableZorroController;
-import frc.robot.Constants.ArmConstants.ArmState;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.Constants.OIConstants.XBox;
 import frc.robot.Constants.OIConstants.Zorro;
 import frc.robot.drivetrain.Drivetrain;
@@ -54,7 +50,7 @@ public class RobotContainer {
 
   private final EventLoop m_loop = new EventLoop();
   private SendableZorroController m_driver;
-  private SendableXBoxController m_operator;
+  private XboxController m_operator;
 
   // digital inputs for autonomous selection
   private final DigitalInput[] autonomousModes =
@@ -90,7 +86,7 @@ public class RobotContainer {
     // We use two different types of controllers - Joystick & XboxController.
     // Create objects of the specific types.
     m_driver = new SendableZorroController(cp.findDriverPort());
-    m_operator = new SendableXBoxController(cp.findOperatorPort());
+    m_operator = new XboxController(cp.findOperatorPort());
 
     configureDriverButtonBindings();
     configureOperatorButtonBindings();

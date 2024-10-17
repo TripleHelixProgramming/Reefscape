@@ -39,6 +39,6 @@ public class XBoxDriveCommand extends DriveCommand {
 
   @Override
   public boolean fieldRelative() {
-    return m_controller.getLeftBumper();
+    return m_controller.getLeftBumperButton();
   }
 }
