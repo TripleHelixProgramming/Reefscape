@@ -33,14 +33,8 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.Constants.OIConstants.XBox;
 import frc.robot.Constants.OIConstants.Zorro;
-import frc.robot.LEDs.LEDs;
-import frc.robot.arm.Arm;
-import frc.robot.climber.Climber;
-import frc.robot.climber.commands.CalibrateCommand;
-import frc.robot.climber.commands.DriveToPositionCommand;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
-import frc.robot.intake.Intake;
 import java.util.function.IntSupplier;
 
 public class RobotContainer {
@@ -57,10 +51,6 @@ public class RobotContainer {
   private final PowerDistribution m_PowerDistribution = new PowerDistribution(1, ModuleType.kRev);
 
   private final Drivetrain m_swerve = new Drivetrain();
-  private final Arm m_arm = new Arm();
-  private final Intake m_intake = new Intake();
-  private final Climber m_climber = new Climber();
-  private final LEDs m_LEDs = new LEDs();
 
   private final EventLoop m_loop = new EventLoop();
   private SendableZorroController m_driver;
@@ -80,7 +70,6 @@ public class RobotContainer {
       autonomousModes[i] = new DigitalInput(AutoConstants.kAutonomousModeSelectorPorts[i]);
     }
 
-    createNamedCommands();
     setDefaultCommands();
 
     m_swerve.configurePathPlanner();
@@ -116,26 +105,11 @@ public class RobotContainer {
     else return null;
   }
 
-  // spotless:off
-  public void teleopInit() {
-    CommandScheduler.getInstance().schedule(m_arm.createStowCommand());
-    CommandScheduler.getInstance().schedule(m_arm.createFlapDeployCommand());
-    CommandScheduler.getInstance().schedule(m_LEDs.createEnabledCommand(
-        m_intake.eitherSensorSupplier(), m_arm.stateChecker(ArmState.DEPLOYED)));
-  }
+  public void teleopInit() {}
 
-  public void autonomousInit() {
-    CommandScheduler.getInstance().schedule(m_arm.createFlapDeployCommand());
-    CommandScheduler.getInstance().schedule(m_LEDs.createEnabledCommand(
-        m_intake.eitherSensorSupplier(), m_arm.stateChecker(ArmState.DEPLOYED)));
-  }
+  public void autonomousInit() {}
 
-  public void disabledInit() {
-    CommandScheduler.getInstance().schedule(m_LEDs.createDisabledCommand(m_swerve.redAllianceSupplier(), autonomousModeSelector()));
-    m_PowerDistribution.setSwitchableChannel(false);
-  }
-
-    // spotless:on
+  public void disabledInit() {}
 
   public void periodic() {
     m_loop.poll();
@@ -241,34 +215,9 @@ public class RobotContainer {
     return m_PowerDistribution.getCurrent(CANBusPort - 10);
   }
 
-  // spotless:off
-  private void createNamedCommands() {
-    NamedCommands.registerCommand("raiseArmAndWait", 
-      m_arm.createDeployCommand()
-        .andThen(new WaitCommand(1.8)));
-    
-    NamedCommands.registerCommand("resetArmAndIntake", 
-      m_arm.createStowCommand()
-        .alongWith(m_intake.createStopIntakeCommand()));
-    
-    NamedCommands.registerCommand("outtakeAndWait", 
-      m_intake.createOuttakeToAmpCommand()
-        .withTimeout(0.7));
-    
-    NamedCommands.registerCommand("intakePiece", 
-      createAutoIntakeCommandSequence()
-      );
-    
-    NamedCommands.registerCommand("stopIntake", 
-      m_intake.createStopIntakeCommand());
-  }
-  // spotless:on
-
   private void setDefaultCommands() {
     m_swerve.setDefaultCommand(
         new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematics, m_driver));
-    m_intake.setDefaultCommand(m_intake.createSetVelocityCommand(0));
-    m_climber.setDefaultCommand(m_climber.createStopCommand());
   }
 
   // spotless:off
@@ -282,114 +231,9 @@ public class RobotContainer {
     new JoystickButton(m_driver, Zorro.kAIn)
     .whileTrue((new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematicsDriveFromArm, m_driver)));
 
-
-    Trigger armDeployed = new Trigger(m_arm.stateChecker(ArmState.DEPLOYED));
-    JoystickButton D_Button = new JoystickButton(m_driver, Zorro.kDIn);
-    
-    // Reverse intake to outake or reject intaking Note
-    D_Button.and(armDeployed.negate())
-            .whileTrue(m_intake.createOuttakeToFloorCommand());
-        // Shoot Note into Amp
-    D_Button.and(armDeployed)
-            .whileTrue(m_intake.createOuttakeToAmpCommand());
   }
   // spotless:on
 
-  // spotless:off
-  private void configureOperatorButtonBindings() {
-    JoystickButton rightBumper = new JoystickButton(m_operator, Button.kRightBumper.value);
-    JoystickButton leftBumper = new JoystickButton(m_operator, Button.kLeftBumper.value);
-    JoystickButton leftJoystickDown = new JoystickButton(m_operator, Button.kLeftStick.value);
+  private void configureOperatorButtonBindings() {}
 
-    Trigger hasNote = new Trigger(m_intake.eitherSensorSupplier());
-    Trigger armDeployed = new Trigger(m_arm.stateChecker(ArmState.DEPLOYED));
-
-    // CLIMBER
-    // Calibrate upper limit of climber actuators
-    new JoystickButton(m_operator, Button.kStart.value).onTrue(new CalibrateCommand(m_climber)
-        .andThen(new DriveToPositionCommand(m_climber, ClimberConstants.kHomePosition)));
-
-    // Deploy climber and begin climbing
-    BooleanEvent climbThreshold = m_operator.axisGreaterThan(Axis.kRightY.value, -0.9, m_loop).debounce(0.1);
-    Trigger climbTrigger = climbThreshold.castTo(Trigger::new);
-    climbTrigger.onTrue(new DriveToPositionCommand(m_climber, ClimberConstants.kDeployPosition)
-        .andThen(m_climber.createArcadeDriveCommand(m_operator)));
-
-    // Move climber to home position
-    // new JoystickButton(m_operator,Button.kB.value)
-    //     .onTrue(m_climber.createDriveToCommand(ClimberConstants.kHomePosition));
-    
-    // Run climber drive while B button down
-    // new JoystickButton(m_operator,Button.kB.value)
-    //     .whileTrue(m_climber.createArcadeDriveCommand(m_operator));
-
-    // INTAKE
-    // Control position of Note in intake
-    Trigger leftStick = new Trigger(() -> Math.abs(m_operator.getLeftY()) > 0.2);
-    //While arm is down
-    leftStick.and(armDeployed.negate()).whileTrue(m_intake.createJoystickControlCommand(m_operator, IntakeConstants.kRepositionSpeedArmDown));
-    //While arm is up
-    leftStick.and(armDeployed).whileTrue(m_intake.createJoystickControlCommand(m_operator, IntakeConstants.kRepositionSpeedArmUp));
-
-    // Intake Note from floor
-    rightBumper.and(hasNote.negate())
-      .whileTrue(m_arm.createStowCommand()
-      .andThen(m_intake.createIntakeCommand()));
-    
-    hasNote.and(m_intake.stateChecker(IntakeState.INTAKING)).and(() -> RobotState.isTeleop())
-      .onTrue(m_arm.createCarryCommand()
-      .andThen(m_intake.createAdvanceAfterIntakingCommand().withInterruptBehavior(InterruptionBehavior.kCancelIncoming)));
-    
-    // Reverse intake to outake or reject intaking Note
-    leftBumper.and(armDeployed.negate())
-        .whileTrue(m_intake.createOuttakeToFloorCommand());
-    
-    // Shoot Note into Amp
-    leftJoystickDown.and(armDeployed)
-        .whileTrue(m_intake.createOuttakeToAmpCommand());
-
-    // Shift Note further into Intake
-    // new JoystickButton(m_operator, Button.kX.value)
-    //     .onTrue(m_intake.createSetPositionCommand(0.05));
-
-    // Move Note back in order to place in trap
-    // new JoystickButton(m_operator, Button.kB.value)
-    //     .whileTrue(m_intake.createSetPositionCommand(-0.27));
-
-    // ARM
-    // Raise and lower arm
-    new JoystickButton(m_operator, Button.kA.value).onTrue(m_arm.createStowCommand());
-    new JoystickButton(m_operator, Button.kY.value).onTrue(m_arm.createDeployCommand());
-    
-    // Deploy flap
-    new POVButton(m_operator, XBox.kUp)
-        .onTrue(m_arm.createFlapDeployCommand()
-        .andThen(() -> m_PowerDistribution.setSwitchableChannel(false)));
-    // only while arm is raised
-
-    // Stow flap
-    new POVButton(m_operator, XBox.kDown)
-        .onTrue(m_arm.createFlapRetractCommand()
-        .andThen(() -> m_PowerDistribution.setSwitchableChannel(true)));
-    // only while arm is raised
-
-    // MULTIPLE SUBSYSTEMS
-    // Give Note to teammates
-    new JoystickButton(m_operator, Button.kBack.value)
-        .onTrue(m_arm.createDeployCommand()
-          .alongWith(new WaitCommand(0.5))
-        .andThen(m_intake.createOuttakeToFloorCommand()
-          .raceWith(new WaitCommand(0.5)))
-        .andThen(m_intake.createStopIntakeCommand()
-          .alongWith(m_arm.createStowCommand())));
-  }
-  // spotless:on
-
-  public Command createAutoIntakeCommandSequence() {
-    return new SequentialCommandGroup(
-        m_arm.createStowCommand(),
-        m_intake.createIntakeCommand().until(m_intake.eitherSensorSupplier()),
-        m_arm.createCarryCommand(),
-        m_intake.createAdvanceAfterIntakingCommand());
-  }
 }
