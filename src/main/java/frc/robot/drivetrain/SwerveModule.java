@@ -135,12 +135,12 @@ public class SwerveModule {
     var encoderRotation = getRelativeTurningPosition();
 
     // Optimize the reference state to avoid spinning further than 90 degrees
-    SwerveModuleState state = SwerveModuleState.optimize(desiredState, encoderRotation);
-
+    desiredState.optimize(encoderRotation);
+    
     // Scale speed by cosine of angle error. This scales down movement perpendicular to the desired
     // direction of travel that can occur when modules change directions. This results in smoother
     // driving.
-    state.speedMetersPerSecond *= state.angle.minus(encoderRotation).getCos();
+    desiredState.cosineScale(encoderRotation);
 
     m_drivePIDController.setReference(
         state.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
