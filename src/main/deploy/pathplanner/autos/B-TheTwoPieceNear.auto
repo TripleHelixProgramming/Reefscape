@@ -1,0 +1,94 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.449083685874939,
+      "y": 7.3158488273620605
+    },
+    "rotation": -90.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "B_OnePiece"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseArmAndWait"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outtakeAndWait"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "resetArmAndIntake"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "B_PickUpNearPiece"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakePiece"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "raiseArmAndWait"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outtakeAndWait"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "resetArmAndIntake"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}
