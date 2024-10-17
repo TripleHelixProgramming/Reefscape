@@ -2,9 +2,14 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public final class Constants {
@@ -15,11 +20,6 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
-    // Define the conventional order of our modules when putting them into arrays
-    public static final int FRONT_LEFT = 0;
-    public static final int FRONT_RIGHT = 1;
-    public static final int REAR_LEFT = 2;
-    public static final int REAR_RIGHT = 3;
 
     public static final class MotorControllers {
       public static final int kRearRightDriveMotorPort = 18;
@@ -43,60 +43,30 @@ public final class Constants {
       public static final double kDefaultAbsEncoderMagnetOffset = 0.0;
     }
 
-    /**
-     * public static final boolean kFrontLeftDriveEncoderReversed = false; public static final
-     * boolean kFrontRightDriveEncoderReversed = false; public static final boolean
-     * kRearLeftDriveEncoderReversed = true; public static final boolean
-     * kRearRightDriveEncoderReversed = true;
-     *
-     * <p>public static final boolean kFrontLeftTurningEncoderReversed = false; public static final
-     * boolean kFrontRightTurningEncoderReversed = false; public static final boolean
-     * kRearLeftTurningEncoderReversed = true; public static final boolean
-     * kRearRightTurningEncoderReversed = true;
-     */
-
-    // Units are meters.
     // Distance between centers of right and left wheels on robot
-    public static final double kTrackWidth = 0.6096; // 2024 Competion Robot 24 inches
+    public static final Distance kTrackWidth = Inches.of(24);
 
     // Distance between front and rear wheels on robot
-    public static final double kWheelBase = 0.5715; // 2024 Competion Robot 22.5 inches
+    public static final Distance kWheelBase = Inches.of(22.5);
 
-    // public static final double kTrackWidth = 0.572; // 2023 Competion Robot
-    // public static final double kWheelBase = 0.622; // 2023 Competion Robot
-
-    // Robot Radius
+    // Robot radius
     public static final double kRadius = 0.423;
 
-    // Units are meters per second
-    public static final double kMaxTranslationalVelocity = 4.0; // 2023 Competion Robot // max 4.5
-
-    // Units are radians per second
-    public static final double kMaxRotationalVelocity = 5.0; // 2023 Competion Robot // max 5.0
+    public static final LinearVelocity kMaxTranslationalVelocity =
+        MetersPerSecond.of(4.0); // max 4.5
+    public static final AngularVelocity kMaxRotationalVelocity =
+        RadiansPerSecond.of(5.0); // max 5.0
 
     // The locations for the modules must be relative to the center of the robot.
     // Positive x values represent moving toward the front of the robot
     // Positive y values represent moving toward the left of the robot.
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
-            new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0), // front left
-            new Translation2d(kWheelBase / 2.0, -kTrackWidth / 2.0), // front right
-            new Translation2d(-kWheelBase / 2.0, kTrackWidth / 2.0), // rear left
-            new Translation2d(-kWheelBase / 2.0, -kTrackWidth / 2.0) // rear right
+            new Translation2d(kWheelBase.times(0.5), kTrackWidth.times(0.5)), // front left
+            new Translation2d(kWheelBase.times(0.5), kTrackWidth.times(-0.5)), // front right
+            new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(0.5)), // rear left
+            new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(-0.5)) // rear right
             );
-
-    public static final SwerveDriveKinematics kDriveKinematicsDriveFromArm =
-        new SwerveDriveKinematics(
-            new Translation2d(kWheelBase, kTrackWidth / 2.0), // front left
-            new Translation2d(kWheelBase, -kTrackWidth / 2.0), // front right
-            new Translation2d(0.0, kTrackWidth / 2.0), // rear left
-            new Translation2d(0.0, -kTrackWidth / 2.0) // rear right
-            );
-
-    // public static final boolean kGyroReversed = false;
-    // public static final double ksVolts = 1.0;
-    // public static final double kvVoltSecondsPerMeter = 0.8;
-    // public static final double kaVoltSecondsSquaredPerMeter = 0.15;
   }
 
   public static final class ModuleConstants {

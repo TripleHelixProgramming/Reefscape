@@ -213,9 +213,6 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_swerve.resetHeading())
         .ignoringDisable(true));
 
-    new JoystickButton(m_driver, Zorro.kAIn)
-    .whileTrue((new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematicsDriveFromArm, m_driver)));
-
   }
   // spotless:on
 
