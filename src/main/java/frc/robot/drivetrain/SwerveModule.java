@@ -19,6 +19,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Preferences;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ModuleConstants.DriveControllerGains;
+import frc.robot.Constants.ModuleConstants.TurningControllerGains;
 import frc.robot.Constants.RobotConstants;
 
 public class SwerveModule {
@@ -71,16 +73,16 @@ public class SwerveModule {
     m_drivePIDController = m_driveMotor.getPIDController();
     m_turningPIDController = m_turningMotor.getPIDController();
 
-    m_drivePIDController.setP(ModuleConstants.kDriveP);
-    m_drivePIDController.setI(ModuleConstants.kDriveI);
-    m_drivePIDController.setD(ModuleConstants.kDriveD);
+    m_drivePIDController.setP(DriveControllerGains.kP);
+    m_drivePIDController.setI(DriveControllerGains.kI);
+    m_drivePIDController.setD(DriveControllerGains.kD);
     // m_drivePIDController.setIZone();
-    m_drivePIDController.setFF(ModuleConstants.kDriveFF);
+    m_drivePIDController.setFF(DriveControllerGains.kFF);
     // m_drivePIDController.setOutputRange();
 
-    m_turningPIDController.setP(ModuleConstants.kTurningP);
-    m_turningPIDController.setI(ModuleConstants.kTurningI);
-    m_turningPIDController.setD(ModuleConstants.kTurningD);
+    m_turningPIDController.setP(TurningControllerGains.kP);
+    m_turningPIDController.setI(TurningControllerGains.kI);
+    m_turningPIDController.setD(TurningControllerGains.kD);
     // m_turningPIDController.setIZone();
     // m_turningPIDController.setFF();
     // m_turningPIDController.setOutputRange();
