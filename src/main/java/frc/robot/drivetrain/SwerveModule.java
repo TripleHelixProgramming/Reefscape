@@ -15,6 +15,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Preferences;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -143,9 +144,9 @@ public class SwerveModule {
     desiredState.cosineScale(encoderRotation);
 
     m_drivePIDController.setReference(
-        state.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
+        desiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
     m_turningPIDController.setReference(
-        state.angle.getRotations(), CANSparkMax.ControlType.kPosition);
+        desiredState.angle.getRotations(), CANSparkMax.ControlType.kPosition);
   }
 
   public void resetDriveEncoder() {
@@ -172,7 +173,7 @@ public class SwerveModule {
    * @return The absolute turning angle of the module
    */
   public Rotation2d getAbsTurningPosition(double waitPeriod) {
-    double absPositonRotations;
+    Angle absPositonRotations;
 
     if (waitPeriod > 0.0) {
       absPositonRotations =
@@ -181,7 +182,7 @@ public class SwerveModule {
       absPositonRotations = m_turningAbsEncoder.getAbsolutePosition().getValue();
     }
 
-    return Rotation2d.fromRotations(absPositonRotations);
+    return new Rotation2d(absPositonRotations);
   }
 
   /**
