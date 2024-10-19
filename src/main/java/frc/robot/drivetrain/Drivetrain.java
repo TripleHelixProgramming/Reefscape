@@ -3,9 +3,6 @@
 package frc.robot.drivetrain;
 
 import choreo.trajectory.SwerveSample;
-
-import java.util.function.BooleanSupplier;
-
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -25,6 +22,7 @@ import frc.robot.Constants.AutoConstants.RotationControllerGains;
 import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
+import java.util.function.BooleanSupplier;
 
 /** Constructs a swerve drive style drivetrain. */
 public class Drivetrain extends SubsystemBase {

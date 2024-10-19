@@ -2,8 +2,6 @@
 
 package frc.robot;
 
-import java.util.List;
-
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -11,26 +9,26 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.lib.AllianceSelector;
+import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
 import frc.lib.ControllerPatroller;
 import frc.lib.SendableZorroController;
-import frc.robot.Constants.AutoConstants.AllianceColor;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.AutoConstants.AllianceColor;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OIConstants.Zorro;
-import frc.robot.autos.ChoreoAuto;
+import frc.robot.autos.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
+import java.util.List;
 
 public class Robot extends TimedRobot {
 
-  private Command m_autonomousCommand;
   private List<AutoOption> m_autoOptions;
 
   private final PowerDistribution m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
@@ -49,9 +47,11 @@ public class Robot extends TimedRobot {
     configureAutoOptions();
 
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
-    m_autoSelector = new AutoSelector(AutoConstants.kAutonomousModeSelectorPorts, m_allianceSelector, m_autoOptions);
+    m_autoSelector =
+        new AutoSelector(
+            AutoConstants.kAutonomousModeSelectorPorts, m_allianceSelector, m_autoOptions);
 
-    m_swerve = new Drivetrain(m_allianceSelector.fieldRotatedSupplier());
+    m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
 
     // Create a button on Smart Dashboard to reset the encoders.
     SmartDashboard.putData(
@@ -94,15 +94,14 @@ public class Robot extends TimedRobot {
         configureButtonBindings();
       }
     }
+
+    m_allianceSelector.disabledPeriodic();
+    m_autoSelector.disabledPeriodic();
   }
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_autoSelector.getAutonomousCommand();
-
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+    m_autoSelector.scheduleAuto();
   }
 
   @Override
@@ -110,9 +109,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+    m_autoSelector.cancelAuto();
   }
 
   @Override
@@ -161,38 +158,8 @@ public class Robot extends TimedRobot {
   private void configureOperatorButtonBindings() {}
 
   private void configureAutoOptions() {
-    m_autoOptions.add(new AutoOption(AllianceColor.Red, 1));
+    m_autoOptions.add(new AutoOption(AllianceColor.Red, 1, new ExampleAuto()));
     m_autoOptions.add(new AutoOption(AllianceColor.Blue, 1));
-  }
-
-  public class AutoOption {
-    private AllianceColor m_color;
-    private int m_option;
-    private ChoreoAuto m_auto;
-
-    public AutoOption(AllianceColor color, int option, ChoreoAuto auto) {
-      this.m_color = color;
-      this.m_option = option;
-      this.m_auto = auto;
-    }
-
-    public AutoOption(AllianceColor color, int option) {
-      this.m_color = color;
-      this.m_option = option;
-      this.m_auto = null;
-    }
-
-    public AllianceColor getColor() {
-      return this.m_color;
-    }
-
-    public int getOption() {
-      return this.m_option;
-    }
-
-    public ChoreoAuto getChoreoAuto() {
-      return this.m_auto;
-    }
   }
 
   /**
