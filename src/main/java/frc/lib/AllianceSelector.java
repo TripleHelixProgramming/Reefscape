@@ -1,25 +1,36 @@
 package frc.lib;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.AutoConstants.AllianceColor;
+import java.util.Optional;
 
 public class AllianceSelector {
 
-  private AllianceColor m_currentColor;
+  private Alliance m_currentColor;
   private DigitalInput m_allianceSelectionSwitch;
   private EventLoop m_loop;
 
+  /**
+   * Constructs an alliance color selector switch
+   *
+   * @param port DIO port for reading the alliance color input
+   */
   public AllianceSelector(int port) {
     this.m_allianceSelectionSwitch = new DigitalInput(port);
   }
 
+  private Alliance getAllianceFromSwitch() {
+    return m_allianceSelectionSwitch.get() ? Alliance.Red : Alliance.Blue;
+  }
+
   private boolean updateAlliance() {
-    AllianceColor m_newColor =
-        m_allianceSelectionSwitch.get() ? AllianceColor.Red : AllianceColor.Blue;
-    if (m_newColor == m_currentColor) return false;
+    Alliance m_newColor = getAllianceFromSwitch();
+
+    if (m_newColor.equals(m_currentColor)) return false;
     else {
       m_currentColor = m_newColor;
       return true;
@@ -28,11 +39,29 @@ public class AllianceSelector {
 
   public BooleanEvent changedAlliance = new BooleanEvent(m_loop, () -> updateAlliance());
 
-  public boolean fieldRotated() {
-    return m_currentColor.equals(AllianceColor.Red);
+  private boolean agreementInAllianceInputs() {
+    Optional<Alliance> allianceFromFMS = DriverStation.getAlliance();
+    Alliance allianceFromSwitch = getAllianceFromSwitch();
+
+    if (allianceFromFMS.isPresent()) {
+      return allianceFromSwitch.equals(allianceFromFMS.get());
+    } else return false;
   }
 
-  public AllianceColor getAllianceColor() {
+  public BooleanEvent agreementInAllianceInputs =
+      new BooleanEvent(m_loop, () -> agreementInAllianceInputs());
+
+  /**
+   * @return Whether the field is rotated from the driver's perspective
+   */
+  public boolean fieldRotated() {
+    return m_currentColor.equals(Alliance.Red);
+  }
+
+  /**
+   * @return The current alliance
+   */
+  public Alliance getAllianceColor() {
     return m_currentColor;
   }
 

@@ -4,6 +4,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -18,7 +19,6 @@ import frc.lib.AutoSelector;
 import frc.lib.ControllerPatroller;
 import frc.lib.SendableZorroController;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.AutoConstants.AllianceColor;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OIConstants.Zorro;
@@ -49,7 +49,9 @@ public class Robot extends TimedRobot {
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
     m_autoSelector =
         new AutoSelector(
-            AutoConstants.kAutonomousModeSelectorPorts, m_allianceSelector, m_autoOptions);
+            AutoConstants.kAutonomousModeSelectorPorts,
+            m_allianceSelector::getAllianceColor,
+            m_autoOptions);
 
     m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
 
@@ -158,8 +160,8 @@ public class Robot extends TimedRobot {
   private void configureOperatorButtonBindings() {}
 
   private void configureAutoOptions() {
-    m_autoOptions.add(new AutoOption(AllianceColor.Red, 1, new ExampleAuto()));
-    m_autoOptions.add(new AutoOption(AllianceColor.Blue, 1));
+    m_autoOptions.add(new AutoOption(Alliance.Red, 1, new ExampleAuto()));
+    m_autoOptions.add(new AutoOption(Alliance.Blue, 1));
   }
 
   /**

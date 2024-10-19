@@ -163,12 +163,6 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-
-    public static enum AllianceColor {
-      Red,
-      Blue
-    }
-
     public static final int kAllianceColorSelectorPort = 10;
 
     // max length is 8
