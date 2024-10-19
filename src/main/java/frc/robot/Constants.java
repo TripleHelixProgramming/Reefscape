@@ -4,7 +4,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -74,14 +73,18 @@ public final class Constants {
     public static final int kDriveMotorCurrentLimit = 80;
     public static final int kTurningMotorCurrentLimit = 80;
 
-    public static final double kDriveP = 0.1; // 2023 Competition Robot
-    public static final double kDriveI = 0.0; // 2023 Competition Robot
-    public static final double kDriveD = 0.0; // 2023 Competition Robot
-    public static final double kDriveFF = 0.255; // 2023 Competition Robot
+    public static final class DriveControllerGains {
+      public static final double kP = 0.1; // 2023 Competition Robot
+      public static final double kI = 0.0; // 2023 Competition Robot
+      public static final double kD = 0.0; // 2023 Competition Robot
+      public static final double kFF = 0.255; // 2023 Competition Robot
+    }
 
-    public static final double kTurningP = 10.0; // 1.5;
-    public static final double kTurningI = 0.0; // 2023 Competition Robot
-    public static final double kTurningD = 0.0; // 2023 Competition Robot
+    public static final class TurningControllerGains {
+      public static final double kP = 10.0; // 1.5;
+      public static final double kI = 0.0; // 2023 Competition Robot
+      public static final double kD = 0.0; // 2023 Competition Robot
+    }
 
     // Not adjusted
     // public static final double kMaxModuleAngularSpeedRadiansPerSecond = 0.05 * Math.PI;
@@ -162,7 +165,7 @@ public final class Constants {
   public static final class AutoConstants {
     public static final int kAllianceColorSelectorPort = 10;
 
-    // length is 8
+    // max length is 8
     public static final int[] kAutonomousModeSelectorPorts = {11, 12, 13, 18, 19};
 
     // public static final double kMaxSpeedMetersPerSecond = 3.0;
@@ -170,8 +173,17 @@ public final class Constants {
     // public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     // public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
-    public static final PIDConstants kTranslationControllerGains = new PIDConstants(1.0, 0.0, 0.0);
-    public static final PIDConstants kRotationControllerGains = new PIDConstants(7.0, 0.0, 0.0);
+    public static final class TranslationControllerGains {
+      public static final double kP = 1.0;
+      public static final double kI = 0.0;
+      public static final double kD = 0.0;
+    }
+
+    public static final class RotationControllerGains {
+      public static final double kP = 7.0;
+      public static final double kI = 0.0;
+      public static final double kD = 0.0;
+    }
 
     // Constraint for the motion profilied robot angle controller
     // public static final TrapezoidProfile.Constraints kThetaControllerConstraints =

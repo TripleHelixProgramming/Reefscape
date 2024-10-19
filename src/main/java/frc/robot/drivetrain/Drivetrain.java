@@ -2,10 +2,9 @@
 
 package frc.robot.drivetrain;
 
+import choreo.trajectory.SwerveSample;
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -15,18 +14,21 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.AutoConstants.RotationControllerGains;
+import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
 import java.util.function.BooleanSupplier;
 
 /** Constructs a swerve drive style drivetrain. */
 public class Drivetrain extends SubsystemBase {
+
+  private BooleanSupplier m_fieldRotatedSupplier;
+
   static LinearVelocity kMaxSpeed = Constants.DriveConstants.kMaxTranslationalVelocity;
   static AngularVelocity kMaxAngularSpeed = Constants.DriveConstants.kMaxRotationalVelocity;
 
@@ -59,6 +61,20 @@ public class Drivetrain extends SubsystemBase {
 
   private SwerveModule[] modules = {m_frontLeft, m_frontRight, m_rearLeft, m_rearRight};
 
+  private final PIDController xController =
+      new PIDController(
+          TranslationControllerGains.kP,
+          TranslationControllerGains.kI,
+          TranslationControllerGains.kD);
+  private final PIDController yController =
+      new PIDController(
+          TranslationControllerGains.kP,
+          TranslationControllerGains.kI,
+          TranslationControllerGains.kD);
+  private final PIDController thetaController =
+      new PIDController(
+          RotationControllerGains.kP, RotationControllerGains.kI, RotationControllerGains.kD);
+
   private final AHRS m_gyro = new AHRS();
 
   private final SwerveDriveOdometry m_odometry =
@@ -74,10 +90,10 @@ public class Drivetrain extends SubsystemBase {
 
   private final Field2d m_field = new Field2d();
 
-  private final DigitalInput allianceSelectionSwitch =
-      new DigitalInput(AutoConstants.kAllianceColorSelectorPort);
+  public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
 
-  public Drivetrain() {
+    this.m_fieldRotatedSupplier = fieldRotatedSupplier;
+
     m_gyro.reset();
 
     SmartDashboard.putData("Field", m_field);
@@ -113,7 +129,6 @@ public class Drivetrain extends SubsystemBase {
       SmartDashboard.putNumber(module.getName() + "OutputCurrent", module.getDriveMotorCurrent());
     }
 
-    SmartDashboard.putBoolean("isRed", getRedAlliance());
     SmartDashboard.putNumber("GyroAngle", m_gyro.getRotation2d().getDegrees());
   }
 
@@ -185,7 +200,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void resetHeading() {
     Pose2d pose =
-        getRedAlliance()
+        m_fieldRotatedSupplier.getAsBoolean()
             ? new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI))
             : new Pose2d(getPose().getTranslation(), new Rotation2d());
 
@@ -230,38 +245,23 @@ public class Drivetrain extends SubsystemBase {
         m_rearRight.getState());
   }
 
-  // spotless:off
-  public void configurePathPlanner() {
-    AutoBuilder.configureHolonomic(
-        this::getPose, // Supplier for the current pose
-        this::setPose, // Consumer for resetting the pose
-        this::getChassisSpeeds, // Supplier for the current robot-relative chassis speeds
-        this::setChassisSpeeds, // Consumer for setting the robot-relative chassis speeds
-
-        // Configuring the path following commands
-        new HolonomicPathFollowerConfig(
-            AutoConstants.kTranslationControllerGains, // Translation PID constants
-            AutoConstants.kRotationControllerGains, // Rotation PID constants
-            DriveConstants.kMaxTranslationalVelocity, // Max module speed, in m/s
-            DriveConstants.kRadius, // Drive base radius in meters
-            new ReplanningConfig() // Default path replanning config
-            ),
-        
-        () -> {return false;}, // Never mirror path
-        this // Requires this subsystem
-        );
+  /**
+   * @param curPose The robot's current pose
+   * @param sample A sample of the trajectory being followed
+   */
+  public void choreoController(Pose2d curPose, SwerveSample sample) {
+    ChassisSpeeds speeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            new ChassisSpeeds(
+                xController.calculate(curPose.getX(), sample.x) + sample.vx,
+                yController.calculate(curPose.getY(), sample.y) + sample.vy,
+                thetaController.calculate(curPose.getRotation().getRadians(), sample.heading)
+                    + sample.omega),
+            curPose.getRotation());
+    this.setChassisSpeeds(speeds);
   }
-  // spotless:on
 
   public BooleanSupplier fieldRotatedSupplier() {
-    return () -> allianceSelectionSwitch.get();
-  }
-
-  private boolean getRedAlliance() {
-    return allianceSelectionSwitch.get();
-  }
-
-  public BooleanSupplier redAllianceSupplier() {
-    return () -> allianceSelectionSwitch.get();
+    return this.m_fieldRotatedSupplier;
   }
 }
