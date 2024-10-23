@@ -12,7 +12,10 @@ public class AllianceSelector {
 
   private Alliance m_currentColor;
   private DigitalInput m_allianceSelectionSwitch;
-  private EventLoop m_loop;
+  private EventLoop m_loop = new EventLoop();
+
+  public BooleanEvent m_changedAlliance;
+  public BooleanEvent m_agreementInAllianceInputs;
 
   /**
    * Constructs an alliance color selector switch
@@ -21,6 +24,9 @@ public class AllianceSelector {
    */
   public AllianceSelector(int port) {
     this.m_allianceSelectionSwitch = new DigitalInput(port);
+
+    m_changedAlliance = new BooleanEvent(m_loop, () -> updateAlliance());
+    m_agreementInAllianceInputs = new BooleanEvent(m_loop, () -> agreementInAllianceInputs());
   }
 
   private Alliance getAllianceFromSwitch() {
@@ -37,8 +43,6 @@ public class AllianceSelector {
     }
   }
 
-  public BooleanEvent changedAlliance = new BooleanEvent(m_loop, () -> updateAlliance());
-
   private boolean agreementInAllianceInputs() {
     Optional<Alliance> allianceFromFMS = DriverStation.getAlliance();
     Alliance allianceFromSwitch = getAllianceFromSwitch();
@@ -47,9 +51,6 @@ public class AllianceSelector {
       return allianceFromSwitch.equals(allianceFromFMS.get());
     } else return false;
   }
-
-  public BooleanEvent agreementInAllianceInputs =
-      new BooleanEvent(m_loop, () -> agreementInAllianceInputs());
 
   /**
    * @return Whether the field is rotated from the driver's perspective

@@ -15,7 +15,9 @@ public class AutoSelector {
   private DigitalInput[] m_switchPositions;
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
-  private EventLoop m_loop;
+  private EventLoop m_loop = new EventLoop();
+
+  public BooleanEvent m_changedAuto;
 
   /**
    * Constructs an autonomous selector switch
@@ -30,6 +32,7 @@ public class AutoSelector {
     this.m_autoOptions = autoOptions;
 
     m_switchPositions = new DigitalInput[ports.length];
+    m_changedAuto = new BooleanEvent(m_loop, () -> updateAuto());
 
     for (int i = 0; i < ports.length; i++) {
       m_switchPositions[i] = new DigitalInput(ports[i]);
@@ -66,8 +69,6 @@ public class AutoSelector {
       return true;
     }
   }
-
-  public BooleanEvent changedAuto = new BooleanEvent(m_loop, () -> updateAuto());
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
