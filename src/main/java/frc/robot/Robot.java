@@ -17,11 +17,10 @@ import frc.lib.AllianceSelector;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
 import frc.lib.ControllerPatroller;
-import frc.lib.SendableZorroController;
+import frc.lib.ZorroController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.OIConstants.Zorro;
 import frc.robot.autos.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
@@ -36,7 +35,7 @@ public class Robot extends TimedRobot {
   private final AutoSelector m_autoSelector;
   private final Drivetrain m_swerve;
 
-  private SendableZorroController m_driver;
+  private ZorroController m_driver;
   private XboxController m_operator;
 
   private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
@@ -139,7 +138,7 @@ public class Robot extends TimedRobot {
 
     // We use two different types of controllers - Joystick & XboxController.
     // Create objects of the specific types.
-    m_driver = new SendableZorroController(cp.findDriverPort());
+    m_driver = new ZorroController(cp.findDriverPort());
     m_operator = new XboxController(cp.findOperatorPort());
 
     configureDriverButtonBindings();
@@ -150,7 +149,7 @@ public class Robot extends TimedRobot {
   private void configureDriverButtonBindings() {
 
     // Reset heading
-    new JoystickButton(m_driver, Zorro.kHIn)
+    new JoystickButton(m_driver, ZorroController.Button.kHIn.value)
         .onTrue(new InstantCommand(() -> m_swerve.resetHeading())
         .ignoringDisable(true));
 

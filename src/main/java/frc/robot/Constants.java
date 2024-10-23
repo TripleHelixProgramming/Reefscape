@@ -127,34 +127,7 @@ public final class Constants {
     public static final int kDefaultDriverControllerPort = 0;
     public static final int kDefaultOperatorControllerPort = 1;
 
-    public static final class Zorro {
-      // RadioMaster Zorro joystick axis
-      public static int kLeftXAxis = 0;
-      public static int kLeftYAxis = 1;
-      public static int kLeftDial = 2;
-      public static int kRightDial = 3;
-      public static int kRightXAxis = 4;
-      public static int kRightYAxis = 5;
-
-      // RadioMaster Zorro buttons
-      public static int kBDown = 1;
-      public static int kBMid = 2;
-      public static int kBUp = 3;
-      public static int kEDown = 4;
-      public static int kEUp = 5;
-      public static int kAIn = 6;
-      public static int kGIn = 7;
-      public static int kCDown = 8;
-      public static int kCMid = 9;
-      public static int kCUp = 10;
-      public static int kFDown = 11;
-      public static int kFUp = 12;
-      public static int kDIn = 13;
-      public static int kHIn = 14;
-    }
-
-    public static final class XBox {
-      // XBox Controller D-Pad Constants
+    public static final class DpadDirection {
       public static int kUp = 0;
       public static int kRight = 90;
       public static int kDown = 180;
