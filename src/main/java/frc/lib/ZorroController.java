@@ -2,9 +2,9 @@ package frc.lib;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.GenericHID;
 
-public class ZorroController extends Joystick implements Sendable {
+public class ZorroController extends GenericHID implements Sendable {
 
   // RadioMaster Zorro joystick axis
   public enum Axis {
