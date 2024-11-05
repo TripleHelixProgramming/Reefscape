@@ -1,5 +1,3 @@
-// Copyright (c) Triple Helix Robotics, FRC 2363. All rights reserved.
-
 package frc.robot.drivetrain.commands;
 
 import edu.wpi.first.math.MathUtil;

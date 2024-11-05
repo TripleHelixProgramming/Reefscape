@@ -1,5 +1,3 @@
-// Copyright (c) Triple Helix Robotics, FRC 2363. All rights reserved.
-
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;

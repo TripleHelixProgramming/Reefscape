@@ -7,3 +7,9 @@ Triple Helix Robotics, FRC 2363\
 ## Code formatting
 
 Spotless autoformatting can be performed using ``./gradlew spotlessApply``.
+
+## License
+
+Except where noted, all files are Copyright (c) 2024 Triple Helix Robotics. See [Triple Helix Robotics license details](License.md).
+
+Files authored by FIRST and other WPILib contributors are Copyright (c) 2009-2024 FIRST and other WPILib contributors. See [WPILib license details](WPILib-License.md).
