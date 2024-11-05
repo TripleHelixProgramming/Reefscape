@@ -3,7 +3,7 @@
 package frc.robot.drivetrain;
 
 import choreo.trajectory.SwerveSample;
-import com.kauailabs.navx.frc.AHRS;
+import com.studica.frc.AHRS;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -75,7 +75,7 @@ public class Drivetrain extends SubsystemBase {
       new PIDController(
           RotationControllerGains.kP, RotationControllerGains.kI, RotationControllerGains.kD);
 
-  private final AHRS m_gyro = new AHRS();
+  private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
   private final SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(
