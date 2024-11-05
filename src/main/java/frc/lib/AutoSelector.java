@@ -7,11 +7,12 @@ import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autos.ChoreoAuto;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class AutoSelector {
 
-  private ChoreoAuto m_currentAuto;
+  private Optional<ChoreoAuto> m_currentAuto;
   private DigitalInput[] m_switchPositions;
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
@@ -32,11 +33,11 @@ public class AutoSelector {
     this.m_autoOptions = autoOptions;
 
     m_switchPositions = new DigitalInput[ports.length];
-    m_changedAuto = new BooleanEvent(m_loop, () -> updateAuto());
-
     for (int i = 0; i < ports.length; i++) {
       m_switchPositions[i] = new DigitalInput(ports[i]);
     }
+
+    m_changedAuto = new BooleanEvent(m_loop, () -> updateAuto());
   }
 
   private int getSwitchPosition() {
@@ -48,7 +49,7 @@ public class AutoSelector {
     return 0; // failure of the physical switch
   }
 
-  private ChoreoAuto findMatchingOption() {
+  private Optional<ChoreoAuto> findMatchingOption() {
     int switchPosition = getSwitchPosition();
     Alliance color = m_allianceColorSupplier.get();
 
@@ -58,11 +59,11 @@ public class AutoSelector {
           return m_autoOptions.get(i).getChoreoAuto();
         }
     }
-    return null;
+    return Optional.empty();
   }
 
   private boolean updateAuto() {
-    ChoreoAuto m_newAuto = findMatchingOption();
+    Optional<ChoreoAuto> m_newAuto = findMatchingOption();
     if (m_newAuto.equals(m_currentAuto)) return false;
     else {
       m_currentAuto = m_newAuto;
@@ -72,19 +73,19 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    if (m_currentAuto != null) m_currentAuto.schedule();
+    if (m_currentAuto.isPresent()) m_currentAuto.get().schedule();
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
   public void cancelAuto() {
-    if (m_currentAuto != null) m_currentAuto.cancel();
+    if (m_currentAuto.isPresent()) m_currentAuto.get().cancel();
   }
 
   public void disabledPeriodic() {
     m_loop.poll();
 
-    if (m_currentAuto != null) {
-      SmartDashboard.putString("Auto", m_currentAuto.getName());
+    if (m_currentAuto.isPresent()) {
+      SmartDashboard.putString("Auto", m_currentAuto.get().getName());
     } else {
       SmartDashboard.putString("Auto", "Null");
     }

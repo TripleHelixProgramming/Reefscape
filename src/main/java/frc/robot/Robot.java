@@ -22,11 +22,12 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.autos.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Robot extends TimedRobot {
 
-  private List<AutoOption> m_autoOptions;
+  private List<AutoOption> m_autoOptions = new ArrayList<>();
 
   private final PowerDistribution m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
   private final AllianceSelector m_allianceSelector;
@@ -39,11 +40,9 @@ public class Robot extends TimedRobot {
   private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
 
   public Robot() {
-    configureButtonBindings();
-    configureDefaultCommands();
-    configureAutoOptions();
-
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
+
+    configureAutoOptions();
     m_autoSelector =
         new AutoSelector(
             AutoConstants.kAutonomousModeSelectorPorts,
@@ -51,6 +50,9 @@ public class Robot extends TimedRobot {
             m_autoOptions);
 
     m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
+
+    configureButtonBindings();
+    configureDefaultCommands();
 
     // Create a button on Smart Dashboard to reset the encoders.
     SmartDashboard.putData(
@@ -157,7 +159,7 @@ public class Robot extends TimedRobot {
   private void configureOperatorButtonBindings() {}
 
   private void configureAutoOptions() {
-    m_autoOptions.add(new AutoOption(Alliance.Red, 1, new ExampleAuto()));
+    m_autoOptions.add(new AutoOption(Alliance.Red, 4, new ExampleAuto()));
     m_autoOptions.add(new AutoOption(Alliance.Blue, 1));
   }
 
