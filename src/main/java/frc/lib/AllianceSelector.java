@@ -68,6 +68,7 @@ public class AllianceSelector {
 
   public void disabledPeriodic() {
     m_loop.poll();
-    SmartDashboard.putString("Alliance Color", getAllianceColor().name());
+    SmartDashboard.putString("AllianceColor", getAllianceColor().name());
+    SmartDashboard.putBoolean("AllianceColorAgreement", agreementInAllianceInputs());
   }
 }

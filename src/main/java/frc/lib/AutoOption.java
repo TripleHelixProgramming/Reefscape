@@ -2,11 +2,12 @@ package frc.lib;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.autos.ChoreoAuto;
+import java.util.Optional;
 
 public class AutoOption {
   private Alliance m_color;
   private int m_option;
-  private ChoreoAuto m_auto;
+  private Optional<ChoreoAuto> m_auto;
 
   /**
    * Constructs a selectable autonomous mode option
@@ -18,7 +19,7 @@ public class AutoOption {
   public AutoOption(Alliance color, int option, ChoreoAuto auto) {
     this.m_color = color;
     this.m_option = option;
-    this.m_auto = auto;
+    this.m_auto = Optional.of(auto);
   }
 
   /**
@@ -30,7 +31,7 @@ public class AutoOption {
   public AutoOption(Alliance color, int option) {
     this.m_color = color;
     this.m_option = option;
-    this.m_auto = null;
+    this.m_auto = Optional.empty();
   }
 
   /**
@@ -50,7 +51,7 @@ public class AutoOption {
   /**
    * @return The command which runs the selected autonomous mode
    */
-  public ChoreoAuto getChoreoAuto() {
+  public Optional<ChoreoAuto> getChoreoAuto() {
     return this.m_auto;
   }
 }
