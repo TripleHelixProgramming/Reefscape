@@ -182,3 +182,7 @@ ctre_sim/
 # clangd
 /.cache
 compile_commands.json
+
+# Simulation generated files
+networktables.json.bck
+simgui-ds.json
