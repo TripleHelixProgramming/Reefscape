@@ -1,5 +1,7 @@
 package frc.robot.drivetrain;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import choreo.trajectory.SwerveSample;
 import com.studica.frc.AHRS;
 import edu.wpi.first.math.controller.PIDController;
@@ -15,7 +17,6 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants.RotationControllerGains;
 import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
@@ -27,8 +28,8 @@ public class Drivetrain extends SubsystemBase {
 
   private BooleanSupplier m_fieldRotatedSupplier;
 
-  static LinearVelocity kMaxSpeed = Constants.DriveConstants.kMaxTranslationalVelocity;
-  static AngularVelocity kMaxAngularSpeed = Constants.DriveConstants.kMaxRotationalVelocity;
+  static LinearVelocity kMaxSpeed = DriveConstants.kMaxTranslationalVelocity;
+  static AngularVelocity kMaxAngularSpeed = DriveConstants.kMaxRotationalVelocity;
 
   private final SwerveDriveKinematics m_kinematics = DriveConstants.kDriveKinematics;
 
@@ -136,7 +137,7 @@ public class Drivetrain extends SubsystemBase {
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     var swerveModuleStates =
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
-            ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod));
+            ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod.in(Seconds)));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
@@ -148,7 +149,7 @@ public class Drivetrain extends SubsystemBase {
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds, SwerveDriveKinematics kinematicsType) {
     var swerveModuleStates =
         kinematicsType.toSwerveModuleStates(
-            ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod));
+            ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod.in(Seconds)));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);

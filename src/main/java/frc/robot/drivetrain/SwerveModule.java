@@ -1,5 +1,10 @@
 package frc.robot.drivetrain;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -66,7 +71,7 @@ public class SwerveModule {
     m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
 
-    m_defaultMotorConfig.voltageCompensation(RobotConstants.kNominalVoltage);
+    m_defaultMotorConfig.voltageCompensation(RobotConstants.kNominalVoltage.in(Volts));
     m_defaultMotorConfig.inverted(false);
     m_driveMotorConfig.apply(m_defaultMotorConfig);
     m_turningMotorConfig.apply(m_defaultMotorConfig);
@@ -74,8 +79,9 @@ public class SwerveModule {
     m_driveMotorConfig.idleMode(IdleMode.kCoast);
     m_turningMotorConfig.idleMode(IdleMode.kBrake);
 
-    m_driveMotorConfig.smartCurrentLimit(ModuleConstants.kDriveMotorCurrentLimit);
-    m_turningMotorConfig.smartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
+    m_driveMotorConfig.smartCurrentLimit(((int) ModuleConstants.kDriveMotorCurrentLimit.in(Amps)));
+    m_turningMotorConfig.smartCurrentLimit(
+        (int) ModuleConstants.kTurningMotorCurrentLimit.in(Amps));
 
     m_driveControllerConfig.p(DriveControllerGains.kP);
     m_driveControllerConfig.i(DriveControllerGains.kI);
@@ -94,8 +100,10 @@ public class SwerveModule {
     m_turningControllerConfig.positionWrappingInputRange(-0.5, 0.5);
     m_turningMotorConfig.apply(m_turningControllerConfig);
 
-    m_driveEncoderConfig.positionConversionFactor(ModuleConstants.kDrivePositionConversionFactor);
-    m_driveEncoderConfig.velocityConversionFactor(ModuleConstants.kDriveVelocityConversionFactor);
+    m_driveEncoderConfig.positionConversionFactor(
+        ModuleConstants.kDrivePositionConversionFactor.in(Meters));
+    m_driveEncoderConfig.velocityConversionFactor(
+        ModuleConstants.kDriveVelocityConversionFactor.in(MetersPerSecond));
     m_driveMotorConfig.apply(m_driveEncoderConfig);
 
     m_turningRelativeEncoderConfig.positionConversionFactor(

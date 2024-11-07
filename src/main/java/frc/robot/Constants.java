@@ -5,15 +5,18 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public final class Constants {
 
   public static final class RobotConstants {
-    public static final double kNominalVoltage = 12.0;
-    public static final double kPeriod = TimedRobot.kDefaultPeriod;
+    public static final Voltage kNominalVoltage = Volts.of(12.0);
+    public static final Time kPeriod = Seconds.of(TimedRobot.kDefaultPeriod);
   }
 
   public static final class DriveConstants {
@@ -37,7 +40,6 @@ public final class Constants {
       public static final int kRearLeftTurningEncoderPort = 45;
 
       public static final String kAbsEncoderMagnetOffsetKey = "AbsEncoderMagnetOffsetKey";
-      public static final double kDefaultAbsEncoderMagnetOffset = 0.0;
     }
 
     // Distance between centers of right and left wheels on robot
@@ -47,7 +49,7 @@ public final class Constants {
     public static final Distance kWheelBase = Inches.of(22.5);
 
     // Robot radius
-    public static final double kRadius = 0.423;
+    // public static final double kRadius = 0.423;
 
     public static final LinearVelocity kMaxTranslationalVelocity =
         MetersPerSecond.of(4.0); // max 4.5
@@ -68,8 +70,8 @@ public final class Constants {
 
   public static final class ModuleConstants {
 
-    public static final int kDriveMotorCurrentLimit = 80;
-    public static final int kTurningMotorCurrentLimit = 80;
+    public static final Current kDriveMotorCurrentLimit = Amps.of(80.0);
+    public static final Current kTurningMotorCurrentLimit = Amps.of(80.0);
 
     public static final class DriveControllerGains {
       public static final double kP = 0.1; // 2023 Competition Robot
@@ -92,18 +94,19 @@ public final class Constants {
     // public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.254,
     // 0.137);
 
-    public static final double kWheelDiameterMeters = 0.10; // 3.7 in; 2023 Competion Robot
+    public static final Distance kWheelDiameter = Inches.of(3.7); // 2023 Competion Robot
+    public static final Distance kWheelCircumference = kWheelDiameter.times(Math.PI);
 
     // By default, the drive encoder in position mode measures rotations at the drive motor
     // Convert to meters at the wheel
     public static final double kDriveGearRatio = 6.75; // 2023 Competion Robot
-    public static final double kDrivePositionConversionFactor =
-        (kWheelDiameterMeters * Math.PI) / kDriveGearRatio;
+    public static final Distance kDrivePositionConversionFactor =
+        kWheelCircumference.divide(kDriveGearRatio);
 
     // By default, the drive encoder in velocity mode measures RPM at the drive motor
     // Convert to meters per second at the wheel
-    public static final double kDriveVelocityConversionFactor =
-        kDrivePositionConversionFactor / 60.0;
+    public static final LinearVelocity kDriveVelocityConversionFactor =
+        kDrivePositionConversionFactor.per(Minute);
 
     // By default, the turn encoder in position mode measures rotations at the turning motor
     // Convert to rotations at the module azimuth
