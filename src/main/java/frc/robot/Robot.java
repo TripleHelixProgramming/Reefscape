@@ -86,12 +86,10 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     m_LEDs.setDefaultCommand(
-        m_LEDs
-            .createDisabledCommand(
-                m_autoSelector::getSwitchPosition,
-                m_allianceSelector::getAllianceColor,
-                m_allianceSelector::agreementInAllianceInputs)
-            .ignoringDisable(true));
+        m_LEDs.createDisabledCommand(
+            m_autoSelector::getSwitchPosition,
+            m_allianceSelector::getAllianceColor,
+            m_allianceSelector::agreementInAllianceInputs));
   }
 
   @Override
@@ -171,9 +169,7 @@ public class Robot extends TimedRobot {
   private void configureOperatorButtonBindings() {}
 
   private void configureEventBindings() {
-    m_autoSelector
-        .getChangedAutoSelection()
-        .onTrue(m_LEDs.createChangeAutoAnimationCommand().ignoringDisable(true));
+    m_autoSelector.getChangedAutoSelection().onTrue(m_LEDs.createChangeAutoAnimationCommand());
   }
 
   private void configureAutoOptions() {
