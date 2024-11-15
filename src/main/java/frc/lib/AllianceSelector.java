@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Optional;
 
 public class AllianceSelector {
@@ -14,8 +15,8 @@ public class AllianceSelector {
   private DigitalInput m_allianceSelectionSwitch;
   private EventLoop m_loop = new EventLoop();
 
-  public BooleanEvent m_changedAlliance;
-  public BooleanEvent m_agreementInAllianceInputs;
+  public Trigger m_changedAlliance;
+  public Trigger m_agreementInAllianceInputs;
 
   /**
    * Constructs an alliance color selector switch
@@ -25,8 +26,9 @@ public class AllianceSelector {
   public AllianceSelector(int port) {
     this.m_allianceSelectionSwitch = new DigitalInput(port);
 
-    m_changedAlliance = new BooleanEvent(m_loop, () -> updateAlliance());
-    m_agreementInAllianceInputs = new BooleanEvent(m_loop, () -> agreementInAllianceInputs());
+    m_changedAlliance = new BooleanEvent(m_loop, () -> updateAlliance()).castTo(Trigger::new);
+    m_agreementInAllianceInputs =
+        new BooleanEvent(m_loop, () -> agreementInAllianceInputs()).castTo(Trigger::new);
   }
 
   private Alliance getAllianceFromSwitch() {
@@ -43,7 +45,10 @@ public class AllianceSelector {
     }
   }
 
-  private boolean agreementInAllianceInputs() {
+  /**
+   * @return Whether there is agreement between the sources of information for alliance color
+   */
+  public boolean agreementInAllianceInputs() {
     Optional<Alliance> allianceFromFMS = DriverStation.getAlliance();
     Alliance allianceFromSwitch = getAllianceFromSwitch();
 
