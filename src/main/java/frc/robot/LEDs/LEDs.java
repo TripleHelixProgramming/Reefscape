@@ -47,7 +47,7 @@ public class LEDs extends SubsystemBase {
   }
 
   public Command createChangeAutoAnimationCommand() {
-    return this.runOnce(
+    return this.run(
         () -> {
           // TODO: Play an animation when the auto selection changes
         });
