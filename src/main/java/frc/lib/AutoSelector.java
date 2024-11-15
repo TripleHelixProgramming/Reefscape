@@ -75,14 +75,6 @@ public class AutoSelector {
   }
 
   /**
-   * @return Selected autonomous command
-   */
-  public ChoreoAuto getSelectedAuto() {
-    if (m_currentAuto.isPresent()) return m_currentAuto.get();
-    return null;
-  }
-
-  /**
    * @return Object for binding a command to a change in autonomous mode selection
    */
   public Trigger getChangedAutoSelection() {
