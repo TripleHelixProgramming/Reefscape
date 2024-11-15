@@ -14,9 +14,8 @@ public class AllianceSelector {
   private Alliance m_currentColor;
   private DigitalInput m_allianceSelectionSwitch;
   private EventLoop m_loop = new EventLoop();
-
-  public Trigger m_changedAlliance;
-  public Trigger m_agreementInAllianceInputs;
+  private BooleanEvent m_changedAlliance;
+  private BooleanEvent m_agreementInAllianceInputs;
 
   /**
    * Constructs an alliance color selector switch
@@ -26,9 +25,8 @@ public class AllianceSelector {
   public AllianceSelector(int port) {
     this.m_allianceSelectionSwitch = new DigitalInput(port);
 
-    m_changedAlliance = new BooleanEvent(m_loop, () -> updateAlliance()).castTo(Trigger::new);
-    m_agreementInAllianceInputs =
-        new BooleanEvent(m_loop, () -> agreementInAllianceInputs()).castTo(Trigger::new);
+    m_changedAlliance = new BooleanEvent(m_loop, () -> updateAlliance());
+    m_agreementInAllianceInputs = new BooleanEvent(m_loop, () -> agreementInAllianceInputs());
   }
 
   private Alliance getAllianceFromSwitch() {
@@ -69,6 +67,21 @@ public class AllianceSelector {
    */
   public Alliance getAllianceColor() {
     return m_currentColor;
+  }
+
+  /**
+   * @return Object for binding a command to a change in alliance color
+   */
+  public Trigger getAllianceColorChange() {
+    return m_changedAlliance.castTo(Trigger::new);
+  }
+
+  /**
+   * @return Object for binding a command to agreement between the sources of information for
+   *     alliance color
+   */
+  public Trigger getAgreementInAllianceColor() {
+    return m_agreementInAllianceInputs.castTo(Trigger::new);
   }
 
   public void disabledPeriodic() {

@@ -18,8 +18,7 @@ public class AutoSelector {
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
   private EventLoop m_loop = new EventLoop();
-
-  public Trigger m_changedAuto;
+  private BooleanEvent m_changedAutoSelection;
 
   /**
    * Constructs an autonomous selector switch
@@ -38,7 +37,7 @@ public class AutoSelector {
       m_switchPositions[i] = new DigitalInput(ports[i]);
     }
 
-    m_changedAuto = new BooleanEvent(m_loop, () -> updateAuto()).castTo(Trigger::new);
+    m_changedAutoSelection = new BooleanEvent(m_loop, () -> updateAuto());
   }
 
   /**
@@ -81,6 +80,13 @@ public class AutoSelector {
   public ChoreoAuto getSelectedAuto() {
     if (m_currentAuto.isPresent()) return m_currentAuto.get();
     return null;
+  }
+
+  /**
+   * @return Object for binding a command to a change in autonomous mode selection
+   */
+  public Trigger getChangedAutoSelection() {
+    return m_changedAutoSelection.castTo(Trigger::new);
   }
 
   /** Schedules the command corresponding to the selected autonomous mode */

@@ -171,8 +171,9 @@ public class Robot extends TimedRobot {
   private void configureOperatorButtonBindings() {}
 
   private void configureEventBindings() {
-    m_autoSelector.m_changedAuto.onTrue(
-        m_LEDs.createChangeAutoAnimationCommand().ignoringDisable(true));
+    m_autoSelector
+        .getChangedAutoSelection()
+        .onTrue(m_LEDs.createChangeAutoAnimationCommand().ignoringDisable(true));
   }
 
   private void configureAutoOptions() {
