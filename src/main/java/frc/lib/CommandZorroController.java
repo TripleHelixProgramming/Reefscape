@@ -37,8 +37,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the B switch's down signal.
    *
-   * @return a Trigger instance representing the B switch's down signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the B switch's down signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger BDown() {
@@ -49,8 +49,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the B switch's down signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the B switch's down signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the B switch's down signal attached to the given loop.
    */
   public Trigger BDown(EventLoop loop) {
     return button(ZorroController.Button.kBDown.value, loop);
@@ -59,8 +58,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the B switch's mid signal.
    *
-   * @return a Trigger instance representing the B switch's mid signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the B switch's mid signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger BMid() {
@@ -71,8 +70,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the B switch's mid signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the B switch's mid signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the B switch's mid signal attached to the given loop.
    */
   public Trigger BMid(EventLoop loop) {
     return button(ZorroController.Button.kBMid.value, loop);
@@ -81,8 +79,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the B switch's up signal.
    *
-   * @return a Trigger instance representing the B switch's up signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the B switch's up signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger BUp() {
@@ -93,8 +91,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the B switch's up signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the B switch's up signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the B switch's up signal attached to the given loop.
    */
   public Trigger BUp(EventLoop loop) {
     return button(ZorroController.Button.kBUp.value, loop);
@@ -103,8 +100,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the E switch's down signal.
    *
-   * @return a Trigger instance representing the E switch's down signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the E switch's down signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger EDown() {
@@ -115,8 +112,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the E switch's down signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the E switch's down signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the E switch's down signal attached to the given loop.
    */
   public Trigger EDown(EventLoop loop) {
     return button(ZorroController.Button.kEDown.value, loop);
@@ -125,8 +121,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the E switch's up signal.
    *
-   * @return a Trigger instance representing the E switch's up signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the E switch's up signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger EUp() {
@@ -137,8 +133,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the E switch's up signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the E switch's up signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the E switch's up signal attached to the given loop.
    */
   public Trigger EUp(EventLoop loop) {
     return button(ZorroController.Button.kEUp.value, loop);
@@ -147,8 +142,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the A button's in signal.
    *
-   * @return a Trigger instance representing the A button's in signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the A button's in signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger AIn() {
@@ -159,8 +154,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the A button's in signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the A button's in signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the A button's in signal attached to the given loop.
    */
   public Trigger AIn(EventLoop loop) {
     return button(ZorroController.Button.kAIn.value, loop);
@@ -169,8 +163,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the G button's in signal.
    *
-   * @return a Trigger instance representing the G button's in signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the G button's in signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger GIn() {
@@ -181,8 +175,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the G button's in signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the G button's in signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the G button's in signal attached to the given loop.
    */
   public Trigger GIn(EventLoop loop) {
     return button(ZorroController.Button.kGIn.value, loop);
@@ -191,8 +184,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the C switch's down signal.
    *
-   * @return a Trigger instance representing the C switch's down signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the C switch's down signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger CDown() {
@@ -203,8 +196,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the C switch's down signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the C switch's down signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the C switch's down signal attached to the given loop.
    */
   public Trigger CDown(EventLoop loop) {
     return button(ZorroController.Button.kCDown.value, loop);
@@ -213,8 +205,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the C switch's mid signal.
    *
-   * @return a Trigger instance representing the C switch's mid signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the C switch's mid signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger CMid() {
@@ -225,8 +217,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the C switch's mid signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the C switch's mid signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the C switch's mid signal attached to the given loop.
    */
   public Trigger CMid(EventLoop loop) {
     return button(ZorroController.Button.kCMid.value, loop);
@@ -235,8 +226,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the C switch's up signal.
    *
-   * @return a Trigger instance representing the C switch's up signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the C switch's up signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger CUp() {
@@ -247,8 +238,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the C switch's up signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the C switch's up signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the C switch's up signal attached to the given loop.
    */
   public Trigger CUp(EventLoop loop) {
     return button(ZorroController.Button.kCUp.value, loop);
@@ -257,8 +247,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the F switch's down signal.
    *
-   * @return a Trigger instance representing the F switch's down signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the F switch's down signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger FDown() {
@@ -269,8 +259,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the F switch's down signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the F switch's down signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the F switch's down signal attached to the given loop.
    */
   public Trigger FDown(EventLoop loop) {
     return button(ZorroController.Button.kFDown.value, loop);
@@ -279,8 +268,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the F switch's up signal.
    *
-   * @return a Trigger instance representing the F switch's up signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the F switch's up signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger FUp() {
@@ -291,8 +280,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the F switch's up signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the F switch's up signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the F switch's up signal attached to the given loop.
    */
   public Trigger FUp(EventLoop loop) {
     return button(ZorroController.Button.kFUp.value, loop);
@@ -301,8 +289,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the D button's in signal.
    *
-   * @return a Trigger instance representing the D button's in signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the D button's in signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger DIn() {
@@ -313,8 +301,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the D button's in signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the D button's in signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the D button's in signal attached to the given loop.
    */
   public Trigger DIn(EventLoop loop) {
     return button(ZorroController.Button.kDIn.value, loop);
@@ -323,8 +310,8 @@ public class CommandZorroController extends CommandGenericHID {
   /**
    * Constructs a Trigger instance around the H button's in signal.
    *
-   * @return a Trigger instance representing the H button's in signal attached
-   *     to the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @return a Trigger instance representing the H button's in signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    * @see #a(EventLoop)
    */
   public Trigger HIn() {
@@ -335,8 +322,7 @@ public class CommandZorroController extends CommandGenericHID {
    * Constructs a Trigger instance around the H button's in signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return a Trigger instance representing the H button's in signal attached
-   *     to the given loop.
+   * @return a Trigger instance representing the H button's in signal attached to the given loop.
    */
   public Trigger HIn(EventLoop loop) {
     return button(ZorroController.Button.kHIn.value, loop);
