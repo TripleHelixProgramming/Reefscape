@@ -57,7 +57,9 @@ public class Robot extends TimedRobot {
     // Create a button on Smart Dashboard to reset the encoders.
     SmartDashboard.putData(
         "Align Encoders",
-        new InstantCommand(() -> m_swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
+        new InstantCommand(() -> m_swerve.zeroAbsTurningEncoderOffsets())
+            .ignoringDisable(true)
+            .withName("Align swerve module steering encoders"));
   }
 
   @Override
@@ -145,16 +147,15 @@ public class Robot extends TimedRobot {
     configureOperatorButtonBindings();
   }
 
-  // spotless:off
   private void configureDriverButtonBindings() {
 
     // Reset heading
     new JoystickButton(m_driver, ZorroController.Button.kHIn.value)
-        .onTrue(new InstantCommand(() -> m_swerve.resetHeading())
-        .ignoringDisable(true));
-
+        .onTrue(
+            new InstantCommand(() -> m_swerve.resetHeading())
+                .ignoringDisable(true)
+                .withName("Reset heading of robot pose"));
   }
-  // spotless:on
 
   private void configureOperatorButtonBindings() {}
 
