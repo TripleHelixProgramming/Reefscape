@@ -33,6 +33,7 @@ public class Robot extends TimedRobot {
   private final AllianceSelector m_allianceSelector;
   private final AutoSelector m_autoSelector;
   private final Drivetrain m_swerve;
+  private final Vision m_vision;
 
   private ZorroController m_driver;
   private XboxController m_operator;
@@ -50,6 +51,8 @@ public class Robot extends TimedRobot {
             m_autoOptions);
 
     m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
+
+    m_vision = new Vision();
 
     configureButtonBindings();
     configureDefaultCommands();
@@ -74,6 +77,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(m_driver);
     SmartDashboard.putData(m_operator);
     SmartDashboard.putData(m_powerDistribution);
+
+    var visionEst = m_vision.getEstimatedGlobalPose();
+    visionEst.ifPresent(est -> {
+      var estStdDevs = m_vision.getEstimationStdDevs();
+
+      
+    });
   }
 
   @Override
