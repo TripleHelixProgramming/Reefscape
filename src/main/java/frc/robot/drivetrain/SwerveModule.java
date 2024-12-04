@@ -2,7 +2,6 @@ package frc.robot.drivetrain;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -234,8 +233,7 @@ public class SwerveModule {
    */
   public void setAbsTurningEncoderOffset(double offset) {
     m_turningAbsEncoderConfig.MagnetSensor.MagnetOffset = offset;
-    m_turningAbsEncoderConfig.MagnetSensor.AbsoluteSensorRange =
-        AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+    m_turningAbsEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
     m_turningAbsEncoderConfig.MagnetSensor.SensorDirection =
         SensorDirectionValue.CounterClockwise_Positive;
     m_turningAbsEncoder.getConfigurator().apply(m_turningAbsEncoderConfig);
