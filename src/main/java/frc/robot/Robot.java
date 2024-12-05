@@ -6,16 +6,15 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceSelector;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
+import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
-import frc.lib.ZorroController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -36,8 +35,8 @@ public class Robot extends TimedRobot {
   private final Drivetrain m_swerve;
   private final LEDs m_LEDs;
 
-  private ZorroController m_driver;
-  private XboxController m_operator;
+  private CommandZorroController m_driver;
+  private CommandXboxController m_operator;
 
   private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
 
@@ -71,15 +70,14 @@ public class Robot extends TimedRobot {
     DriverStation.startDataLog(DataLogManager.getLog());
 
     m_swerve.setDefaultCommand(
-        new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematics, m_driver));
+        new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematics, m_driver.getHID()));
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-
-    SmartDashboard.putData(m_driver);
-    SmartDashboard.putData(m_operator);
+    SmartDashboard.putData(m_driver.getHID());
+    SmartDashboard.putData(m_operator.getHID());
     SmartDashboard.putData(m_powerDistribution);
   }
 
@@ -148,8 +146,8 @@ public class Robot extends TimedRobot {
 
     // We use two different types of controllers - Joystick & XboxController.
     // Create objects of the specific types.
-    m_driver = new ZorroController(cp.findDriverPort());
-    m_operator = new XboxController(cp.findOperatorPort());
+    m_driver = new CommandZorroController(cp.findDriverPort());
+    m_operator = new CommandXboxController(cp.findOperatorPort());
 
     configureDriverButtonBindings();
     configureOperatorButtonBindings();
@@ -159,7 +157,7 @@ public class Robot extends TimedRobot {
   private void configureDriverButtonBindings() {
 
     // Reset heading
-    new JoystickButton(m_driver, ZorroController.Button.kHIn.value)
+    m_driver.HIn()
         .onTrue(new InstantCommand(() -> m_swerve.resetHeading())
         .ignoringDisable(true));
 
