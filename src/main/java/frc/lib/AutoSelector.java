@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.ChoreoAuto;
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +18,7 @@ public class AutoSelector {
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
   private EventLoop m_loop = new EventLoop();
-
-  public BooleanEvent m_changedAuto;
+  private BooleanEvent m_changedAutoSelection;
 
   /**
    * Constructs an autonomous selector switch
@@ -37,10 +37,13 @@ public class AutoSelector {
       m_switchPositions[i] = new DigitalInput(ports[i]);
     }
 
-    m_changedAuto = new BooleanEvent(m_loop, () -> updateAuto());
+    m_changedAutoSelection = new BooleanEvent(m_loop, () -> updateAuto());
   }
 
-  private int getSwitchPosition() {
+  /**
+   * @return The position of the autonomous selection switch
+   */
+  public int getSwitchPosition() {
     for (int i = 0; i < m_switchPositions.length; i++) {
       if (!m_switchPositions[i].get()) {
         return i + 1;
@@ -69,6 +72,13 @@ public class AutoSelector {
       m_currentAuto = m_newAuto;
       return true;
     }
+  }
+
+  /**
+   * @return Object for binding a command to a change in autonomous mode selection
+   */
+  public Trigger getChangedAutoSelection() {
+    return m_changedAutoSelection.castTo(Trigger::new);
   }
 
   /** Schedules the command corresponding to the selected autonomous mode */
