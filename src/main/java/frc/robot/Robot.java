@@ -78,12 +78,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(m_operator);
     SmartDashboard.putData(m_powerDistribution);
 
-    var visionEst = m_vision.getEstimatedGlobalPose();
-    visionEst.ifPresent(est -> {
-      var estStdDevs = m_vision.getEstimationStdDevs();
-
-      
-    });
+    m_vision.visionLog();
   }
 
   @Override
