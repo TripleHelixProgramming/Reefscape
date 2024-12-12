@@ -21,7 +21,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 public final class Constants {
 
   public static final class CameraConstants {
-    public static final String kCameraName1 = "cameraName";
+    public static final String kCameraNameFrontRight = "OV2311_TH_4";
+    public static final String kCameraNameFrontLeft = "OV2311_TH_3";
+    public static final String kCameraNameBackRight = "OV2311_TH_2";
+    public static final String kCameraNameBackLeft = "OV2311_TH_1";
 
     public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
