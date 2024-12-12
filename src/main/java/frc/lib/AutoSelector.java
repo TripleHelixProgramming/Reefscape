@@ -94,6 +94,8 @@ public class AutoSelector {
   public void disabledPeriodic() {
     m_loop.poll();
 
+    SmartDashboard.putNumber("Auto Selector Switch Position", getSwitchPosition());
+
     if (m_currentAuto.isPresent()) {
       SmartDashboard.putString("Auto", m_currentAuto.get().getName());
     } else {
