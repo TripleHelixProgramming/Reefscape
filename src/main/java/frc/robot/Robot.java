@@ -22,6 +22,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.autos.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
+import frc.robot.vision.Vision;
 import java.util.ArrayList;
 import java.util.List;
 

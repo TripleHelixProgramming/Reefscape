@@ -55,10 +55,10 @@ public class AutoSelector {
 
   private Optional<ChoreoAuto> findMatchingOption() {
     return m_autoOptions.stream()
-      .filter( o -> o.getColor() == getAllianceColor() )
-      .filter( o -> o.getOption() == getSwitchPosition() )
-      .findFirst()
-      .flatMap(AutoOption::getChoreoAuto);
+        .filter(o -> o.getColor() == getAllianceColor())
+        .filter(o -> o.getOption() == getSwitchPosition())
+        .findFirst()
+        .flatMap(AutoOption::getChoreoAuto);
   }
 
   private boolean updateAuto() {
@@ -72,12 +72,12 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    m_currentAuto.ifPresent( o -> o.schedule() );
+    m_currentAuto.ifPresent(o -> o.schedule());
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
   public void cancelAuto() {
-    m_currentAuto.ifPresent( o -> o.cancel() );
+    m_currentAuto.ifPresent(o -> o.cancel());
   }
 
   public void disabledPeriodic() {
