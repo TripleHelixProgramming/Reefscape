@@ -71,7 +71,8 @@ public class LEDs extends SubsystemBase {
       BooleanSupplier agreementInAllianceInputs) {
     return this.run(
             () -> {
-              // TODO: Change the basic disabled pattern (e.g. blink or pulse the LED strip) if the selected alliance color does not match the value from FMS
+              // TODO: Change the basic disabled pattern (e.g. blink or pulse the LED strip) if the
+              // selected alliance color does not match the value from FMS
               autoColor(allianceColorSupplier.get(), autoSwitchPositionSupplier.getAsInt());
             })
         .ignoringDisable(true);
