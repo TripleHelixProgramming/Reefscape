@@ -2,7 +2,11 @@ package frc.robot.drivetrain;
 
 import choreo.trajectory.SwerveSample;
 import com.studica.frc.AHRS;
+
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -10,6 +14,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -31,6 +37,11 @@ public class Drivetrain extends SubsystemBase {
   static AngularVelocity kMaxAngularSpeed = Constants.DriveConstants.kMaxRotationalVelocity;
 
   private final SwerveDriveKinematics m_kinematics = DriveConstants.kDriveKinematics;
+
+    // The robot pose estimator for tracking swerve odometry and applying vision corrections.
+    private final SwerveDrivePoseEstimator poseEstimator;
+
+
 
   private final SwerveModule m_frontLeft =
       new SwerveModule(
@@ -74,18 +85,6 @@ public class Drivetrain extends SubsystemBase {
           RotationControllerGains.kP, RotationControllerGains.kI, RotationControllerGains.kD);
 
   private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
-
-  private final SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(
-          DriveConstants.kDriveKinematics,
-          m_gyro.getRotation2d(),
-          new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-          });
-
   private final Field2d m_field = new Field2d();
 
   public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
@@ -101,13 +100,26 @@ public class Drivetrain extends SubsystemBase {
       module.initializeAbsoluteTurningEncoder();
       module.initializeRelativeTurningEncoder();
     }
+
+    // Define the standard deviations for the pose estimator, which determine how fast the pose
+    // estimate converges to the vision measurement. This should depend on the vision measurement
+    // noise and how many or how frequently vision measurements are applied to the pose estimator.
+    var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
+    var visionStdDevs = VecBuilder.fill(1, 1, 1);
+    poseEstimator  = new SwerveDrivePoseEstimator(
+      DriveConstants.kDriveKinematics,
+      m_gyro.getRotation2d(),
+      getSwerveModulePositions(),
+      new Pose2d(),
+      stateStdDevs,
+      visionStdDevs);
   }
 
   @Override
   public void periodic() {
 
     updateOdometry();
-    m_field.setRobotPose(m_odometry.getPoseMeters());
+    m_field.setRobotPose(getPose());
 
     for (SwerveModule module : modules) {
       SmartDashboard.putNumber(
@@ -159,14 +171,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    m_odometry.update(
-        m_gyro.getRotation2d(),
-        new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_rearLeft.getPosition(),
-          m_rearRight.getPosition()
-        });
+    poseEstimator.update(m_gyro.getRotation2d(), getSwerveModulePositions());
   }
 
   /** Reconfigures all swerve module steering angles using external alignment device */
@@ -180,21 +185,14 @@ public class Drivetrain extends SubsystemBase {
    * @return The direction of the robot pose
    */
   public Rotation2d getHeading() {
-    return m_odometry.getPoseMeters().getRotation();
+    return poseEstimator.getEstimatedPosition().getRotation();
   }
 
   /**
    * @return The robot pose
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
-  }
-
-  /**
-   * @param pose The robot pose
-   */
-  public void setPose(Pose2d pose) {
-    m_odometry.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
+    return poseEstimator.getEstimatedPosition();
   }
 
   public void resetHeading() {
@@ -202,8 +200,7 @@ public class Drivetrain extends SubsystemBase {
         m_fieldRotatedSupplier.getAsBoolean()
             ? new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI))
             : new Pose2d(getPose().getTranslation(), new Rotation2d());
-
-    m_odometry.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
+    poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
   /**
@@ -263,4 +260,28 @@ public class Drivetrain extends SubsystemBase {
   public BooleanSupplier fieldRotatedSupplier() {
     return this.m_fieldRotatedSupplier;
   }
+
+      /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)}. */
+    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
+        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
+    }
+
+    /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
+    public void addVisionMeasurement(
+            Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+    }
+
+    /**
+     * Reset the estimated pose of the swerve drive on the field.
+     *
+     * @param pose New robot pose.
+     * @param resetSimPose If the simulated robot pose should also be reset. This effectively
+     *     teleports the robot and should only be used during the setup of the simulation world.
+     */
+    public void resetPose(Pose2d pose, boolean resetSimPose) {
+        poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
+    }
+
+
 }

@@ -75,11 +75,11 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    checkVision();
+
     SmartDashboard.putData(m_driver);
     SmartDashboard.putData(m_operator);
     SmartDashboard.putData(m_powerDistribution);
-
-    m_vision.visionLog();
   }
 
   @Override
@@ -120,7 +120,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    checkVision();
+  }
 
   @Override
   public void testInit() {
@@ -178,5 +180,15 @@ public class Robot extends TimedRobot {
    */
   public double getPDHCurrent(int CANBusPort) {
     return m_powerDistribution.getCurrent(CANBusPort - 10);
+  }
+
+  protected void checkVision() {
+    var visionEst = m_vision.getEstimatedGlobalPose();
+    visionEst.ifPresent(est -> {
+      // Change our trust in the measurement based on the tags we can see
+      var estStdDevs = m_vision.getEstimationStdDevs();
+      m_swerve.addVisionMeasurement(
+        est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+    });
   }
 }

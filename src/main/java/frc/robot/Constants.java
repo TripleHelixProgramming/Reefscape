@@ -20,32 +20,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 public final class Constants {
 
-  public static final class CameraConstants {
-
-    public static final class CameraName {
-      public static final String kFrontRight = "OV2311_TH_4";
-      public static final String kFrontLeft = "OV2311_TH_3";
-      public static final String kBackRight = "OV2311_TH_2";
-      public static final String kBackLeft = "OV2311_TH_1";
-    }
+  public static final class VisionConstants {
 
     public static final AprilTagFieldLayout kTagLayout =
         AprilTagFields.kDefaultField.loadAprilTagLayoutField();
-
-    public static final class TransformRobotToCamera {
-      public static final Transform3d kBackLeft =
-          new Transform3d(
-              new Translation3d(-0.252, 0.341, 0.628), new Rotation3d(Math.PI, 0, 1.972));
-      public static final Transform3d kBackRight =
-          new Transform3d(
-              new Translation3d(-0.259, -0.346, 0.628), new Rotation3d(Math.PI, 0, 4.311));
-      public static final Transform3d kFrontLeft =
-          new Transform3d(
-              new Translation3d(0.292, 0.316, 0.361), new Rotation3d(Math.PI, 0, 5.498));
-      public static final Transform3d kFrontRight =
-          new Transform3d(
-              new Translation3d(0.286, -0.332, 0.361), new Rotation3d(Math.PI, 0, 0.768));
-    }
 
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);

@@ -1,18 +1,20 @@
 package frc.robot.vision;
 
-import frc.robot.Constants.CameraConstants.CameraName;
-import frc.robot.Constants.CameraConstants.TransformRobotToCamera;
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 
 public class Vision {
 
-  private final Camera cameraFrontRight =
-      new Camera(CameraName.kFrontRight, TransformRobotToCamera.kFrontRight);
-  private final Camera cameraFrontLeft =
-      new Camera(CameraName.kFrontLeft, TransformRobotToCamera.kFrontLeft);
-  private final Camera cameraBackRight =
-      new Camera(CameraName.kBackRight, TransformRobotToCamera.kBackRight);
-  private final Camera cameraBackLeft =
-      new Camera(CameraName.kBackLeft, TransformRobotToCamera.kBackLeft);
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+        return Camera.FrontRight.getEstimatedGlobalPose();
+    }
 
-  public Vision() {}
+    public Matrix<N3, N1> getEstimationStdDevs() {
+        return Camera.FrontRight.getEstimationStdDevs();
+    }
 }
