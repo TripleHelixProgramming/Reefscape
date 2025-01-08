@@ -11,6 +11,7 @@ public class Vision {
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
     /*
      * TODO: Need some logic here to poll all cameras and select the best one.
+     * Look for one with non-empty pose and lowest error.
      */
     return Camera.FrontRight.getEstimatedGlobalPose();
   }
