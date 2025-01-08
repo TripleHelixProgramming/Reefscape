@@ -2,7 +2,6 @@ package frc.robot.drivetrain;
 
 import choreo.trajectory.SwerveSample;
 import com.studica.frc.AHRS;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -37,10 +36,8 @@ public class Drivetrain extends SubsystemBase {
 
   private final SwerveDriveKinematics m_kinematics = DriveConstants.kDriveKinematics;
 
-    // The robot pose estimator for tracking swerve odometry and applying vision corrections.
-    private final SwerveDrivePoseEstimator poseEstimator;
-
-
+  // The robot pose estimator for tracking swerve odometry and applying vision corrections.
+  private final SwerveDrivePoseEstimator poseEstimator;
 
   private final SwerveModule m_frontLeft =
       new SwerveModule(
@@ -105,13 +102,14 @@ public class Drivetrain extends SubsystemBase {
     // noise and how many or how frequently vision measurements are applied to the pose estimator.
     var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
     var visionStdDevs = VecBuilder.fill(1, 1, 1);
-    poseEstimator  = new SwerveDrivePoseEstimator(
-      DriveConstants.kDriveKinematics,
-      m_gyro.getRotation2d(),
-      getSwerveModulePositions(),
-      new Pose2d(),
-      stateStdDevs,
-      visionStdDevs);
+    poseEstimator =
+        new SwerveDrivePoseEstimator(
+            DriveConstants.kDriveKinematics,
+            m_gyro.getRotation2d(),
+            getSwerveModulePositions(),
+            new Pose2d(),
+            stateStdDevs,
+            visionStdDevs);
   }
 
   @Override
@@ -260,27 +258,25 @@ public class Drivetrain extends SubsystemBase {
     return this.m_fieldRotatedSupplier;
   }
 
-      /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)}. */
-    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
-        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
-    }
+  /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)}. */
+  public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
+    poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
+  }
 
-    /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
-    public void addVisionMeasurement(
-            Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
-    }
+  /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
+  public void addVisionMeasurement(
+      Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+    poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+  }
 
-    /**
-     * Reset the estimated pose of the swerve drive on the field.
-     *
-     * @param pose New robot pose.
-     * @param resetSimPose If the simulated robot pose should also be reset. This effectively
-     *     teleports the robot and should only be used during the setup of the simulation world.
-     */
-    public void resetPose(Pose2d pose, boolean resetSimPose) {
-        poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
-    }
-
-
+  /**
+   * Reset the estimated pose of the swerve drive on the field.
+   *
+   * @param pose New robot pose.
+   * @param resetSimPose If the simulated robot pose should also be reset. This effectively
+   *     teleports the robot and should only be used during the setup of the simulation world.
+   */
+  public void resetPose(Pose2d pose, boolean resetSimPose) {
+    poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
+  }
 }
