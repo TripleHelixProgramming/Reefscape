@@ -9,6 +9,9 @@ import org.photonvision.EstimatedRobotPose;
 public class Vision {
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+    /* 
+     * TODO: Need some logic here to poll all cameras and select the best one.
+     */
     return Camera.FrontRight.getEstimatedGlobalPose();
   }
 
