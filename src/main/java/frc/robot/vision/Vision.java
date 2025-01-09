@@ -8,15 +8,20 @@ import org.photonvision.EstimatedRobotPose;
 
 public class Vision {
 
+  private Matrix<N3, N1> currentStdevs;
+
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-    /*
-     * TODO: Need some logic here to poll all cameras and select the best one.
-     * Look for one with non-empty pose and lowest error.
-     */
-    return Camera.FrontRight.getEstimatedGlobalPose();
+    for (var camera : Camera.values()) {
+      var est = camera.getEstimatedGlobalPose();
+      if (!est.isEmpty()) {
+        currentStdevs = camera.getEstimationStdDevs();
+        return est;
+      }
+    }
+    return Optional.empty();
   }
 
   public Matrix<N3, N1> getEstimationStdDevs() {
-    return Camera.FrontRight.getEstimationStdDevs();
+    return currentStdevs;
   }
 }
