@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -83,6 +84,17 @@ public class Drivetrain extends SubsystemBase {
   private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
   private final Field2d m_field = new Field2d();
 
+  private final SwerveDriveOdometry m_odometry =
+      new SwerveDriveOdometry(
+          DriveConstants.kDriveKinematics,
+          m_gyro.getRotation2d(),
+          new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+          });
+
   public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
 
     this.m_fieldRotatedSupplier = fieldRotatedSupplier;
@@ -117,6 +129,7 @@ public class Drivetrain extends SubsystemBase {
 
     updateOdometry();
     m_field.setRobotPose(getPose());
+    m_field.getObject("odo").setPose(m_odometry.getPoseMeters());
 
     for (SwerveModule module : modules) {
       SmartDashboard.putNumber(
@@ -169,6 +182,7 @@ public class Drivetrain extends SubsystemBase {
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     poseEstimator.update(m_gyro.getRotation2d(), getSwerveModulePositions());
+    m_odometry.update(m_gyro.getRotation2d(), getSwerveModulePositions());
   }
 
   /** Reconfigures all swerve module steering angles using external alignment device */
@@ -198,6 +212,7 @@ public class Drivetrain extends SubsystemBase {
             ? new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI))
             : new Pose2d(getPose().getTranslation(), new Rotation2d());
     poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
+    m_odometry.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
   /**
@@ -278,5 +293,6 @@ public class Drivetrain extends SubsystemBase {
    */
   public void resetPose(Pose2d pose, boolean resetSimPose) {
     poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
+    m_odometry.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 }
