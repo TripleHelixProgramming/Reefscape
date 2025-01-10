@@ -179,13 +179,12 @@ public class Robot extends TimedRobot {
   }
 
   protected void checkVision() {
-    var visionEst = m_vision.getEstimatedGlobalPose();
-    visionEst.ifPresent(
-        est -> {
-          // Change our trust in the measurement based on the tags we can see
-          var estStdDevs = m_vision.getEstimationStdDevs();
-          m_swerve.addVisionMeasurement(
-              est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-        });
+    m_vision
+        .getPoseEstimates()
+        .forEach(
+            est -> {
+              m_swerve.addVisionMeasurement(
+                  est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
+            });
   }
 }
