@@ -173,7 +173,7 @@ networktables.json
 simgui-ds.json
 simgui.json
 *-window.json
-*.bak
+.bak
 
 # Simulation data log directory
 logs/
