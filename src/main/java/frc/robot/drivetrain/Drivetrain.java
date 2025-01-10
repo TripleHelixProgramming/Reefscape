@@ -1,7 +1,8 @@
 package frc.robot.drivetrain;
 
 import choreo.trajectory.SwerveSample;
-import com.studica.frc.AHRS;
+import com.reduxrobotics.canand.CanandEventLoop;
+import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,8 +22,6 @@ import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
 import java.util.function.BooleanSupplier;
-import com.reduxrobotics.canand.CanandEventLoop;
-import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 
 /** Constructs a swerve drive style drivetrain. */
 public class Drivetrain extends SubsystemBase {
@@ -76,12 +75,10 @@ public class Drivetrain extends SubsystemBase {
           RotationControllerGains.kP, RotationControllerGains.kI, RotationControllerGains.kD);
 
   private final Canandgyro canandgyro = new Canandgyro(0);
-  // private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
   private final SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(
           DriveConstants.kDriveKinematics,
-          // m_gyro.getRotation2d(),
           canandgyro.getRotation2d(),
           new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
@@ -96,8 +93,8 @@ public class Drivetrain extends SubsystemBase {
 
     this.m_fieldRotatedSupplier = fieldRotatedSupplier;
 
-    // m_gyro.reset();
     canandgyro.setYaw(0);
+
     SmartDashboard.putData("Field", m_field);
 
     for (SwerveModule module : modules) {
@@ -105,6 +102,7 @@ public class Drivetrain extends SubsystemBase {
       module.initializeAbsoluteTurningEncoder();
       module.initializeRelativeTurningEncoder();
     }
+
     CanandEventLoop.getInstance();
   }
 
