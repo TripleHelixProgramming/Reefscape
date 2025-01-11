@@ -202,6 +202,7 @@ public class Robot extends TimedRobot {
     var publisher = posePublishers.get(name);
     if (publisher == null) {
       publisher = NetworkTableInstance.getDefault().getStructTopic(name, Pose2d.struct).publish();
+      posePublishers.put(name, publisher);
     }
     return publisher;
   }
