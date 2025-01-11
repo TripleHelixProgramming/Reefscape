@@ -1,8 +1,9 @@
 package frc.robot.drivetrain;
 
 import choreo.trajectory.SwerveSample;
-import com.studica.frc.AHRS;
-import edu.wpi.first.math.Matrix;
+import com.reduxrobotics.canand.CanandEventLoop;
+import com.reduxrobotics.sensors.canandgyro.Canandgyro;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -15,9 +16,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+// import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -81,13 +84,13 @@ public class Drivetrain extends SubsystemBase {
       new PIDController(
           RotationControllerGains.kP, RotationControllerGains.kI, RotationControllerGains.kD);
 
-  private final AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+  private final Canandgyro canandgyro = new Canandgyro(0);
   private final Field2d m_field = new Field2d();
 
   private final SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(
           DriveConstants.kDriveKinematics,
-          m_gyro.getRotation2d(),
+          canandgyro.getRotation2d(),
           new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -95,19 +98,25 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
           });
 
+  // private final Field2d m_field = new Field2d();
+  private StructPublisher<Pose2d> m_publisher =
+      NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
+
   public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
 
     this.m_fieldRotatedSupplier = fieldRotatedSupplier;
 
-    m_gyro.reset();
+    canandgyro.setYaw(0);
 
-    SmartDashboard.putData("Field", m_field);
+    // SmartDashboard.putData("Field", m_field);
 
     for (SwerveModule module : modules) {
       module.resetDriveEncoder();
       module.initializeAbsoluteTurningEncoder();
       module.initializeRelativeTurningEncoder();
     }
+
+    CanandEventLoop.getInstance();
 
     // Define the standard deviations for the pose estimator, which determine how fast the pose
     // estimate converges to the vision measurement. This should depend on the vision measurement
@@ -128,8 +137,9 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
 
     updateOdometry();
-    m_field.setRobotPose(getPose());
+    // m_field.setRobotPose(getPose());
     m_field.getObject("odo").setPose(m_odometry.getPoseMeters());
+    m_publisher.set(m_odometry.getPoseMeters());
 
     for (SwerveModule module : modules) {
       SmartDashboard.putNumber(
@@ -150,7 +160,7 @@ public class Drivetrain extends SubsystemBase {
       SmartDashboard.putNumber(module.getName() + "OutputCurrent", module.getDriveMotorCurrent());
     }
 
-    SmartDashboard.putNumber("GyroAngle", m_gyro.getRotation2d().getDegrees());
+    SmartDashboard.putNumber("GyroAngle", canandgyro.getRotation2d().getDegrees());
   }
 
   /**
@@ -182,7 +192,7 @@ public class Drivetrain extends SubsystemBase {
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     poseEstimator.update(m_gyro.getRotation2d(), getSwerveModulePositions());
-    m_odometry.update(m_gyro.getRotation2d(), getSwerveModulePositions());
+    m_odometry.update(canandgyro.getRotation2d(), getSwerveModulePositions());
   }
 
   /** Reconfigures all swerve module steering angles using external alignment device */
@@ -206,13 +216,20 @@ public class Drivetrain extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  /**
+   * @param pose The robot pose
+   */
+  public void setPose(Pose2d pose) {
+    m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+  }
+
   public void resetHeading() {
     Pose2d pose =
         m_fieldRotatedSupplier.getAsBoolean()
             ? new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI))
             : new Pose2d(getPose().getTranslation(), new Rotation2d());
-    poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
-    m_odometry.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
+    poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+    m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
   /**
