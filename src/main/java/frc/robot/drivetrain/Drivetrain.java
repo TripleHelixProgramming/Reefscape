@@ -4,6 +4,7 @@ import choreo.trajectory.SwerveSample;
 import com.reduxrobotics.canand.CanandEventLoop;
 import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -20,6 +21,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 // import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -126,7 +128,7 @@ public class Drivetrain extends SubsystemBase {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
-            m_gyro.getRotation2d(),
+            canandgyro.getRotation2d(),
             getSwerveModulePositions(),
             new Pose2d(),
             stateStdDevs,
@@ -191,7 +193,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    poseEstimator.update(m_gyro.getRotation2d(), getSwerveModulePositions());
+    poseEstimator.update(canandgyro.getRotation2d(), getSwerveModulePositions());
     m_odometry.update(canandgyro.getRotation2d(), getSwerveModulePositions());
   }
 
@@ -309,7 +311,7 @@ public class Drivetrain extends SubsystemBase {
    *     teleports the robot and should only be used during the setup of the simulation world.
    */
   public void resetPose(Pose2d pose, boolean resetSimPose) {
-    poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
-    m_odometry.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
+    poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+    m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 }
