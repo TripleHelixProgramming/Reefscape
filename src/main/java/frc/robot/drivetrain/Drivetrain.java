@@ -11,9 +11,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+// import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -87,7 +89,9 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
           });
 
-  private final Field2d m_field = new Field2d();
+  // private final Field2d m_field = new Field2d();
+  private StructPublisher<Pose2d> m_publisher = NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
+  
 
   public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
 
@@ -95,7 +99,7 @@ public class Drivetrain extends SubsystemBase {
 
     canandgyro.setYaw(0);
 
-    SmartDashboard.putData("Field", m_field);
+    // SmartDashboard.putData("Field", m_field);
 
     for (SwerveModule module : modules) {
       module.resetDriveEncoder();
@@ -109,7 +113,8 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometry();
-    m_field.setRobotPose(m_odometry.getPoseMeters());
+    // m_field.setRobotPose(m_odometry.getPoseMeters());
+    m_publisher.set(m_odometry.getPoseMeters());
 
     for (SwerveModule module : modules) {
       SmartDashboard.putNumber(
