@@ -18,6 +18,7 @@ import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.LEDs.LEDs;
 import frc.robot.autos.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot {
   private final AllianceSelector m_allianceSelector;
   private final AutoSelector m_autoSelector;
   private final Drivetrain m_swerve;
+  private final LEDs m_LEDs;
 
   private CommandZorroController m_driver;
   private CommandXboxController m_operator;
@@ -49,9 +51,10 @@ public class Robot extends TimedRobot {
             m_autoOptions);
 
     m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
+    m_LEDs = new LEDs();
 
     configureButtonBindings();
-    configureDefaultCommands();
+    configureEventBindings();
 
     // Create a button on Smart Dashboard to reset the encoders.
     SmartDashboard.putData(
@@ -65,6 +68,9 @@ public class Robot extends TimedRobot {
     // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html#logging-joystick-data
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
+
+    m_swerve.setDefaultCommand(
+        new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematics, m_driver.getHID()));
   }
 
   @Override
@@ -76,7 +82,13 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_LEDs.setDefaultCommand(
+        m_LEDs.createDisabledCommand(
+            m_autoSelector::getSwitchPosition,
+            m_allianceSelector::getAllianceColor,
+            m_allianceSelector::agreementInAllianceInputs));
+  }
 
   @Override
   public void disabledPeriodic() {
@@ -102,6 +114,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autoSelector.scheduleAuto();
+    m_LEDs.setDefaultCommand(m_LEDs.createEnabledCommand());
   }
 
   @Override
@@ -110,6 +123,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     m_autoSelector.cancelAuto();
+    m_LEDs.setDefaultCommand(m_LEDs.createEnabledCommand());
   }
 
   @Override
@@ -122,11 +136,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {}
-
-  private void configureDefaultCommands() {
-    m_swerve.setDefaultCommand(
-        new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematics, m_driver.getHID()));
-  }
 
   public void configureButtonBindings() {
 
@@ -156,6 +165,10 @@ public class Robot extends TimedRobot {
   // spotless:on
 
   private void configureOperatorButtonBindings() {}
+
+  private void configureEventBindings() {
+    m_autoSelector.getChangedAutoSelection().onTrue(m_LEDs.createChangeAutoAnimationCommand());
+  }
 
   private void configureAutoOptions() {
     m_autoOptions.add(new AutoOption(Alliance.Red, 4, new ExampleAuto()));
