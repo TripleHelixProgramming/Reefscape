@@ -90,8 +90,8 @@ public class Drivetrain extends SubsystemBase {
           });
 
   // private final Field2d m_field = new Field2d();
-  private StructPublisher<Pose2d> m_publisher = NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
-  
+  private StructPublisher<Pose2d> m_publisher =
+      NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
 
   public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
 
