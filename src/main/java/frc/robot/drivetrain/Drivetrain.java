@@ -3,7 +3,6 @@ package frc.robot.drivetrain;
 import choreo.trajectory.SwerveSample;
 import com.reduxrobotics.canand.CanandEventLoop;
 import com.reduxrobotics.sensors.canandgyro.Canandgyro;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -100,7 +99,7 @@ public class Drivetrain extends SubsystemBase {
   private StructPublisher<Pose2d> m_odometryPublisher =
       NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
 
-  private StructPublisher<Pose2d> m_visionPosePublisher = 
+  private StructPublisher<Pose2d> m_visionPosePublisher =
       NetworkTableInstance.getDefault().getStructTopic("Vision", Pose2d.struct).publish();
 
   public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
@@ -204,14 +203,16 @@ public class Drivetrain extends SubsystemBase {
    * @return The direction of the robot pose
    */
   public Rotation2d getHeading() {
-    return poseEstimator.getEstimatedPosition().getRotation();
+    // return poseEstimator.getEstimatedPosition().getRotation();
+    return m_odometry.getPoseMeters().getRotation();
   }
 
   /**
    * @return The robot pose
    */
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    // return poseEstimator.getEstimatedPosition();
+    return m_odometry.getPoseMeters();
   }
 
   /**
@@ -219,6 +220,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setPose(Pose2d pose) {
     m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+    poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
   public void resetHeading() {

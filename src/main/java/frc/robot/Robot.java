@@ -25,10 +25,11 @@ import frc.robot.LEDs.LEDs;
 import frc.robot.autos.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
-import frc.robot.vision.Camera;
 import frc.robot.vision.Vision;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Robot extends TimedRobot {
 
@@ -46,7 +47,7 @@ public class Robot extends TimedRobot {
 
   private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
 
-  private StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().getStructTopic(Camera.FrontRight.toString(), Pose2d.struct).publish();
+  private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
 
   public Robot() {
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
@@ -197,6 +198,14 @@ public class Robot extends TimedRobot {
     return m_powerDistribution.getCurrent(CANBusPort - 10);
   }
 
+  private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {
+    var publisher = posePublishers.get(name);
+    if (publisher == null) {
+      publisher = NetworkTableInstance.getDefault().getStructTopic(name, Pose2d.struct).publish();
+    }
+    return publisher;
+  }
+
   protected void checkVision() {
     m_vision
         .getPoseEstimates()
@@ -204,7 +213,7 @@ public class Robot extends TimedRobot {
             est -> {
               m_swerve.addVisionMeasurement(
                   est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
-                  publisher.set(est.pose().estimatedPose.toPose2d());
+              getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
             });
   }
 }
