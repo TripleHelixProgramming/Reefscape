@@ -21,8 +21,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-// import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -87,7 +85,6 @@ public class Drivetrain extends SubsystemBase {
           RotationControllerGains.kP, RotationControllerGains.kI, RotationControllerGains.kD);
 
   private final Canandgyro canandgyro = new Canandgyro(0);
-  private final Field2d m_field = new Field2d();
 
   private final SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(
@@ -100,17 +97,17 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
           });
 
-  // private final Field2d m_field = new Field2d();
-  private StructPublisher<Pose2d> m_publisher =
+  private StructPublisher<Pose2d> m_odometryPublisher =
       NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
+
+  private StructPublisher<Pose2d> m_visionPosePublisher = 
+      NetworkTableInstance.getDefault().getStructTopic("Vision", Pose2d.struct).publish();
 
   public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
 
     this.m_fieldRotatedSupplier = fieldRotatedSupplier;
 
     canandgyro.setYaw(0);
-
-    // SmartDashboard.putData("Field", m_field);
 
     for (SwerveModule module : modules) {
       module.resetDriveEncoder();
@@ -139,9 +136,8 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
 
     updateOdometry();
-    // m_field.setRobotPose(getPose());
-    m_field.getObject("odo").setPose(m_odometry.getPoseMeters());
-    m_publisher.set(m_odometry.getPoseMeters());
+    m_odometryPublisher.set(m_odometry.getPoseMeters());
+    m_visionPosePublisher.set(getPose());
 
     for (SwerveModule module : modules) {
       SmartDashboard.putNumber(

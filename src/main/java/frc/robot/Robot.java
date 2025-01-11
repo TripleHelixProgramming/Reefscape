@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -198,6 +200,8 @@ public class Robot extends TimedRobot {
             est -> {
               m_swerve.addVisionMeasurement(
                   est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
+                  var publisher = NetworkTableInstance.getDefault().getStructTopic(est.name(), Pose2d.struct).publish();
+                  publisher.set(est.pose().estimatedPose.toPose2d());
             });
   }
 }
