@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -24,6 +25,7 @@ import frc.robot.LEDs.LEDs;
 import frc.robot.autos.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
+import frc.robot.vision.Camera;
 import frc.robot.vision.Vision;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,8 @@ public class Robot extends TimedRobot {
   private CommandXboxController m_operator;
 
   private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
+
+  private StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().getStructTopic(Camera.FrontRight.toString(), Pose2d.struct).publish();
 
   public Robot() {
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
@@ -200,7 +204,6 @@ public class Robot extends TimedRobot {
             est -> {
               m_swerve.addVisionMeasurement(
                   est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
-                  var publisher = NetworkTableInstance.getDefault().getStructTopic(est.name(), Pose2d.struct).publish();
                   publisher.set(est.pose().estimatedPose.toPose2d());
             });
   }
