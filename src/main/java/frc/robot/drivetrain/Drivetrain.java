@@ -136,7 +136,7 @@ public class Drivetrain extends SubsystemBase {
 
     updateOdometry();
     m_odometryPublisher.set(m_odometry.getPoseMeters());
-    m_visionPosePublisher.set(getPose());
+    m_visionPosePublisher.set(poseEstimator.getEstimatedPosition());
 
     for (SwerveModule module : modules) {
       SmartDashboard.putNumber(
