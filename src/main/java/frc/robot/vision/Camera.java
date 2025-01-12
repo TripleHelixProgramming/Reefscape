@@ -11,7 +11,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +49,8 @@ public enum Camera {
       tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     }
 
-    this.pose = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, transform);
+    this.pose =
+        new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, transform);
   }
 
   /**
