@@ -25,7 +25,28 @@ import frc.robot.Constants.ModuleConstants.DriveControllerGains;
 import frc.robot.Constants.ModuleConstants.TurningControllerGains;
 import frc.robot.Constants.RobotConstants;
 
-public class SwerveModule {
+public enum SwerveModule {
+  FrontRight(
+      "FrontLeft",
+      DriveConstants.MotorControllers.kFrontLeftDriveMotorPort,
+      DriveConstants.MotorControllers.kFrontLeftTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kFrontLeftTurningEncoderPort),
+  FrontLeft(
+      "FrontRight",
+      DriveConstants.MotorControllers.kFrontRightDriveMotorPort,
+      DriveConstants.MotorControllers.kFrontRightTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kFrontRightTurningEncoderPort),
+  BackRight(
+      "RearLeft",
+      DriveConstants.MotorControllers.kRearLeftDriveMotorPort,
+      DriveConstants.MotorControllers.kRearLeftTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kRearLeftTurningEncoderPort),
+  BackLeft(
+      "RearRight",
+      DriveConstants.MotorControllers.kRearRightDriveMotorPort,
+      DriveConstants.MotorControllers.kRearRightTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kRearRightTurningEncoderPort);
+
   public final String moduleName;
 
   private final SparkMax m_driveMotor;
@@ -47,20 +68,12 @@ public class SwerveModule {
   private final CANcoder m_turningAbsEncoder;
   private final CANcoderConfiguration m_turningAbsEncoderConfig;
 
-  /**
-   * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
-   *
-   * @param moduleName Name of the module
-   * @param driveMotorChannel CAN ID of the drive motor controller
-   * @param turningMotorChannel CAN ID of the turning motor controller
-   * @param turningAbsoluteEncoderChannel CAN ID of absolute encoder
-   */
-  public SwerveModule(
-      String name,
+  private SwerveModule(
+      String moduleName,
       int driveMotorChannel,
       int turningMotorChannel,
       int turningAbsoluteEncoderChannel) {
-    moduleName = name;
+    this.moduleName = moduleName;
 
     m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);

@@ -17,16 +17,16 @@ public abstract class DriveCommand extends Command {
   private AngularVelocity thetaDot;
 
   // used to swap control locations
-  SwerveDriveKinematics kinematicsType;
+  SwerveDriveKinematics kinematics;
 
   // The subsystem the command runs on
   public final Drivetrain drivetrain;
 
-  public DriveCommand(Drivetrain subsystem, SwerveDriveKinematics kinematicsType) {
+  public DriveCommand(Drivetrain subsystem, SwerveDriveKinematics kinematics) {
     drivetrain = subsystem;
     addRequirements(drivetrain);
 
-    this.kinematicsType = kinematicsType;
+    this.kinematics = kinematics;
   }
 
   @Override
@@ -43,7 +43,7 @@ public abstract class DriveCommand extends Command {
 
     drivetrain.setChassisSpeeds(
         fieldRelative() ? getFieldRelativeChassisSpeeds() : getRobotRelativeChassisSpeeds(),
-        kinematicsType);
+        kinematics);
   }
 
   private ChassisSpeeds getRobotRelativeChassisSpeeds() {
