@@ -1,5 +1,7 @@
 package frc.robot.vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -9,6 +11,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -30,16 +34,23 @@ public enum Camera {
   public final String name;
   public final Transform3d transform;
   public final PhotonCamera device;
-  public final PhotonPoseEstimator pose;
+  public PhotonPoseEstimator pose;
   private Matrix<N3, N1> curStdDevs;
 
   private Camera(String name, Translation3d translation, Rotation3d rotation) {
     this.name = name;
     this.transform = new Transform3d(translation, rotation);
     this.device = new PhotonCamera(name);
-    this.pose =
-        new PhotonPoseEstimator(
-            VisionConstants.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, transform);
+
+    AprilTagFieldLayout tagLayout;
+    try {
+      tagLayout = new AprilTagFieldLayout(VisionConstants.kAprilTagLayoutPath);
+    } catch (IOException e) {
+      System.err.println("Error loading custom AprilTag layout: " + e.getMessage());
+      tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    }
+
+    this.pose = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, transform);
   }
 
   /**
