@@ -173,7 +173,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public SwerveModulePosition[] getSwerveModulePositions() {
     return Arrays.stream(SwerveModule.values())
-        .map(module -> module.getPosition())
+        .map(SwerveModule::getPosition)
         .toArray(SwerveModulePosition[]::new);
   }
 
@@ -182,7 +182,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public SwerveModuleState[] getModuleStates() {
     return Arrays.stream(SwerveModule.values())
-        .map(module -> module.getState())
+        .map(SwerveModule::getState)
         .toArray(SwerveModuleState[]::new);
   }
 

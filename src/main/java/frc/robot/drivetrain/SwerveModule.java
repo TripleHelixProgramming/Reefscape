@@ -26,22 +26,22 @@ import frc.robot.Constants.ModuleConstants.TurningControllerGains;
 import frc.robot.Constants.RobotConstants;
 
 public enum SwerveModule {
-  FrontRight(
+  FrontLeft(
       "FrontLeft",
       DriveConstants.MotorControllers.kFrontLeftDriveMotorPort,
       DriveConstants.MotorControllers.kFrontLeftTurningMotorPort,
       DriveConstants.AbsoluteEncoders.kFrontLeftTurningEncoderPort),
-  FrontLeft(
+  FrontRight(
       "FrontRight",
       DriveConstants.MotorControllers.kFrontRightDriveMotorPort,
       DriveConstants.MotorControllers.kFrontRightTurningMotorPort,
       DriveConstants.AbsoluteEncoders.kFrontRightTurningEncoderPort),
-  BackRight(
+  RearLeft(
       "RearLeft",
       DriveConstants.MotorControllers.kRearLeftDriveMotorPort,
       DriveConstants.MotorControllers.kRearLeftTurningMotorPort,
       DriveConstants.AbsoluteEncoders.kRearLeftTurningEncoderPort),
-  BackLeft(
+  RearRight(
       "RearRight",
       DriveConstants.MotorControllers.kRearRightDriveMotorPort,
       DriveConstants.MotorControllers.kRearRightTurningMotorPort,
