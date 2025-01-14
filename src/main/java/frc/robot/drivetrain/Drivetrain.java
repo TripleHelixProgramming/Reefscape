@@ -7,6 +7,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -26,7 +27,6 @@ import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.VisionConstants;
-
 import java.util.function.BooleanSupplier;
 
 /** Constructs a swerve drive style drivetrain. */
@@ -128,7 +128,7 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     updatePoseEstimate();
     publishPoseEstimate();
-    
+
     for (SwerveModule module : modules) {
       SmartDashboard.putNumber(
           module.getName() + "RelativeTurningPosition",
@@ -217,10 +217,11 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void resetHeading() {
+    Translation2d translation = poseEstimator.getEstimatedPosition().getTranslation();
     Pose2d pose =
         m_fieldRotatedSupplier.getAsBoolean()
-            ? new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d(Math.PI))
-            : new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d());
+            ? new Pose2d(translation, new Rotation2d(Math.PI))
+            : new Pose2d(translation, new Rotation2d());
     m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
