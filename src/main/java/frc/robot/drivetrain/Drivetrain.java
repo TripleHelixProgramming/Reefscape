@@ -1,7 +1,6 @@
 package frc.robot.drivetrain;
 
 import choreo.trajectory.SwerveSample;
-import com.reduxrobotics.canand.CanandEventLoop;
 import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -113,8 +112,6 @@ public class Drivetrain extends SubsystemBase {
       module.initializeAbsoluteTurningEncoder();
       module.initializeRelativeTurningEncoder();
     }
-
-    CanandEventLoop.getInstance();
 
     // Define the standard deviations for the pose estimator, which determine how fast the pose
     // estimate converges to the vision measurement. This should depend on the vision measurement
@@ -228,7 +225,7 @@ public class Drivetrain extends SubsystemBase {
         m_fieldRotatedSupplier.getAsBoolean()
             ? new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI))
             : new Pose2d(getPose().getTranslation(), new Rotation2d());
-    poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+    // poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
     m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 

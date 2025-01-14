@@ -169,7 +169,7 @@ public class Robot extends TimedRobot {
   private void configureDriverButtonBindings() {
 
     // Reset heading
-    m_driver.HIn()
+    m_driver.DIn()
         .onTrue(new InstantCommand(() -> m_swerve.resetHeading())
         .ignoringDisable(true));
 

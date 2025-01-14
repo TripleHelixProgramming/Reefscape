@@ -18,7 +18,7 @@ public final class Constants {
 
   public static final class VisionConstants {
     public static final String kAprilTagLayoutPath =
-        Filesystem.getDeployDirectory() + "stemgym.json";
+        Filesystem.getDeployDirectory() + "/" + "stemgym.json";
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
   }
