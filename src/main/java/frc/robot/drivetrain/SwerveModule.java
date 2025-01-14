@@ -27,27 +27,22 @@ import frc.robot.Constants.RobotConstants;
 
 public enum SwerveModule {
   FrontLeft(
-      "FrontLeft",
       DriveConstants.MotorControllers.kFrontLeftDriveMotorPort,
       DriveConstants.MotorControllers.kFrontLeftTurningMotorPort,
       DriveConstants.AbsoluteEncoders.kFrontLeftTurningEncoderPort),
   FrontRight(
-      "FrontRight",
       DriveConstants.MotorControllers.kFrontRightDriveMotorPort,
       DriveConstants.MotorControllers.kFrontRightTurningMotorPort,
       DriveConstants.AbsoluteEncoders.kFrontRightTurningEncoderPort),
   RearLeft(
-      "RearLeft",
       DriveConstants.MotorControllers.kRearLeftDriveMotorPort,
       DriveConstants.MotorControllers.kRearLeftTurningMotorPort,
       DriveConstants.AbsoluteEncoders.kRearLeftTurningEncoderPort),
   RearRight(
-      "RearRight",
       DriveConstants.MotorControllers.kRearRightDriveMotorPort,
       DriveConstants.MotorControllers.kRearRightTurningMotorPort,
       DriveConstants.AbsoluteEncoders.kRearRightTurningEncoderPort);
 
-  public final String moduleName;
 
   private final SparkMax m_driveMotor;
   private final SparkMax m_turningMotor;
@@ -69,11 +64,9 @@ public enum SwerveModule {
   private final CANcoderConfiguration m_turningAbsEncoderConfig;
 
   private SwerveModule(
-      String moduleName,
       int driveMotorChannel,
       int turningMotorChannel,
       int turningAbsoluteEncoderChannel) {
-    this.moduleName = moduleName;
 
     m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
@@ -213,11 +206,11 @@ public enum SwerveModule {
   public void initializeAbsoluteTurningEncoder() {
     double magnetOffsetFromCANCoder = getAbsTurningEncoderOffset().getRotations();
     Preferences.initDouble(
-        moduleName + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
+        name() + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
         magnetOffsetFromCANCoder);
     double magnetOffsetFromPreferences =
         Preferences.getDouble(
-            moduleName + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
+            name() + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
             magnetOffsetFromCANCoder);
     setAbsTurningEncoderOffset(magnetOffsetFromPreferences);
   }
@@ -232,7 +225,7 @@ public enum SwerveModule {
 
     Rotation2d magnetOffset = getAbsTurningEncoderOffset().minus(getAbsTurningPosition(0.25));
     Preferences.setDouble(
-        moduleName + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
+        name() + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
         magnetOffset.getRotations());
     setAbsTurningEncoderOffset(magnetOffset.getRotations());
 
@@ -263,7 +256,7 @@ public enum SwerveModule {
    * @return The name of the swerve module
    */
   public String getName() {
-    return moduleName;
+    return name();
   }
 
   public double getDriveMotorCurrent() {
