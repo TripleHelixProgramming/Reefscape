@@ -19,6 +19,10 @@ public final class Constants {
   public static final class VisionConstants {
     public static final String kAprilTagLayoutPath =
         Filesystem.getDeployDirectory() + "/" + "stemgym.json";
+
+    // Define the standard deviations for the pose estimator, which determine how fast the pose
+    // estimate converges to the vision measurement. This should depend on the vision measurement
+    // noise and how many or how frequently vision measurements are applied to the pose estimator.
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
   }
@@ -29,6 +33,8 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
+
+    public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
 
     public static final class MotorControllers {
       public static final int kRearRightDriveMotorPort = 18;
