@@ -22,13 +22,13 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public enum Camera {
   FrontRight(
-      "OV2311_TH_4", new Translation3d(-0.286, 0.332, -0.361), new Rotation3d(Math.PI, 0, -0.768)),
+      "OV2311_TH_4", new Translation3d(0.286, -0.332, 0.361), new Rotation3d(0, 0, 0.768)),
   FrontLeft(
-      "OV2311_TH_3", new Translation3d(-0.292, -0.316, -0.361), new Rotation3d(Math.PI, 0, -5.498)),
+      "OV2311_TH_3", new Translation3d(0.292, 0.316, 0.361), new Rotation3d(0, 0, 5.498)),
   BackRight(
-      "OV2311_TH_2", new Translation3d(0.259, 0.346, -0.628), new Rotation3d(Math.PI, 0, -4.311)),
+      "OV2311_TH_2", new Translation3d(-0.259, -0.346, 0.628), new Rotation3d(0, 0, 4.311)),
   BackLeft(
-      "OV2311_TH_1", new Translation3d(0.252, -0.341, -0.628), new Rotation3d(Math.PI, 0, -1.972));
+      "OV2311_TH_1", new Translation3d(-0.252, 0.341, 0.628), new Rotation3d(0, 0, 1.972));
 
   public final String name;
   public final Transform3d transform;
