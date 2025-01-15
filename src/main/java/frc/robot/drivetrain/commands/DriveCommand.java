@@ -54,7 +54,7 @@ public abstract class DriveCommand extends Command {
   private ChassisSpeeds getFieldRelativeChassisSpeeds() {
     return drivetrain.fieldRotatedSupplier().getAsBoolean()
         ? ChassisSpeeds.fromFieldRelativeSpeeds(
-            xDot, yDot, thetaDot, drivetrain.getHeading().rotateBy(new Rotation2d(Math.PI)))
+            xDot, yDot, thetaDot, drivetrain.getHeading().rotateBy(drivetrain.getHeadingOffset()).rotateBy(new Rotation2d(Math.PI)))
         : ChassisSpeeds.fromFieldRelativeSpeeds(
             xDot, yDot, thetaDot, drivetrain.getHeading());
   }

@@ -84,17 +84,7 @@ public class Drivetrain extends SubsystemBase {
           RotationControllerGains.kP, RotationControllerGains.kI, RotationControllerGains.kD);
 
   private final Canandgyro canandgyro = new Canandgyro(0);
-
-  private final SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(
-          DriveConstants.kDriveKinematics,
-          canandgyro.getRotation2d(),
-          new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-          });
+  private Rotation2d headingOffset = new Rotation2d();
 
   private StructPublisher<Pose2d> m_odometryPublisher =
       NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
@@ -180,11 +170,9 @@ public class Drivetrain extends SubsystemBase {
   /** Updates the field relative position of the robot. */
   private void updatePoseEstimate() {
     poseEstimator.update(canandgyro.getRotation2d(), getSwerveModulePositions());
-    m_odometry.update(canandgyro.getRotation2d(), getSwerveModulePositions());
   }
 
   private void publishPoseEstimate() {
-    m_odometryPublisher.set(m_odometry.getPoseMeters());
     m_visionPosePublisher.set(poseEstimator.getEstimatedPosition());
   }
 
@@ -199,7 +187,12 @@ public class Drivetrain extends SubsystemBase {
    * @return The direction of the robot pose
    */
   public Rotation2d getHeading() {
-    return m_odometry.getPoseMeters().getRotation();
+    // return m_odometry.getPoseMeters().getRotation();
+    return poseEstimator.getEstimatedPosition().getRotation();
+  }
+
+  public Rotation2d getHeadingOffset() {
+    return headingOffset;
   }
 
   /**
@@ -217,12 +210,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void resetHeading() {
-    Translation2d translation = poseEstimator.getEstimatedPosition().getTranslation();
-    Pose2d pose =
-        m_fieldRotatedSupplier.getAsBoolean()
-            ? new Pose2d(translation, new Rotation2d(Math.PI))
-            : new Pose2d(translation, new Rotation2d());
-    m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+    headingOffset = canandgyro.getRotation2d();
   }
 
   /**
@@ -303,6 +291,5 @@ public class Drivetrain extends SubsystemBase {
    */
   public void resetPose(Pose2d pose, boolean resetSimPose) {
     poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
-    m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 }
