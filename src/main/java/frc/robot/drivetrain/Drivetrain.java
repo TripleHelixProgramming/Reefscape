@@ -7,10 +7,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -86,9 +84,6 @@ public class Drivetrain extends SubsystemBase {
   private final Canandgyro canandgyro = new Canandgyro(0);
   private Rotation2d headingOffset = new Rotation2d();
 
-  private StructPublisher<Pose2d> m_odometryPublisher =
-      NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
-
   private StructPublisher<Pose2d> m_visionPosePublisher =
       NetworkTableInstance.getDefault().getStructTopic("Vision", Pose2d.struct).publish();
 
@@ -116,8 +111,8 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    updatePoseEstimate();
-    publishPoseEstimate();
+    poseEstimator.update(canandgyro.getRotation2d(), getSwerveModulePositions());
+    m_visionPosePublisher.set(poseEstimator.getEstimatedPosition());
 
     for (SwerveModule module : modules) {
       SmartDashboard.putNumber(
@@ -138,7 +133,7 @@ public class Drivetrain extends SubsystemBase {
       SmartDashboard.putNumber(module.getName() + "OutputCurrent", module.getDriveMotorCurrent());
     }
 
-    SmartDashboard.putNumber("Heading", getHeading().getDegrees());
+    SmartDashboard.putNumber("Offset Heading", getOffsetHeading().getDegrees());
   }
 
   /**
@@ -167,15 +162,6 @@ public class Drivetrain extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
-  /** Updates the field relative position of the robot. */
-  private void updatePoseEstimate() {
-    poseEstimator.update(canandgyro.getRotation2d(), getSwerveModulePositions());
-  }
-
-  private void publishPoseEstimate() {
-    m_visionPosePublisher.set(poseEstimator.getEstimatedPosition());
-  }
-
   /** Reconfigures all swerve module steering angles using external alignment device */
   public void zeroAbsTurningEncoderOffsets() {
     for (SwerveModule module : modules) {
@@ -183,16 +169,8 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  /**
-   * @return The direction of the robot pose
-   */
-  public Rotation2d getHeading() {
-    // return m_odometry.getPoseMeters().getRotation();
-    return poseEstimator.getEstimatedPosition().getRotation();
-  }
-
-  public Rotation2d getHeadingOffset() {
-    return headingOffset;
+  public Rotation2d getOffsetHeading() {
+    return poseEstimator.getEstimatedPosition().getRotation().plus(headingOffset);
   }
 
   /**
@@ -209,8 +187,8 @@ public class Drivetrain extends SubsystemBase {
     poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
-  public void resetHeading() {
-    headingOffset = canandgyro.getRotation2d();
+  public void resetHeadingOffset() {
+    headingOffset = poseEstimator.getEstimatedPosition().getRotation();
   }
 
   /**

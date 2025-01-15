@@ -170,7 +170,7 @@ public class Robot extends TimedRobot {
 
     // Reset heading
     m_driver.DIn()
-        .onTrue(new InstantCommand(() -> m_swerve.resetHeading())
+        .onTrue(new InstantCommand(() -> m_swerve.resetHeadingOffset())
         .ignoringDisable(true));
 
   }
