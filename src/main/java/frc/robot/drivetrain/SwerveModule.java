@@ -43,7 +43,6 @@ public enum SwerveModule {
       DriveConstants.MotorControllers.kRearRightTurningMotorPort,
       DriveConstants.AbsoluteEncoders.kRearRightTurningEncoderPort);
 
-
   private final SparkMax m_driveMotor;
   private final SparkMax m_turningMotor;
   private final SparkMaxConfig m_defaultMotorConfig = new SparkMaxConfig();
@@ -64,9 +63,7 @@ public enum SwerveModule {
   private final CANcoderConfiguration m_turningAbsEncoderConfig;
 
   private SwerveModule(
-      int driveMotorChannel,
-      int turningMotorChannel,
-      int turningAbsoluteEncoderChannel) {
+      int driveMotorChannel, int turningMotorChannel, int turningAbsoluteEncoderChannel) {
 
     m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
