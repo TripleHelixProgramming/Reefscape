@@ -7,10 +7,12 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
@@ -28,10 +30,9 @@ import frc.robot.Constants.RobotConstants;
 public class SwerveModule {
   public final String moduleName;
 
-  private final SparkMax m_driveMotor;
+  private final SparkFlex m_driveMotor;
   private final SparkMax m_turningMotor;
-  private final SparkMaxConfig m_defaultMotorConfig = new SparkMaxConfig();
-  private final SparkMaxConfig m_driveMotorConfig = new SparkMaxConfig();
+  private final SparkFlexConfig m_driveMotorConfig = new SparkFlexConfig();
   private final SparkMaxConfig m_turningMotorConfig = new SparkMaxConfig();
 
   private final RelativeEncoder m_driveEncoder;
@@ -62,13 +63,13 @@ public class SwerveModule {
       int turningAbsoluteEncoderChannel) {
     moduleName = name;
 
-    m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
+    m_driveMotor = new SparkFlex(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
 
-    m_defaultMotorConfig.voltageCompensation(RobotConstants.kNominalVoltage);
-    m_defaultMotorConfig.inverted(false);
-    m_driveMotorConfig.apply(m_defaultMotorConfig);
-    m_turningMotorConfig.apply(m_defaultMotorConfig);
+    m_driveMotorConfig.voltageCompensation(RobotConstants.kNominalVoltage);
+    m_turningMotorConfig.voltageCompensation(RobotConstants.kNominalVoltage);
+    m_driveMotorConfig.inverted(false);
+    m_turningMotorConfig.inverted(false);
 
     m_driveMotorConfig.idleMode(IdleMode.kCoast);
     m_turningMotorConfig.idleMode(IdleMode.kBrake);
