@@ -133,7 +133,7 @@ public class Drivetrain extends SubsystemBase {
       SmartDashboard.putNumber(module.getName() + "OutputCurrent", module.getDriveMotorCurrent());
     }
 
-    SmartDashboard.putNumber("Offset Heading", getOffsetHeading().getDegrees());
+    SmartDashboard.putNumber("Heading", getHeading().getDegrees());
   }
 
   /**
@@ -169,8 +169,8 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  public Rotation2d getOffsetHeading() {
-    return poseEstimator.getEstimatedPosition().getRotation().minus(headingOffset);
+  public Rotation2d getHeading() {
+    return poseEstimator.getEstimatedPosition().getRotation();
   }
 
   /**
@@ -187,8 +187,12 @@ public class Drivetrain extends SubsystemBase {
     poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
+  public Rotation2d getHeadingOffset() {
+    return headingOffset;
+  }
+
   public void resetHeadingOffset() {
-    headingOffset = poseEstimator.getEstimatedPosition().getRotation();
+    headingOffset = getHeading();
   }
 
   /**
