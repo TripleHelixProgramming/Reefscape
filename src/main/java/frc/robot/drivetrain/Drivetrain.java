@@ -170,7 +170,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Rotation2d getOffsetHeading() {
-    return poseEstimator.getEstimatedPosition().getRotation().plus(headingOffset);
+    return poseEstimator.getEstimatedPosition().getRotation().minus(headingOffset);
   }
 
   /**
