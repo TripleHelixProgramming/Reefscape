@@ -136,6 +136,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     m_autoSelector.cancelAuto();
     m_LEDs.setDefaultCommand(m_LEDs.createEnabledCommand());
+    m_swerve.resetHeadingOffset();
   }
 
   @Override
@@ -144,7 +145,6 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-    m_swerve.resetHeadingOffset();
   }
 
   @Override
@@ -171,7 +171,7 @@ public class Robot extends TimedRobot {
 
     // Reset heading
     m_driver.DIn()
-        .onTrue(new InstantCommand(() -> m_swerve.resetHeadingOffset())
+        .onTrue(new InstantCommand(() -> m_swerve.setHeadingOffset())
         .ignoringDisable(true));
 
   }

@@ -134,6 +134,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     SmartDashboard.putNumber("Heading", getHeading().getDegrees());
+    SmartDashboard.putNumber("HeadingOffset", headingOffset.getDegrees());
   }
 
   /**
@@ -192,7 +193,14 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void resetHeadingOffset() {
-    headingOffset = getHeading();
+    headingOffset = new Rotation2d();
+  }
+
+  public void setHeadingOffset() {
+    headingOffset =
+        m_fieldRotatedSupplier.getAsBoolean()
+            ? getHeading().rotateBy(new Rotation2d(Math.PI))
+            : getHeading();
   }
 
   /**

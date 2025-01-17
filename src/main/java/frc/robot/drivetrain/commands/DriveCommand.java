@@ -47,7 +47,7 @@ public abstract class DriveCommand extends Command {
   }
 
   private ChassisSpeeds getRobotRelativeChassisSpeeds() {
-    return new ChassisSpeeds(xDot.unaryMinus(), yDot.unaryMinus(), thetaDot);
+    return new ChassisSpeeds(xDot, yDot, thetaDot);
   }
 
   private ChassisSpeeds getFieldRelativeChassisSpeeds() {
