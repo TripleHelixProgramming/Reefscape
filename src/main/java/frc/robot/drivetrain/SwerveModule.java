@@ -25,8 +25,23 @@ import frc.robot.Constants.ModuleConstants.DriveControllerGains;
 import frc.robot.Constants.ModuleConstants.TurningControllerGains;
 import frc.robot.Constants.RobotConstants;
 
-public class SwerveModule {
-  public final String moduleName;
+public enum SwerveModule {
+  FrontLeft(
+      DriveConstants.MotorControllers.kFrontLeftDriveMotorPort,
+      DriveConstants.MotorControllers.kFrontLeftTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kFrontLeftTurningEncoderPort),
+  FrontRight(
+      DriveConstants.MotorControllers.kFrontRightDriveMotorPort,
+      DriveConstants.MotorControllers.kFrontRightTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kFrontRightTurningEncoderPort),
+  RearLeft(
+      DriveConstants.MotorControllers.kRearLeftDriveMotorPort,
+      DriveConstants.MotorControllers.kRearLeftTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kRearLeftTurningEncoderPort),
+  RearRight(
+      DriveConstants.MotorControllers.kRearRightDriveMotorPort,
+      DriveConstants.MotorControllers.kRearRightTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kRearRightTurningEncoderPort);
 
   private final SparkMax m_driveMotor;
   private final SparkMax m_turningMotor;
@@ -47,20 +62,8 @@ public class SwerveModule {
   private final CANcoder m_turningAbsEncoder;
   private final CANcoderConfiguration m_turningAbsEncoderConfig;
 
-  /**
-   * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
-   *
-   * @param moduleName Name of the module
-   * @param driveMotorChannel CAN ID of the drive motor controller
-   * @param turningMotorChannel CAN ID of the turning motor controller
-   * @param turningAbsoluteEncoderChannel CAN ID of absolute encoder
-   */
-  public SwerveModule(
-      String name,
-      int driveMotorChannel,
-      int turningMotorChannel,
-      int turningAbsoluteEncoderChannel) {
-    moduleName = name;
+  private SwerveModule(
+      int driveMotorChannel, int turningMotorChannel, int turningAbsoluteEncoderChannel) {
 
     m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
@@ -200,11 +203,11 @@ public class SwerveModule {
   public void initializeAbsoluteTurningEncoder() {
     double magnetOffsetFromCANCoder = getAbsTurningEncoderOffset().getRotations();
     Preferences.initDouble(
-        moduleName + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
+        name() + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
         magnetOffsetFromCANCoder);
     double magnetOffsetFromPreferences =
         Preferences.getDouble(
-            moduleName + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
+            name() + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
             magnetOffsetFromCANCoder);
     setAbsTurningEncoderOffset(magnetOffsetFromPreferences);
   }
@@ -219,7 +222,7 @@ public class SwerveModule {
 
     Rotation2d magnetOffset = getAbsTurningEncoderOffset().minus(getAbsTurningPosition(0.25));
     Preferences.setDouble(
-        moduleName + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
+        name() + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
         magnetOffset.getRotations());
     setAbsTurningEncoderOffset(magnetOffset.getRotations());
 
@@ -250,7 +253,7 @@ public class SwerveModule {
    * @return The name of the swerve module
    */
   public String getName() {
-    return moduleName;
+    return name();
   }
 
   public double getDriveMotorCurrent() {

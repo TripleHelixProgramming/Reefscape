@@ -25,6 +25,7 @@ import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.VisionConstants;
+import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 
 /** Constructs a swerve drive style drivetrain. */
@@ -39,33 +40,6 @@ public class Drivetrain extends SubsystemBase {
 
   // The robot pose estimator for tracking swerve odometry and applying vision corrections.
   private final SwerveDrivePoseEstimator poseEstimator;
-
-  private final SwerveModule m_frontLeft =
-      new SwerveModule(
-          "FrontLeft",
-          DriveConstants.MotorControllers.kFrontLeftDriveMotorPort,
-          DriveConstants.MotorControllers.kFrontLeftTurningMotorPort,
-          DriveConstants.AbsoluteEncoders.kFrontLeftTurningEncoderPort);
-  private final SwerveModule m_frontRight =
-      new SwerveModule(
-          "FrontRight",
-          DriveConstants.MotorControllers.kFrontRightDriveMotorPort,
-          DriveConstants.MotorControllers.kFrontRightTurningMotorPort,
-          DriveConstants.AbsoluteEncoders.kFrontRightTurningEncoderPort);
-  private final SwerveModule m_rearLeft =
-      new SwerveModule(
-          "RearLeft",
-          DriveConstants.MotorControllers.kRearLeftDriveMotorPort,
-          DriveConstants.MotorControllers.kRearLeftTurningMotorPort,
-          DriveConstants.AbsoluteEncoders.kRearLeftTurningEncoderPort);
-  private final SwerveModule m_rearRight =
-      new SwerveModule(
-          "RearRight",
-          DriveConstants.MotorControllers.kRearRightDriveMotorPort,
-          DriveConstants.MotorControllers.kRearRightTurningMotorPort,
-          DriveConstants.AbsoluteEncoders.kRearRightTurningEncoderPort);
-
-  private SwerveModule[] modules = {m_frontLeft, m_frontRight, m_rearLeft, m_rearRight};
 
   private final PIDController xController =
       new PIDController(
@@ -93,7 +67,7 @@ public class Drivetrain extends SubsystemBase {
 
     canandgyro.setYaw(0);
 
-    for (SwerveModule module : modules) {
+    for (SwerveModule module : SwerveModule.values()) {
       module.resetDriveEncoder();
       module.initializeAbsoluteTurningEncoder();
       module.initializeRelativeTurningEncoder();
@@ -114,7 +88,7 @@ public class Drivetrain extends SubsystemBase {
     poseEstimator.update(canandgyro.getRotation2d(), getSwerveModulePositions());
     m_visionPosePublisher.set(poseEstimator.getEstimatedPosition());
 
-    for (SwerveModule module : modules) {
+    for (SwerveModule module : SwerveModule.values()) {
       SmartDashboard.putNumber(
           module.getName() + "RelativeTurningPosition",
           module.getRelativeTurningPosition().getDegrees());
@@ -141,31 +115,26 @@ public class Drivetrain extends SubsystemBase {
    * @param chassisSpeeds Robot-relative chassis speeds (x, y, theta)
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-    var swerveModuleStates =
-        DriveConstants.kDriveKinematics.toSwerveModuleStates(
-            ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod));
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
-    m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    m_frontRight.setDesiredState(swerveModuleStates[1]);
-    m_rearLeft.setDesiredState(swerveModuleStates[2]);
-    m_rearRight.setDesiredState(swerveModuleStates[3]);
+    setChassisSpeeds(chassisSpeeds, DriveConstants.kDriveKinematics);
   }
 
-  // uses kinematics type to determine robot center
-  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds, SwerveDriveKinematics kinematicsType) {
+  /**
+   * @param chassisSpeeds Robot-relative chassis speeds (x, y, theta)
+   * @param kinematics Kinematics of the robot chassis
+   */
+  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds, SwerveDriveKinematics kinematics) {
     var swerveModuleStates =
-        kinematicsType.toSwerveModuleStates(
+        kinematics.toSwerveModuleStates(
             ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
-    m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    m_frontRight.setDesiredState(swerveModuleStates[1]);
-    m_rearLeft.setDesiredState(swerveModuleStates[2]);
-    m_rearRight.setDesiredState(swerveModuleStates[3]);
+    for (SwerveModule module : SwerveModule.values()) {
+      module.setDesiredState(swerveModuleStates[module.ordinal()]);
+    }
   }
 
   /** Reconfigures all swerve module steering angles using external alignment device */
   public void zeroAbsTurningEncoderOffsets() {
-    for (SwerveModule module : modules) {
+    for (SwerveModule module : SwerveModule.values()) {
       module.zeroAbsTurningEncoderOffset();
     }
   }
@@ -207,38 +176,25 @@ public class Drivetrain extends SubsystemBase {
    * @return Array of swerve module positions
    */
   public SwerveModulePosition[] getSwerveModulePositions() {
-    SwerveModulePosition[] bill = {
-      m_frontLeft.getPosition(),
-      m_frontRight.getPosition(),
-      m_rearLeft.getPosition(),
-      m_rearRight.getPosition()
-    };
-    return bill;
+    return Arrays.stream(SwerveModule.values())
+        .map(SwerveModule::getPosition)
+        .toArray(SwerveModulePosition[]::new);
   }
 
   /**
    * @return Array of swerve module states
    */
   public SwerveModuleState[] getModuleStates() {
-
-    SwerveModuleState[] states = new SwerveModuleState[4];
-
-    for (int i = 0; i <= 3; i++) {
-      states[i++] = modules[i].getState();
-    }
-
-    return states;
+    return Arrays.stream(SwerveModule.values())
+        .map(SwerveModule::getState)
+        .toArray(SwerveModuleState[]::new);
   }
 
   /**
    * @return The current robot-relative chassis speeds (x, y, theta)
    */
   public ChassisSpeeds getChassisSpeeds() {
-    return m_kinematics.toChassisSpeeds(
-        m_frontLeft.getState(),
-        m_frontRight.getState(),
-        m_rearLeft.getState(),
-        m_rearRight.getState());
+    return m_kinematics.toChassisSpeeds(getModuleStates());
   }
 
   /**
