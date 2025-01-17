@@ -24,8 +24,8 @@ import frc.robot.Constants.AutoConstants.RotationControllerGains;
 import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
-import java.util.Arrays;
 import frc.robot.Constants.VisionConstants;
+import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 
 /** Constructs a swerve drive style drivetrain. */
