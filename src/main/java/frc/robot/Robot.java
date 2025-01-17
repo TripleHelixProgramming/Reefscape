@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceSelector;
@@ -19,11 +21,13 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
-import frc.robot.autos.ExampleAuto;
+import frc.robot.autos.ChoreoAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import java.util.ArrayList;
 import java.util.List;
+
+import choreo.auto.AutoFactory;
 
 public class Robot extends TimedRobot {
 
@@ -34,6 +38,8 @@ public class Robot extends TimedRobot {
   private final AutoSelector m_autoSelector;
   private final Drivetrain m_swerve;
   private final LEDs m_LEDs;
+
+  private final AutoFactory m_autoFactory;
 
   private CommandZorroController m_driver;
   private CommandXboxController m_operator;
@@ -60,6 +66,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(
         "Align Encoders",
         new InstantCommand(() -> m_swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
+
+    m_autoFactory = new AutoFactory(m_swerve::getPose, m_swerve::setPose, m_swerve::followTrajectory, false, m_swerve);
   }
 
   @Override
@@ -171,7 +179,7 @@ public class Robot extends TimedRobot {
   }
 
   private void configureAutoOptions() {
-    m_autoOptions.add(new AutoOption(Alliance.Red, 4, new ExampleAuto()));
+    m_autoOptions.add(new AutoOption(Alliance.Red, 4));
     m_autoOptions.add(new AutoOption(Alliance.Blue, 1));
   }
 
@@ -184,5 +192,27 @@ public class Robot extends TimedRobot {
    */
   public double getPDHCurrent(int CANBusPort) {
     return m_powerDistribution.getCurrent(CANBusPort - 10);
+  }
+
+  public ChoreoAuto auto = new ChoreoAuto() {
+
+    final String getName() {
+      return "Example Auto";
+    }
+
+    public Command getCommand() {
+      return Commands.sequence(
+        m_autoFactory.resetOdometry("pickupGamepiece"), 
+        Commands.deadline(
+            m_autoFactory.trajectoryCmd("pickupGamepiece")
+            // intakeSubsystem.intake() 
+        ),
+        Commands.parallel(
+            m_autoFactory.trajectoryCmd("scoreGamepiece")
+            // scoringSubsystem.getReady()
+        )
+        // scoringSubsystem.score()
+      );
+    }
   }
 }

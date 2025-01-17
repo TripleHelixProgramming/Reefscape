@@ -8,4 +8,6 @@ public abstract class ChoreoAuto extends Command {
    * @return The name of the auto mode
    */
   public abstract String getName();
+
+  public abstract Command getCommand();
 }
