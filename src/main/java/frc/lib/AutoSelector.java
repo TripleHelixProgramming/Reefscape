@@ -52,17 +52,16 @@ public class AutoSelector {
     return 0; // failure of the physical switch
   }
 
-  private Optional<ChoreoAuto> findMatchingOption() {
-    int switchPosition = getSwitchPosition();
-    Alliance color = m_allianceColorSupplier.get();
+  private Alliance getAllianceColor() {
+    return m_allianceColorSupplier.get();
+  }
 
-    for (int i = 0; i < m_autoOptions.size(); i++) {
-      if (m_autoOptions.get(i).getColor() == color)
-        if (m_autoOptions.get(i).getOption() == switchPosition) {
-          return m_autoOptions.get(i).getChoreoAuto();
-        }
-    }
-    return Optional.empty();
+  private Optional<ChoreoAuto> findMatchingOption() {
+    return m_autoOptions.stream()
+        .filter(o -> o.getColor() == getAllianceColor())
+        .filter(o -> o.getOption() == getSwitchPosition())
+        .findFirst()
+        .flatMap(AutoOption::getChoreoAuto);
   }
 
   private boolean updateAuto() {
@@ -83,12 +82,12 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    if (m_currentAuto.isPresent()) m_currentAuto.get().schedule();
+    m_currentAuto.ifPresent(o -> o.schedule());
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
   public void cancelAuto() {
-    if (m_currentAuto.isPresent()) m_currentAuto.get().cancel();
+    m_currentAuto.ifPresent(o -> o.cancel());
   }
 
   public void disabledPeriodic() {
