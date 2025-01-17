@@ -1,21 +1,22 @@
 package frc.robot.drivetrain;
 
 import choreo.trajectory.SwerveSample;
-import com.reduxrobotics.canand.CanandEventLoop;
 import com.reduxrobotics.sensors.canandgyro.Canandgyro;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-// import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -23,6 +24,7 @@ import frc.robot.Constants.AutoConstants.RotationControllerGains;
 import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
+import frc.robot.Constants.VisionConstants;
 import java.util.function.BooleanSupplier;
 
 /** Constructs a swerve drive style drivetrain. */
@@ -34,6 +36,9 @@ public class Drivetrain extends SubsystemBase {
   static AngularVelocity kMaxAngularSpeed = Constants.DriveConstants.kMaxRotationalVelocity;
 
   private final SwerveDriveKinematics m_kinematics = DriveConstants.kDriveKinematics;
+
+  // The robot pose estimator for tracking swerve odometry and applying vision corrections.
+  private final SwerveDrivePoseEstimator poseEstimator;
 
   private final SwerveModule m_frontLeft =
       new SwerveModule(
@@ -77,21 +82,10 @@ public class Drivetrain extends SubsystemBase {
           RotationControllerGains.kP, RotationControllerGains.kI, RotationControllerGains.kD);
 
   private final Canandgyro canandgyro = new Canandgyro(0);
+  private Rotation2d headingOffset = new Rotation2d();
 
-  private final SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(
-          DriveConstants.kDriveKinematics,
-          canandgyro.getRotation2d(),
-          new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-          });
-
-  // private final Field2d m_field = new Field2d();
-  private StructPublisher<Pose2d> m_publisher =
-      NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
+  private StructPublisher<Pose2d> m_visionPosePublisher =
+      NetworkTableInstance.getDefault().getStructTopic("Vision", Pose2d.struct).publish();
 
   public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
 
@@ -99,22 +93,26 @@ public class Drivetrain extends SubsystemBase {
 
     canandgyro.setYaw(0);
 
-    // SmartDashboard.putData("Field", m_field);
-
     for (SwerveModule module : modules) {
       module.resetDriveEncoder();
       module.initializeAbsoluteTurningEncoder();
       module.initializeRelativeTurningEncoder();
     }
 
-    CanandEventLoop.getInstance();
+    poseEstimator =
+        new SwerveDrivePoseEstimator(
+            DriveConstants.kDriveKinematics,
+            canandgyro.getRotation2d(),
+            getSwerveModulePositions(),
+            new Pose2d(),
+            DriveConstants.kStateStdDevs,
+            VisionConstants.kMultiTagStdDevs);
   }
 
   @Override
   public void periodic() {
-    updateOdometry();
-    // m_field.setRobotPose(m_odometry.getPoseMeters());
-    m_publisher.set(m_odometry.getPoseMeters());
+    poseEstimator.update(canandgyro.getRotation2d(), getSwerveModulePositions());
+    m_visionPosePublisher.set(poseEstimator.getEstimatedPosition());
 
     for (SwerveModule module : modules) {
       SmartDashboard.putNumber(
@@ -135,7 +133,8 @@ public class Drivetrain extends SubsystemBase {
       SmartDashboard.putNumber(module.getName() + "OutputCurrent", module.getDriveMotorCurrent());
     }
 
-    SmartDashboard.putNumber("GyroAngle", canandgyro.getRotation2d().getDegrees());
+    SmartDashboard.putNumber("Heading", getHeading().getDegrees());
+    SmartDashboard.putNumber("HeadingOffset", headingOffset.getDegrees());
   }
 
   /**
@@ -164,18 +163,6 @@ public class Drivetrain extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
-  /** Updates the field relative position of the robot. */
-  public void updateOdometry() {
-    m_odometry.update(
-        canandgyro.getRotation2d(),
-        new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_rearLeft.getPosition(),
-          m_rearRight.getPosition()
-        });
-  }
-
   /** Reconfigures all swerve module steering angles using external alignment device */
   public void zeroAbsTurningEncoderOffsets() {
     for (SwerveModule module : modules) {
@@ -183,34 +170,37 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  /**
-   * @return The direction of the robot pose
-   */
   public Rotation2d getHeading() {
-    return m_odometry.getPoseMeters().getRotation();
+    return poseEstimator.getEstimatedPosition().getRotation();
   }
 
   /**
    * @return The robot pose
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   }
 
   /**
    * @param pose The robot pose
    */
   public void setPose(Pose2d pose) {
-    m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+    poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
-  public void resetHeading() {
-    Pose2d pose =
-        m_fieldRotatedSupplier.getAsBoolean()
-            ? new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI))
-            : new Pose2d(getPose().getTranslation(), new Rotation2d());
+  public Rotation2d getHeadingOffset() {
+    return headingOffset;
+  }
 
-    m_odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+  public void resetHeadingOffset() {
+    headingOffset = new Rotation2d();
+  }
+
+  public void setHeadingOffset() {
+    headingOffset =
+        m_fieldRotatedSupplier.getAsBoolean()
+            ? getHeading().rotateBy(new Rotation2d(Math.PI))
+            : getHeading();
   }
 
   /**
@@ -269,5 +259,27 @@ public class Drivetrain extends SubsystemBase {
 
   public BooleanSupplier fieldRotatedSupplier() {
     return this.m_fieldRotatedSupplier;
+  }
+
+  /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)}. */
+  public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
+    poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
+  }
+
+  /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
+  public void addVisionMeasurement(
+      Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+    poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+  }
+
+  /**
+   * Reset the estimated pose of the swerve drive on the field.
+   *
+   * @param pose New robot pose.
+   * @param resetSimPose If the simulated robot pose should also be reset. This effectively
+   *     teleports the robot and should only be used during the setup of the simulation world.
+   */
+  public void resetPose(Pose2d pose, boolean resetSimPose) {
+    poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 }

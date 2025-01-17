@@ -2,14 +2,30 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public final class Constants {
+
+  public static final class VisionConstants {
+    public static final String kAprilTagLayoutPath =
+        Filesystem.getDeployDirectory() + "/" + "stemgym.json";
+
+    // Define the standard deviations for the pose estimator, which determine how fast the pose
+    // estimate converges to the vision measurement. This should depend on the vision measurement
+    // noise and how many or how frequently vision measurements are applied to the pose estimator.
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+  }
 
   public static final class RobotConstants {
     public static final double kNominalVoltage = 12.0;
@@ -17,6 +33,8 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
+
+    public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
 
     public static final class MotorControllers {
       public static final int kRearRightDriveMotorPort = 18;
