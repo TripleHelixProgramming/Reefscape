@@ -7,9 +7,9 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
+// import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceSelector;
@@ -21,13 +21,13 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
-import frc.robot.autos.ChoreoAuto;
+// import frc.robot.autos.ChoreoAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import java.util.ArrayList;
 import java.util.List;
 
-import choreo.auto.AutoFactory;
+// import choreo.auto.AutoFactory;
 
 public class Robot extends TimedRobot {
 
@@ -38,6 +38,7 @@ public class Robot extends TimedRobot {
   private final AutoSelector m_autoSelector;
   private final Drivetrain m_swerve;
   private final LEDs m_LEDs;
+  private final Auto m_auto;
 
   // private final AutoFactory m_autoFactory;
 
@@ -66,6 +67,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(
         "Align Encoders",
         new InstantCommand(() -> m_swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
+
+    m_auto = new Auto(m_allianceSelector, m_swerve);
 
     // m_autoFactory = new AutoFactory(m_swerve::getPose, m_swerve::setPose, m_swerve::followTrajectory, false, m_swerve);
   }
@@ -180,7 +183,7 @@ public class Robot extends TimedRobot {
 
   private void configureAutoOptions() {
     m_autoOptions.add(new AutoOption(Alliance.Red, 4));
-    m_autoOptions.add(new AutoOption(Alliance.Blue, 1));
+    m_autoOptions.add(new AutoOption(Alliance.Blue, 1, m_auto.exampleRoutine()));
   }
 
   /**

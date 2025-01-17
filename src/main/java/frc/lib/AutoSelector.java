@@ -6,14 +6,15 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.autos.ChoreoAuto;
+// import frc.robot.autos.ChoreoAuto;
+import choreo.auto.AutoRoutine;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class AutoSelector {
 
-  private Optional<ChoreoAuto> m_currentAuto;
+  private Optional<AutoRoutine> m_currentAuto;
   private DigitalInput[] m_switchPositions;
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
@@ -52,7 +53,7 @@ public class AutoSelector {
     return 0; // failure of the physical switch
   }
 
-  private Optional<ChoreoAuto> findMatchingOption() {
+  private Optional<AutoRoutine> findMatchingOption() {
     int switchPosition = getSwitchPosition();
     Alliance color = m_allianceColorSupplier.get();
 
@@ -66,7 +67,7 @@ public class AutoSelector {
   }
 
   private boolean updateAuto() {
-    Optional<ChoreoAuto> m_newAuto = findMatchingOption();
+    Optional<AutoRoutine> m_newAuto = findMatchingOption();
     if (m_newAuto.equals(m_currentAuto)) return false;
     else {
       m_currentAuto = m_newAuto;
@@ -83,12 +84,12 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    if (m_currentAuto.isPresent()) m_currentAuto.get().schedule();
+    if (m_currentAuto.isPresent()) m_currentAuto.get();
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
   public void cancelAuto() {
-    if (m_currentAuto.isPresent()) m_currentAuto.get().cancel();
+    if (m_currentAuto.isPresent()) m_currentAuto.get().kill();
   }
 
   public void disabledPeriodic() {
@@ -97,7 +98,7 @@ public class AutoSelector {
     SmartDashboard.putNumber("Auto Selector Switch Position", getSwitchPosition());
 
     if (m_currentAuto.isPresent()) {
-      SmartDashboard.putString("Auto", m_currentAuto.get().getName());
+      SmartDashboard.putString("Auto", m_currentAuto.get().toString());
     } else {
       SmartDashboard.putString("Auto", "Null");
     }

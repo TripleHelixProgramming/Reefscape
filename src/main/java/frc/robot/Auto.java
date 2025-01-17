@@ -6,7 +6,6 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.AllianceSelector;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.drivetrain.Drivetrain;
 
 public class Auto {
@@ -15,10 +14,10 @@ public class Auto {
 
     private final AutoFactory m_autoFactory;
 
-    public Auto() {
-        m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
+    public Auto(AllianceSelector allianceSelector, Drivetrain drivetrain) {
+        this.m_allianceSelector = allianceSelector;
 
-        m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
+        this.m_swerve = drivetrain;
 
         m_autoFactory = new AutoFactory(m_swerve::getPose, m_swerve::setPose, m_swerve::followTrajectory, false, m_swerve);
     }
