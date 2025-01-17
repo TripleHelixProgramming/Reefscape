@@ -2,8 +2,6 @@ package frc.lib;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import choreo.auto.AutoRoutine;
-// import frc.robot.autos.ChoreoAuto;
-// import frc.robot.Auto;
 import java.util.Optional;
 
 public class AutoOption {

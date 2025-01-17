@@ -7,9 +7,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-// import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceSelector;
@@ -21,13 +19,11 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
-// import frc.robot.autos.ChoreoAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import java.util.ArrayList;
 import java.util.List;
 
-// import choreo.auto.AutoFactory;
 
 public class Robot extends TimedRobot {
 
@@ -69,8 +65,6 @@ public class Robot extends TimedRobot {
         new InstantCommand(() -> m_swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
 
     m_auto = new Auto(m_allianceSelector, m_swerve);
-
-    // m_autoFactory = new AutoFactory(m_swerve::getPose, m_swerve::setPose, m_swerve::followTrajectory, false, m_swerve);
   }
 
   @Override
@@ -196,26 +190,4 @@ public class Robot extends TimedRobot {
   public double getPDHCurrent(int CANBusPort) {
     return m_powerDistribution.getCurrent(CANBusPort - 10);
   }
-
-  // public ChoreoAuto auto = new ChoreoAuto() {
-
-  //   final String getName() {
-  //     return "Example Auto";
-  //   }
-
-  //   public Command getCommand() {
-  //     return Commands.sequence(
-  //       m_autoFactory.resetOdometry("pickupGamepiece"), 
-  //       Commands.deadline(
-  //           m_autoFactory.trajectoryCmd("pickupGamepiece")
-  //           // intakeSubsystem.intake() 
-  //       ),
-  //       Commands.parallel(
-  //           m_autoFactory.trajectoryCmd("scoreGamepiece")
-  //           // scoringSubsystem.getReady()
-  //       )
-  //       // scoringSubsystem.score()
-  //     );
-  //   }
-  // }
 }
