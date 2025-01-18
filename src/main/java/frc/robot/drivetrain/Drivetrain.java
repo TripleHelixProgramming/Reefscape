@@ -81,6 +81,8 @@ public class Drivetrain extends SubsystemBase {
             new Pose2d(),
             DriveConstants.kStateStdDevs,
             VisionConstants.kMultiTagStdDevs);
+
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -237,5 +239,18 @@ public class Drivetrain extends SubsystemBase {
    */
   public void resetPose(Pose2d pose, boolean resetSimPose) {
     poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+  }
+
+  public void followTrajectory(SwerveSample sample) {
+    Pose2d pose = getPose();
+
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            sample.vx + xController.calculate(pose.getX(), sample.x),
+            sample.vy + yController.calculate(pose.getY(), sample.y),
+            sample.omega
+                + thetaController.calculate(pose.getRotation().getRadians(), sample.heading));
+
+    setChassisSpeeds(speeds);
   }
 }
