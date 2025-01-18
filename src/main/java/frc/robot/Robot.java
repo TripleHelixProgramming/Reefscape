@@ -46,7 +46,6 @@ public class Robot extends TimedRobot {
   public Robot() {
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
 
-    configureAutoOptions();
     m_autoSelector =
         new AutoSelector(
             AutoConstants.kAutonomousModeSelectorPorts,
@@ -54,17 +53,17 @@ public class Robot extends TimedRobot {
             m_autoOptions);
 
     m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
+    m_auto = new Auto(m_allianceSelector, m_swerve);
     m_LEDs = new LEDs();
 
     configureButtonBindings();
     configureEventBindings();
+    configureAutoOptions();
 
     // Create a button on Smart Dashboard to reset the encoders.
     SmartDashboard.putData(
         "Align Encoders",
         new InstantCommand(() -> m_swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
-
-    m_auto = new Auto(m_allianceSelector, m_swerve);
   }
 
   @Override

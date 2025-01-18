@@ -83,12 +83,12 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    if (m_currentAuto.isPresent()) m_currentAuto.get();
+    if (m_currentAuto.isPresent()) m_currentAuto.get().cmd().schedule(); 
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
   public void cancelAuto() {
-    if (m_currentAuto.isPresent()) m_currentAuto.get().kill();
+    if (m_currentAuto.isPresent()) m_currentAuto.get().cmd().cancel();
   }
 
   public void disabledPeriodic() {
