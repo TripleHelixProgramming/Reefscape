@@ -189,7 +189,7 @@ public class Robot extends TimedRobot {
 
   private void configureAutoOptions() {
     m_autoOptions.add(new AutoOption(Alliance.Red, 4));
-    m_autoOptions.add(new AutoOption(Alliance.Blue, 1, m_auto.exampleRoutine()));
+    m_autoOptions.add(new AutoOption(Alliance.Blue, 1, m_auto.exampleRoutine(), "exampleAuto"));
   }
 
   /**

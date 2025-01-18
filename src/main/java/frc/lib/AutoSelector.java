@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import choreo.auto.AutoRoutine;
 import java.util.List;
@@ -13,10 +14,11 @@ import java.util.function.Supplier;
 
 public class AutoSelector {
 
-  private Optional<AutoRoutine> m_currentAuto;
+  private Optional<Command> m_currentAuto;
   private DigitalInput[] m_switchPositions;
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
+  private AutoOption m_autoOption;
   private EventLoop m_loop = new EventLoop();
   private BooleanEvent m_changedAutoSelection;
 
@@ -56,16 +58,16 @@ public class AutoSelector {
     return m_allianceColorSupplier.get();
   }
 
-  private Optional<AutoRoutine> findMatchingOption() {
+  private Optional<Command> findMatchingOption() {
     return m_autoOptions.stream()
         .filter(o -> o.getColor() == getAllianceColor())
         .filter(o -> o.getOption() == getSwitchPosition())
         .findFirst()
-        .flatMap(AutoOption::getChoreoAuto);
+        .flatMap(AutoOption::getAutoCommand);
   }
 
   private boolean updateAuto() {
-    Optional<AutoRoutine> m_newAuto = findMatchingOption();
+    Optional<Command> m_newAuto = findMatchingOption();
     if (m_newAuto.equals(m_currentAuto)) return false;
     else {
       m_currentAuto = m_newAuto;
@@ -82,12 +84,12 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    if (m_currentAuto.isPresent()) m_currentAuto.get().cmd().schedule(); 
+    m_currentAuto.ifPresent(o -> o.schedule()); 
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
   public void cancelAuto() {
-    if (m_currentAuto.isPresent()) m_currentAuto.get().cmd().cancel();
+    m_currentAuto.ifPresent(o -> o.cancel());
   }
 
   public void disabledPeriodic() {
@@ -96,7 +98,7 @@ public class AutoSelector {
     SmartDashboard.putNumber("Auto Selector Switch Position", getSwitchPosition());
 
     if (m_currentAuto.isPresent()) {
-      SmartDashboard.putString("Auto", m_currentAuto.get().toString());
+      SmartDashboard.putString("Auto", m_currentAuto.get().getName());
     } else {
       SmartDashboard.putString("Auto", "Null");
     }
