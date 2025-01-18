@@ -52,17 +52,16 @@ public class AutoSelector {
     return 0; // failure of the physical switch
   }
 
-  private Optional<AutoRoutine> findMatchingOption() {
-    int switchPosition = getSwitchPosition();
-    Alliance color = m_allianceColorSupplier.get();
+  private Alliance getAllianceColor() {
+    return m_allianceColorSupplier.get();
+  }
 
-    for (int i = 0; i < m_autoOptions.size(); i++) {
-      if (m_autoOptions.get(i).getColor() == color)
-        if (m_autoOptions.get(i).getOption() == switchPosition) {
-          return m_autoOptions.get(i).getChoreoAuto();
-        }
-    }
-    return Optional.empty();
+  private Optional<AutoRoutine> findMatchingOption() {
+    return m_autoOptions.stream()
+        .filter(o -> o.getColor() == getAllianceColor())
+        .filter(o -> o.getOption() == getSwitchPosition())
+        .findFirst()
+        .flatMap(AutoOption::getChoreoAuto);
   }
 
   private boolean updateAuto() {

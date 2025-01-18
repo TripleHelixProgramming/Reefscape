@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -21,8 +24,11 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
+import frc.robot.vision.Vision;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Robot extends TimedRobot {
@@ -34,6 +40,7 @@ public class Robot extends TimedRobot {
   private final AutoSelector m_autoSelector;
   private final Drivetrain m_swerve;
   private final LEDs m_LEDs;
+  private final Vision m_vision;
   private final Auto m_auto;
 
   // private final AutoFactory m_autoFactory;
@@ -42,6 +49,8 @@ public class Robot extends TimedRobot {
   private CommandXboxController m_operator;
 
   private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
+
+  private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
 
   public Robot() {
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
@@ -55,6 +64,8 @@ public class Robot extends TimedRobot {
     m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
     m_auto = new Auto(m_allianceSelector, m_swerve);
     m_LEDs = new LEDs();
+
+    m_vision = new Vision();
 
     configureButtonBindings();
     configureEventBindings();
@@ -80,6 +91,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    checkVision();
     SmartDashboard.putData(m_driver.getHID());
     SmartDashboard.putData(m_operator.getHID());
     SmartDashboard.putData(m_powerDistribution);
@@ -128,6 +140,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     m_autoSelector.cancelAuto();
     m_LEDs.setDefaultCommand(m_LEDs.createEnabledCommand());
+    m_swerve.resetHeadingOffset();
   }
 
   @Override
@@ -161,8 +174,8 @@ public class Robot extends TimedRobot {
   private void configureDriverButtonBindings() {
 
     // Reset heading
-    m_driver.HIn()
-        .onTrue(new InstantCommand(() -> m_swerve.resetHeading())
+    m_driver.DIn()
+        .onTrue(new InstantCommand(() -> m_swerve.setHeadingOffset())
         .ignoringDisable(true));
 
   }
@@ -188,5 +201,25 @@ public class Robot extends TimedRobot {
    */
   public double getPDHCurrent(int CANBusPort) {
     return m_powerDistribution.getCurrent(CANBusPort - 10);
+  }
+
+  private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {
+    var publisher = posePublishers.get(name);
+    if (publisher == null) {
+      publisher = NetworkTableInstance.getDefault().getStructTopic(name, Pose2d.struct).publish();
+      posePublishers.put(name, publisher);
+    }
+    return publisher;
+  }
+
+  protected void checkVision() {
+    m_vision
+        .getPoseEstimates()
+        .forEach(
+            est -> {
+              m_swerve.addVisionMeasurement(
+                  est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
+              getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
+            });
   }
 }
