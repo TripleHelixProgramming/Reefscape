@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public class AutoSelector {
 
-  private Optional<Command> m_currentAuto;
+  private Optional<AutoOption> m_currentAuto;
   private DigitalInput[] m_switchPositions;
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
@@ -56,16 +56,15 @@ public class AutoSelector {
     return m_allianceColorSupplier.get();
   }
 
-  private Optional<Command> findMatchingOption() {
+  private Optional<AutoOption> findMatchingOption() {
     return m_autoOptions.stream()
         .filter(o -> o.getColor() == getAllianceColor())
         .filter(o -> o.getOption() == getSwitchPosition())
-        .findFirst()
-        .flatMap(AutoOption::getAutoCommand);
+        .findFirst();
   }
 
   private boolean updateAuto() {
-    Optional<Command> m_newAuto = findMatchingOption();
+    Optional<AutoOption> m_newAuto = findMatchingOption();
     if (m_newAuto.equals(m_currentAuto)) return false;
     else {
       m_currentAuto = m_newAuto;
@@ -82,12 +81,12 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    m_currentAuto.ifPresent(o -> o.schedule());
+    m_currentAuto.ifPresent(o -> o.getAutoCommand().get().schedule());
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
   public void cancelAuto() {
-    m_currentAuto.ifPresent(o -> o.cancel());
+    m_currentAuto.ifPresent(o -> o.getAutoCommand().get().cancel());
   }
 
   public void disabledPeriodic() {
