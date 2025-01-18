@@ -163,7 +163,7 @@ public final class Constants {
     // public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
     public static final class TranslationControllerGains {
-      public static final double kP = 2.0;
+      public static final double kP = 4.0;
       public static final double kI = 0.0;
       public static final double kD = 0.0;
     }

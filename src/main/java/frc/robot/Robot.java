@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
             m_autoOptions);
 
     m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
-    m_auto = new Auto(m_allianceSelector, m_swerve);
+    m_auto = new Auto(m_swerve);
     m_LEDs = new LEDs();
 
     m_vision = new Vision();
