@@ -244,7 +244,12 @@ public class Drivetrain extends SubsystemBase {
   public void followTrajectory(SwerveSample sample) {
     Pose2d pose = getPose();
 
-    ChassisSpeeds speeds = new ChassisSpeeds(sample.vx + xController.calculate(pose.getX(), sample.x), sample.vy + yController.calculate(pose.getY(), sample.y), sample.omega + thetaController.calculate(pose.getRotation().getRadians(), sample.heading));
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            sample.vx + xController.calculate(pose.getX(), sample.x),
+            sample.vy + yController.calculate(pose.getY(), sample.y),
+            sample.omega
+                + thetaController.calculate(pose.getRotation().getRadians(), sample.heading));
 
     setChassisSpeeds(speeds);
   }

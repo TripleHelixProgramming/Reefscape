@@ -1,8 +1,8 @@
 package frc.lib;
 
+import choreo.auto.AutoRoutine;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import choreo.auto.AutoRoutine;
 import java.util.Optional;
 
 public class AutoOption {

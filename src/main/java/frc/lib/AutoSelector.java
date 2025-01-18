@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import choreo.auto.AutoRoutine;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -18,7 +17,6 @@ public class AutoSelector {
   private DigitalInput[] m_switchPositions;
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
-  private AutoOption m_autoOption;
   private EventLoop m_loop = new EventLoop();
   private BooleanEvent m_changedAutoSelection;
 
@@ -84,7 +82,7 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    m_currentAuto.ifPresent(o -> o.schedule()); 
+    m_currentAuto.ifPresent(o -> o.schedule());
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
