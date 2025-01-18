@@ -82,7 +82,7 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    m_currentAuto.ifPresent(o -> o.schedule()); 
+    m_currentAuto.ifPresent(o -> o.schedule());
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */

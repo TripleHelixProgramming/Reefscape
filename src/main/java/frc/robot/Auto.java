@@ -28,7 +28,9 @@ public class Auto {
         .active()
         .onTrue(Commands.sequence(exampleTrajectory.resetOdometry(), exampleTrajectory.cmd()));
 
-    exampleTrajectory.done().onTrue(Commands.sequence(new WaitCommand(0.5), exampleTrajectory2.cmd()));
+    exampleTrajectory
+        .done()
+        .onTrue(Commands.sequence(new WaitCommand(0.5), exampleTrajectory2.cmd()));
 
     return exampleRoutine;
   }
