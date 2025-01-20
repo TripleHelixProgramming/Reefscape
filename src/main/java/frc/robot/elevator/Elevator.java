@@ -25,7 +25,9 @@ public class Elevator extends SubsystemBase {
   private final SparkMax leaderMotor;
   private final SparkMax followerMotor;
 
-  private final SparkMaxConfig motorConfig = new SparkMaxConfig();
+  private final SparkMaxConfig globalConfig = new SparkMaxConfig();
+  private final SparkMaxConfig leaderConfig = new SparkMaxConfig();
+  private final SparkMaxConfig followerConfig = new SparkMaxConfig();
 
   private final RelativeEncoder encoder;
   private final SparkClosedLoopController controller;
@@ -39,17 +41,24 @@ public class Elevator extends SubsystemBase {
     leaderMotor = new SparkMax(ElevatorConstants.kLeaderMotorPort, MotorType.kBrushless);
     followerMotor = new SparkMax(ElevatorConstants.kFollowerMotorPort, MotorType.kBrushless);
 
-    motorConfig
+    globalConfig
       .voltageCompensation(RobotConstants.kNominalVoltage)
       .inverted(false)
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(ElevatorConstants.kCurrentLimit);
 
-    motorConfig.closedLoop.maxMotion
+    leaderConfig
+      .apply(globalConfig);
+
+    followerConfig
+      .apply(globalConfig)
+      .follow(leaderMotor);
+
+    leaderConfig.closedLoop.maxMotion
       .maxAcceleration(ElevatorConstants.kMaxAcceleration)
       .maxVelocity(ElevatorConstants.kMaxVelocity);
 
-    motorConfig.closedLoop
+    leaderConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .p(ElevatorControllerGains.kP)
       .i(ElevatorControllerGains.kI)
@@ -58,14 +67,14 @@ public class Elevator extends SubsystemBase {
       // .velocityFF(ElevatorConstants.kFF)
       .outputRange(-1, 1);
 
-    motorConfig.encoder
+    leaderConfig.encoder
       .positionConversionFactor(ElevatorConstants.kPositionConversionFactor)
       .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
 
     leaderMotor.configure(
-        motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     followerMotor.configure(
-        motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        followerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     controller = leaderMotor.getClosedLoopController();
     encoder = leaderMotor.getEncoder();
