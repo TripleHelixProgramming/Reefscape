@@ -105,6 +105,9 @@ public class Elevator extends SubsystemBase {
       SmartDashboard.putBoolean("Reset Encoder", false);
       encoder.setPosition(0);
     }
+
+    SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
+    SmartDashboard.putBoolean("Lower Limit Switch", upperLimitSwitch.get());
   }
 
   private void resetEncoder() {
