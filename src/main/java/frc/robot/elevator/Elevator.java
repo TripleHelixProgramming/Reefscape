@@ -83,6 +83,12 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elevator Position", encoder.getPosition());
+    SmartDashboard.putNumber("Actual Velocity", encoder.getVelocity());
+
+    if (SmartDashboard.getBoolean("Reset Encoder", false)) {
+      SmartDashboard.putBoolean("Reset Encoder", false);
+      encoder.setPosition(0);
+    }
   }
 
   private void setPosition(ElevatorPosition position) {
@@ -93,7 +99,7 @@ public class Elevator extends SubsystemBase {
     return new InstantCommand(() -> this.setPosition(position));
   }
 
-  public Command createStopIntakeCommand() {
+  public Command createStopCommand() {
     return this.runOnce(
         () -> {
           leaderMotor.set(0.0);
