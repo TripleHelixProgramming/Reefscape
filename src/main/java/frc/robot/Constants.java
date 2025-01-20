@@ -204,8 +204,14 @@ public final class Constants {
     public static final int upperLimitSwitchPort = 0;
     public static final int lowerLimitSwitchPort = 1;
 
-    public final class ElevatorControllerGains {
+    public final class ElevatorControllerPositionGains {
       public static final double kP = 0.1;
+      public static final double kI = 0.0;
+      public static final double kD = 0.0;
+    }
+
+    public final class ElevatorControllerVelocityGains {
+      public static final double kP = 0.0001;
       public static final double kI = 0.0;
       public static final double kD = 0.0;
     }

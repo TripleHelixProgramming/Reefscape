@@ -4,6 +4,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -19,7 +20,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorControllerGains;
+import frc.robot.Constants.ElevatorConstants.ElevatorControllerPositionGains;
+import frc.robot.Constants.ElevatorConstants.ElevatorControllerVelocityGains;
 import frc.robot.Constants.ElevatorConstants.ElevatorPosition;
 import frc.robot.Constants.RobotConstants;
 
@@ -71,15 +73,18 @@ public class Elevator extends SubsystemBase {
         .maxVelocity(ElevatorConstants.kMaxVelocity);
 
     leaderConfig.closedLoop
-        // TODO: Add 2nd control loop slot, with velocity closed loop gains
-        // See https://github.com/REVrobotics/REVLib-Examples/blob/main/Java/SPARK/Closed%20Loop%20Control/
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(ElevatorControllerGains.kP)
-        .i(ElevatorControllerGains.kI)
-        .d(ElevatorControllerGains.kD)
+        .p(ElevatorControllerPositionGains.kP , ClosedLoopSlot.kSlot0)
+        .i(ElevatorControllerPositionGains.kI, ClosedLoopSlot.kSlot0)
+        .d(ElevatorControllerPositionGains.kD, ClosedLoopSlot.kSlot0)
         // .iZone()
         // .velocityFF(ElevatorConstants.kFF)
-        .outputRange(-1, 1);
+        .outputRange(-1, 1, ClosedLoopSlot.kSlot0)
+        .p(ElevatorControllerVelocityGains.kP, ClosedLoopSlot.kSlot1)
+        .i(ElevatorControllerVelocityGains.kI, ClosedLoopSlot.kSlot1)
+        .d(ElevatorControllerVelocityGains.kD, ClosedLoopSlot.kSlot1)
+        // .velocityFF(ElevatorConstants.kFF, ClosedLoopSlot.kSlot1)
+        .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
 
     leaderConfig.encoder
         .positionConversionFactor(ElevatorConstants.kPositionConversionFactor)
@@ -143,11 +148,11 @@ public class Elevator extends SubsystemBase {
 
   private void setPosition(ElevatorPosition position) {
     currentPosition = position;
-    controller.setReference(position.height, ControlType.kPosition);
+    controller.setReference(position.height, ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
   private void setVelocity(double targetVelocity) {
-    controller.setReference(targetVelocity, ControlType.kVelocity);
+    controller.setReference(targetVelocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
   }
 
   public Command createSetPositionCommand(ElevatorPosition position) {
