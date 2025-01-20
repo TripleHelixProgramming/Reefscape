@@ -201,6 +201,9 @@ public final class Constants {
     public static final double kMaxAcceleration = 1.0;
     public static final double kMaxVelocity = 1.0;
 
+    public static final int upperLimitSwitchPort = 0;
+    public static final int lowerLimitSwitchPort = 1;
+
     public final class ElevatorControllerGains {
       public static final double kP = 0.1;
       public static final double kI = 0.0;

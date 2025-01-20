@@ -11,6 +11,9 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.event.BooleanEvent;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -31,6 +34,11 @@ public class Elevator extends SubsystemBase {
 
   private final RelativeEncoder encoder;
   private final SparkClosedLoopController controller;
+
+  private final DigitalInput lowerLimitSwitch;
+  private final DigitalInput upperLimitSwitch;
+
+  private final EventLoop loop = new EventLoop();
 
   /**
    * private final ProfiledPIDController m_positionController = new ProfiledPIDController(
@@ -78,10 +86,18 @@ public class Elevator extends SubsystemBase {
 
     controller = leaderMotor.getClosedLoopController();
     encoder = leaderMotor.getEncoder();
+
+    lowerLimitSwitch = new DigitalInput(ElevatorConstants.lowerLimitSwitchPort);
+    upperLimitSwitch = new DigitalInput(ElevatorConstants.upperLimitSwitchPort);
+
+    BooleanEvent atLowerLimit = new BooleanEvent(loop, lowerLimitSwitch::get);
+    atLowerLimit.rising().ifHigh(() -> resetEncoder());
   }
 
   @Override
   public void periodic() {
+    loop.poll();
+
     SmartDashboard.putNumber("Elevator Position", encoder.getPosition());
     SmartDashboard.putNumber("Actual Velocity", encoder.getVelocity());
 
@@ -89,6 +105,10 @@ public class Elevator extends SubsystemBase {
       SmartDashboard.putBoolean("Reset Encoder", false);
       encoder.setPosition(0);
     }
+  }
+
+  private void resetEncoder() {
+    encoder.setPosition(0);
   }
 
   private void setPosition(ElevatorPosition position) {
@@ -105,5 +125,4 @@ public class Elevator extends SubsystemBase {
           leaderMotor.set(0.0);
         });
   }
-
 }
