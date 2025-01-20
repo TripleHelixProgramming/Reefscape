@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,6 +40,8 @@ public class Elevator extends SubsystemBase {
   private final DigitalInput upperLimitSwitch;
 
   private final EventLoop loop = new EventLoop();
+
+  private ElevatorPosition currentState;
 
   /**
    * private final ProfiledPIDController m_positionController = new ProfiledPIDController(
@@ -92,6 +95,8 @@ public class Elevator extends SubsystemBase {
 
     BooleanEvent atLowerLimit = new BooleanEvent(loop, lowerLimitSwitch::get);
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
+
+    currentState = ElevatorPosition.Floor;
   }
 
   @Override
@@ -100,6 +105,8 @@ public class Elevator extends SubsystemBase {
 
     SmartDashboard.putNumber("Elevator Position", encoder.getPosition());
     SmartDashboard.putNumber("Actual Velocity", encoder.getVelocity());
+
+    SmartDashboard.putString("Current State", getCurrentState().toString());
 
     if (SmartDashboard.getBoolean("Reset Encoder", false)) {
       SmartDashboard.putBoolean("Reset Encoder", false);
@@ -110,12 +117,36 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putBoolean("Lower Limit Switch", upperLimitSwitch.get());
   }
 
+  private ElevatorPosition getCurrentState() {
+    return this.currentState;
+  }
+
+  private void setState(ElevatorPosition state) {
+    currentState = state;
+  }
+
+  private void nextState() {
+    ElevatorPosition[] states = ElevatorPosition.values();
+        int nextIndex = (currentState.ordinal() + 1) % states.length;
+        currentState = states[nextIndex];
+  }
+
+  private void previousState() {
+    ElevatorPosition[] states = ElevatorPosition.values();
+        int nextIndex = (currentState.ordinal() - 1) % states.length;
+        currentState = states[nextIndex];
+  }
+
   private void resetEncoder() {
     encoder.setPosition(0);
   }
 
   private void setPosition(ElevatorPosition position) {
     controller.setReference(position.height, ControlType.kPosition);
+  }
+
+  private void setVelocity(double targetVelocity) {
+    controller.setReference(targetVelocity, ControlType.kVelocity);
   }
 
   public Command createSetPositionCommand(ElevatorPosition position) {
@@ -127,5 +158,20 @@ public class Elevator extends SubsystemBase {
         () -> {
           leaderMotor.set(0.0);
         });
+  }
+
+  public Command createJoystickControlCommand(XboxController controller, double factor) {
+    return this.run(
+        () -> {
+          this.setVelocity(controller.getLeftY() * factor);
+        });
+  }
+
+  public Command createNextStateCommand() {
+    return this.runOnce(() -> nextState());
+  }
+
+  public Command createPreviousStateCommand() {
+    return this.runOnce(() -> previousState());
   }
 }
