@@ -97,7 +97,6 @@ public class Elevator extends SubsystemBase {
     return this.runOnce(
         () -> {
           leaderMotor.set(0.0);
-          followerMotor.set(0.0);
         });
   }
 
