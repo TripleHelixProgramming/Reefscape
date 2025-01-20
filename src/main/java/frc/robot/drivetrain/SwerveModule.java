@@ -9,8 +9,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
@@ -51,13 +49,9 @@ public enum SwerveModule {
 
   private final RelativeEncoder m_driveEncoder;
   private final RelativeEncoder m_turningRelativeEncoder;
-  private final EncoderConfig m_driveEncoderConfig = new EncoderConfig();
-  private final EncoderConfig m_turningRelativeEncoderConfig = new EncoderConfig();
 
   private final SparkClosedLoopController m_driveController;
   private final SparkClosedLoopController m_turningController;
-  private final ClosedLoopConfig m_driveControllerConfig = new ClosedLoopConfig();
-  private final ClosedLoopConfig m_turningControllerConfig = new ClosedLoopConfig();
 
   private final CANcoder m_turningAbsEncoder;
   private final CANcoderConfiguration m_turningAbsEncoderConfig;
@@ -68,41 +62,43 @@ public enum SwerveModule {
     m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
 
-    m_defaultMotorConfig.voltageCompensation(RobotConstants.kNominalVoltage);
-    m_defaultMotorConfig.inverted(false);
-    m_driveMotorConfig.apply(m_defaultMotorConfig);
-    m_turningMotorConfig.apply(m_defaultMotorConfig);
+    m_defaultMotorConfig
+      .voltageCompensation(RobotConstants.kNominalVoltage)
+      .inverted(false);
+    
+    m_driveMotorConfig
+      .apply(m_defaultMotorConfig)
+      .idleMode(IdleMode.kCoast)
+      .smartCurrentLimit(ModuleConstants.kDriveMotorCurrentLimit);
+    
+    m_turningMotorConfig
+      .apply(m_defaultMotorConfig)
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
 
-    m_driveMotorConfig.idleMode(IdleMode.kCoast);
-    m_turningMotorConfig.idleMode(IdleMode.kBrake);
+    m_driveMotorConfig.closedLoop
+      .p(DriveControllerGains.kP)
+      .i(DriveControllerGains.kI)
+      .d(DriveControllerGains.kD)
+      // .iZone();
+      .velocityFF(DriveControllerGains.kFF);
+      // .outputRange();
 
-    m_driveMotorConfig.smartCurrentLimit(ModuleConstants.kDriveMotorCurrentLimit);
-    m_turningMotorConfig.smartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
+    m_turningMotorConfig.closedLoop
+      .p(TurningControllerGains.kP)
+      .i(TurningControllerGains.kI)
+      .d(TurningControllerGains.kD)
+      // .iZone();
+      // .outputRange();
+      .positionWrappingEnabled(true)
+      .positionWrappingInputRange(-0.5, 0.5);
 
-    m_driveControllerConfig.p(DriveControllerGains.kP);
-    m_driveControllerConfig.i(DriveControllerGains.kI);
-    m_driveControllerConfig.d(DriveControllerGains.kD);
-    // m_driveControllerConfig.iZone();
-    m_driveControllerConfig.velocityFF(DriveControllerGains.kFF);
-    // m_driveControllerConfig.outputRange();
-    m_driveMotorConfig.apply(m_driveControllerConfig);
+    m_driveMotorConfig.encoder
+      .positionConversionFactor(ModuleConstants.kDrivePositionConversionFactor)
+      .velocityConversionFactor(ModuleConstants.kDriveVelocityConversionFactor);
 
-    m_turningControllerConfig.p(TurningControllerGains.kP);
-    m_turningControllerConfig.i(TurningControllerGains.kI);
-    m_turningControllerConfig.d(TurningControllerGains.kD);
-    // m_turningControllerConfig.iZone();
-    // m_turningControllerConfig.outputRange();
-    m_turningControllerConfig.positionWrappingEnabled(true);
-    m_turningControllerConfig.positionWrappingInputRange(-0.5, 0.5);
-    m_turningMotorConfig.apply(m_turningControllerConfig);
-
-    m_driveEncoderConfig.positionConversionFactor(ModuleConstants.kDrivePositionConversionFactor);
-    m_driveEncoderConfig.velocityConversionFactor(ModuleConstants.kDriveVelocityConversionFactor);
-    m_driveMotorConfig.apply(m_driveEncoderConfig);
-
-    m_turningRelativeEncoderConfig.positionConversionFactor(
-        ModuleConstants.kTurnPositionConversionFactor);
-    m_turningMotorConfig.apply(m_turningRelativeEncoderConfig);
+    m_turningMotorConfig.encoder
+      .positionConversionFactor(ModuleConstants.kTurnPositionConversionFactor);
 
     m_driveMotor.configure(
         m_driveMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
