@@ -7,10 +7,9 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -20,9 +19,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorControllerGains;
 import frc.robot.Constants.ElevatorConstants.ElevatorPosition;
+import frc.robot.Constants.RobotConstants;
 
 public class Elevator extends SubsystemBase {
 
@@ -41,7 +40,8 @@ public class Elevator extends SubsystemBase {
 
   private final EventLoop loop = new EventLoop();
 
-  private ElevatorPosition currentState;
+  private ElevatorPosition currentPosition;
+  private ElevatorPosition nextPosition;
 
   /**
    * private final ProfiledPIDController m_positionController = new ProfiledPIDController(
@@ -52,35 +52,37 @@ public class Elevator extends SubsystemBase {
     leaderMotor = new SparkMax(ElevatorConstants.kLeaderMotorPort, MotorType.kBrushless);
     followerMotor = new SparkMax(ElevatorConstants.kFollowerMotorPort, MotorType.kBrushless);
 
+    // spotless:off
     globalConfig
-      .voltageCompensation(RobotConstants.kNominalVoltage)
-      .inverted(false)
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(ElevatorConstants.kCurrentLimit);
+        .voltageCompensation(RobotConstants.kNominalVoltage)
+        .inverted(false)
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(ElevatorConstants.kCurrentLimit);
 
     leaderConfig
-      .apply(globalConfig);
+        .apply(globalConfig);
 
     followerConfig
-      .apply(globalConfig)
-      .follow(leaderMotor);
+        .apply(globalConfig)
+        .follow(leaderMotor);
 
     leaderConfig.closedLoop.maxMotion
-      .maxAcceleration(ElevatorConstants.kMaxAcceleration)
-      .maxVelocity(ElevatorConstants.kMaxVelocity);
+        .maxAcceleration(ElevatorConstants.kMaxAcceleration)
+        .maxVelocity(ElevatorConstants.kMaxVelocity);
 
     leaderConfig.closedLoop
-      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-      .p(ElevatorControllerGains.kP)
-      .i(ElevatorControllerGains.kI)
-      .d(ElevatorControllerGains.kD)
-      // .iZone()
-      // .velocityFF(ElevatorConstants.kFF)
-      .outputRange(-1, 1);
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(ElevatorControllerGains.kP)
+        .i(ElevatorControllerGains.kI)
+        .d(ElevatorControllerGains.kD)
+        // .iZone()
+        // .velocityFF(ElevatorConstants.kFF)
+        .outputRange(-1, 1);
 
     leaderConfig.encoder
-      .positionConversionFactor(ElevatorConstants.kPositionConversionFactor)
-      .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
+        .positionConversionFactor(ElevatorConstants.kPositionConversionFactor)
+        .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
+    // spotless:on
 
     leaderMotor.configure(
         leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -96,45 +98,41 @@ public class Elevator extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, lowerLimitSwitch::get);
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    currentState = ElevatorPosition.Floor;
+    currentPosition = ElevatorPosition.Floor;
+    nextPosition = currentPosition;
   }
 
   @Override
   public void periodic() {
     loop.poll();
 
-    SmartDashboard.putNumber("Elevator Position", encoder.getPosition());
-    SmartDashboard.putNumber("Actual Velocity", encoder.getVelocity());
+    SmartDashboard.putNumber("Elevator Height", encoder.getPosition());
+    SmartDashboard.putNumber("Elevator Velocity", encoder.getVelocity());
 
-    SmartDashboard.putString("Current State", getCurrentState().toString());
+    SmartDashboard.putString("Elevator Position Current", getCurrentPosition().name());
+    SmartDashboard.putString("Elevator Position Next", getNextPosition().name());
 
     if (SmartDashboard.getBoolean("Reset Encoder", false)) {
       SmartDashboard.putBoolean("Reset Encoder", false);
-      encoder.setPosition(0);
+      resetEncoder();
     }
 
     SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
     SmartDashboard.putBoolean("Lower Limit Switch", upperLimitSwitch.get());
   }
 
-  private ElevatorPosition getCurrentState() {
-    return this.currentState;
+  private ElevatorPosition getCurrentPosition() {
+    return this.currentPosition;
   }
 
-  private void setState(ElevatorPosition state) {
-    currentState = state;
+  private ElevatorPosition getNextPosition() {
+    return this.nextPosition;
   }
 
-  private void nextState() {
-    ElevatorPosition[] states = ElevatorPosition.values();
-        int nextIndex = (currentState.ordinal() + 1) % states.length;
-        currentState = states[nextIndex];
-  }
-
-  private void previousState() {
-    ElevatorPosition[] states = ElevatorPosition.values();
-        int nextIndex = (currentState.ordinal() - 1) % states.length;
-        currentState = states[nextIndex];
+  private void incrementState(int increment) {
+    ElevatorPosition[] positions = ElevatorPosition.values();
+    int nextIndex = (currentPosition.ordinal() + increment) % positions.length;
+    nextPosition = positions[nextIndex];
   }
 
   private void resetEncoder() {
@@ -142,6 +140,7 @@ public class Elevator extends SubsystemBase {
   }
 
   private void setPosition(ElevatorPosition position) {
+    currentPosition = position;
     controller.setReference(position.height, ControlType.kPosition);
   }
 
@@ -151,6 +150,10 @@ public class Elevator extends SubsystemBase {
 
   public Command createSetPositionCommand(ElevatorPosition position) {
     return new InstantCommand(() -> this.setPosition(position));
+  }
+
+  public Command createGoToNextPositionCommand() {
+    return new InstantCommand(() -> this.setPosition(nextPosition));
   }
 
   public Command createStopCommand() {
@@ -168,10 +171,10 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command createNextStateCommand() {
-    return this.runOnce(() -> nextState());
+    return this.runOnce(() -> incrementState(1));
   }
 
   public Command createPreviousStateCommand() {
-    return this.runOnce(() -> previousState());
+    return this.runOnce(() -> incrementState(-1));
   }
 }
