@@ -62,43 +62,45 @@ public enum SwerveModule {
     m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
 
+    // spotless:off
     m_defaultMotorConfig
       .voltageCompensation(RobotConstants.kNominalVoltage)
       .inverted(false);
-    
+
     m_driveMotorConfig
-      .apply(m_defaultMotorConfig)
-      .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(ModuleConstants.kDriveMotorCurrentLimit);
-    
+        .apply(m_defaultMotorConfig)
+        .idleMode(IdleMode.kCoast)
+        .smartCurrentLimit(ModuleConstants.kDriveMotorCurrentLimit);
+
     m_turningMotorConfig
-      .apply(m_defaultMotorConfig)
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
+        .apply(m_defaultMotorConfig)
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
 
     m_driveMotorConfig.closedLoop
-      .p(DriveControllerGains.kP)
-      .i(DriveControllerGains.kI)
-      .d(DriveControllerGains.kD)
-      // .iZone();
-      .velocityFF(DriveControllerGains.kFF);
-      // .outputRange();
+        .p(DriveControllerGains.kP)
+        .i(DriveControllerGains.kI)
+        .d(DriveControllerGains.kD)
+        // .iZone();
+        .velocityFF(DriveControllerGains.kFF);
+        // .outputRange();
 
     m_turningMotorConfig.closedLoop
-      .p(TurningControllerGains.kP)
-      .i(TurningControllerGains.kI)
-      .d(TurningControllerGains.kD)
-      // .iZone();
-      // .outputRange();
-      .positionWrappingEnabled(true)
-      .positionWrappingInputRange(-0.5, 0.5);
+        .p(TurningControllerGains.kP)
+        .i(TurningControllerGains.kI)
+        .d(TurningControllerGains.kD)
+        // .iZone();
+        // .outputRange();
+        .positionWrappingEnabled(true)
+        .positionWrappingInputRange(-0.5, 0.5);
 
     m_driveMotorConfig.encoder
-      .positionConversionFactor(ModuleConstants.kDrivePositionConversionFactor)
-      .velocityConversionFactor(ModuleConstants.kDriveVelocityConversionFactor);
+        .positionConversionFactor(ModuleConstants.kDrivePositionConversionFactor)
+        .velocityConversionFactor(ModuleConstants.kDriveVelocityConversionFactor);
 
     m_turningMotorConfig.encoder
-      .positionConversionFactor(ModuleConstants.kTurnPositionConversionFactor);
+        .positionConversionFactor(ModuleConstants.kTurnPositionConversionFactor);
+    // spotless:on
 
     m_driveMotor.configure(
         m_driveMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
