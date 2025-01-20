@@ -2,6 +2,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.revrobotics.spark.config.MAXMotionConfig;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -189,6 +191,15 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants{
-    
+
+    public static final int kRmotorport = 0;
+    public static final int kLmotorport = 1;
+    public static final int kelevatorcurrantlimit = 80;
+    public static final double kP = 0.1;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+    public static final double kDrivePositionConversionFactor = 1;
+    public static final double kDriveVelocityConversionFactor = 2;
+    public static final double ktargetPosition = 4;
   }
 }
