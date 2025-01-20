@@ -187,4 +187,8 @@ public final class Constants {
     public static final int kLEDsPerBlock = 2;
     public static final int kLEDsBetweenBlocks = 1;
   }
+
+  public static final class ElevatorConstants{
+    
+  }
 }
