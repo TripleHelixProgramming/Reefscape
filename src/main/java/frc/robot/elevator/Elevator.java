@@ -50,7 +50,7 @@ public class Elevator extends SubsystemBase {
    * IntakeConstants.kPositionP, IntakeConstants.kPositionI, IntakeConstants.kPositionD,
    * IntakeConstants.kConstraints);
    */
-  private Elevator() {
+  public Elevator() {
     leaderMotor = new SparkMax(ElevatorConstants.kLeaderMotorPort, MotorType.kBrushless);
     followerMotor = new SparkMax(ElevatorConstants.kFollowerMotorPort, MotorType.kBrushless);
 

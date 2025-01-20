@@ -24,6 +24,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
+import frc.robot.elevator.Elevator;
 import frc.robot.vision.Vision;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ public class Robot extends TimedRobot {
   private final AllianceSelector m_allianceSelector;
   private final AutoSelector m_autoSelector;
   private final Drivetrain m_swerve;
+  private final Elevator m_elevator;
   private final LEDs m_LEDs;
   private final Vision m_vision;
   private final Auto m_auto;
@@ -61,7 +63,8 @@ public class Robot extends TimedRobot {
             m_autoOptions);
 
     m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
-    m_auto = new Auto(m_swerve);
+    m_elevator = new Elevator();
+    m_auto = new Auto(m_swerve, m_elevator);
     m_LEDs = new LEDs();
 
     m_vision = new Vision();
@@ -188,7 +191,7 @@ public class Robot extends TimedRobot {
 
   private void configureAutoOptions() {
     m_autoOptions.add(new AutoOption(Alliance.Red, 4));
-    m_autoOptions.add(new AutoOption(Alliance.Blue, 1, m_auto.exampleRoutine(), "exampleAuto"));
+    m_autoOptions.add(new AutoOption(Alliance.Blue, 1, m_auto.l4AlgaeToProcess(), "l4AlgaeToProcess"));
   }
 
   /**
