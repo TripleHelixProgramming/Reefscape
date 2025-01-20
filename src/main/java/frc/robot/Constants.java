@@ -207,7 +207,7 @@ public final class Constants {
       public static final double kD = 0.0;
     }
 
-    public static enum ElevatorHeight {
+    public static enum ElevatorPosition {
       Floor(0.0),
       L1(12.0),
       L2(14.0),
@@ -218,7 +218,7 @@ public final class Constants {
 
       public double height;
 
-      private ElevatorHeight(double height) {
+      private ElevatorPosition(double height) {
         this.height = height;
       }
     }
