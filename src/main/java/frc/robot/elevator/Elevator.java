@@ -71,6 +71,8 @@ public class Elevator extends SubsystemBase {
         .maxVelocity(ElevatorConstants.kMaxVelocity);
 
     leaderConfig.closedLoop
+        // TODO: Add 2nd control loop slot, with velocity closed loop gains
+        // See https://github.com/REVrobotics/REVLib-Examples/blob/main/Java/SPARK/Closed%20Loop%20Control/
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(ElevatorControllerGains.kP)
         .i(ElevatorControllerGains.kI)
