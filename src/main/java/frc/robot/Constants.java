@@ -2,8 +2,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.revrobotics.spark.config.MAXMotionConfig;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -190,16 +188,39 @@ public final class Constants {
     public static final int kLEDsBetweenBlocks = 1;
   }
 
-  public static final class ElevatorConstants{
+  public static final class ElevatorConstants {
 
-    public static final int kRmotorport = 0;
-    public static final int kLmotorport = 1;
-    public static final int kelevatorcurrantlimit = 80;
-    public static final double kP = 0.1;
-    public static final double kI = 0.0;
-    public static final double kD = 0.0;
-    public static final double kDrivePositionConversionFactor = 1;
-    public static final double kDriveVelocityConversionFactor = 2;
-    public static final double ktargetPosition = 4;
+    public static final int kLeaderMotorPort = 0;
+    public static final int kFollowerMotorPort = 1;
+
+    public static final int kCurrentLimit = 80;
+
+    public static final double kPositionConversionFactor = 1;
+    public static final double kVelocityConversionFactor = 2;
+
+    public static final double kMaxAcceleration = 1.0;
+    public static final double kMaxVelocity = 1.0;
+
+    public final class ElevatorControllerGains {
+      public static final double kP = 0.1;
+      public static final double kI = 0.0;
+      public static final double kD = 0.0;
+    }
+
+    public static enum ElevatorHeight {
+      Floor(0.0),
+      L1(12.0),
+      L2(14.0),
+      L3(16.0),
+      L4(18.0),
+      Intake(20.0),
+      Top(30.0);
+
+      public double height;
+
+      private ElevatorHeight(double height) {
+        this.height = height;
+      }
+    }
   }
 }
