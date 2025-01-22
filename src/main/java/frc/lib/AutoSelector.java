@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public class AutoSelector {
 
-  private Optional<Command> m_currentAuto;
+  private Optional<AutoOption> currentAutoCommand;
   private DigitalInput[] m_switchPositions;
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
@@ -23,9 +23,11 @@ public class AutoSelector {
   /**
    * Constructs an autonomous selector switch
    *
-   * @param ports An array of DIO ports for selecting an autonomous mode
-   * @param allianceColorSupplier A method that supplies the current alliance color
-   * @param autoOptions An array of autonomous mode options
+   * @param ports                 An array of DIO ports for selecting an
+   *                              autonomous mode
+   * @param allianceColorSupplier A method that supplies the current alliance
+   *                              color
+   * @param autoOptions           An array of autonomous mode options
    */
   public AutoSelector(
       int[] ports, Supplier<Alliance> allianceColorSupplier, List<AutoOption> autoOptions) {
@@ -56,21 +58,21 @@ public class AutoSelector {
     return m_allianceColorSupplier.get();
   }
 
-  private Optional<Command> findMatchingOption() {
+  private Optional<AutoOption> findMatchingOption() {
     return m_autoOptions.stream()
         .filter(o -> o.getColor() == getAllianceColor())
         .filter(o -> o.getOption() == getSwitchPosition())
-        .findFirst()
-        .flatMap(AutoOption::getAutoCommand);
+        .findFirst();
   }
 
   private boolean updateAuto() {
-    Optional<Command> m_newAuto = findMatchingOption();
-    if (m_newAuto.equals(m_currentAuto)) return false;
-    else {
-      m_currentAuto = m_newAuto;
-      return true;
+    var newAutoOption = findMatchingOption();
+
+    if (newAutoOption.equals(currentAutoCommand)) {
+      return false;
     }
+    currentAutoCommand = newAutoOption;
+    return true;
   }
 
   /**
@@ -82,23 +84,17 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    m_currentAuto.ifPresent(o -> o.schedule());
+    currentAutoCommand.ifPresent(ao -> ao.getAutoCommand().ifPresent(Command::schedule));
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
   public void cancelAuto() {
-    m_currentAuto.ifPresent(o -> o.cancel());
+    currentAutoCommand.ifPresent(ao -> ao.getAutoCommand().ifPresent(Command::cancel));
   }
 
   public void disabledPeriodic() {
     m_loop.poll();
-
     SmartDashboard.putNumber("Auto Selector Switch Position", getSwitchPosition());
-
-    if (m_currentAuto.isPresent()) {
-      SmartDashboard.putString("Auto", m_currentAuto.get().getName());
-    } else {
-      SmartDashboard.putString("Auto", "Null");
-    }
+    SmartDashboard.putString("Auto", currentAutoCommand.isPresent() ? currentAutoCommand.get().getName() : "None");
   }
 }
