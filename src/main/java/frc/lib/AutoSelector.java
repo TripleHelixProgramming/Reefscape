@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public class AutoSelector {
 
-  private Optional<Command> m_currentAuto;
+  private Optional<AutoOption> currentAutoOption;
   private DigitalInput[] m_switchPositions;
   private Supplier<Alliance> m_allianceColorSupplier;
   private List<AutoOption> m_autoOptions;
@@ -56,21 +56,20 @@ public class AutoSelector {
     return m_allianceColorSupplier.get();
   }
 
-  private Optional<Command> findMatchingOption() {
+  private Optional<AutoOption> findMatchingOption() {
     return m_autoOptions.stream()
         .filter(o -> o.getColor() == getAllianceColor())
         .filter(o -> o.getOption() == getSwitchPosition())
-        .findFirst()
-        .flatMap(AutoOption::getAutoCommand);
+        .findFirst();
   }
 
   private boolean updateAuto() {
-    Optional<Command> m_newAuto = findMatchingOption();
-    if (m_newAuto.equals(m_currentAuto)) return false;
-    else {
-      m_currentAuto = m_newAuto;
-      return true;
+    var newAutoOption = findMatchingOption();
+    if (newAutoOption.equals(currentAutoOption)) {
+      return false;
     }
+    currentAutoOption = newAutoOption;
+    return true;
   }
 
   /**
@@ -82,23 +81,19 @@ public class AutoSelector {
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
-    m_currentAuto.ifPresent(o -> o.schedule());
+    currentAutoOption.ifPresent(ao -> ao.getAutoCommand().ifPresent(Command::schedule));
   }
 
   /** Deschedules the command corresponding to the selected autonomous mode */
   public void cancelAuto() {
-    m_currentAuto.ifPresent(o -> o.cancel());
+    currentAutoOption.ifPresent(ao -> ao.getAutoCommand().ifPresent(Command::cancel));
   }
 
   public void disabledPeriodic() {
     m_loop.poll();
-
-    SmartDashboard.putNumber("Auto Selector Switch Position", getSwitchPosition());
-
-    if (m_currentAuto.isPresent()) {
-      SmartDashboard.putString("Auto", m_currentAuto.get().getName());
-    } else {
-      SmartDashboard.putString("Auto", "Null");
-    }
+    SmartDashboard.putNumber("AutoSelectorSwitchPosition", getSwitchPosition());
+    SmartDashboard.putString(
+        "SelectedAutonomousMode",
+        currentAutoOption.isPresent() ? currentAutoOption.get().getName() : "None");
   }
 }
