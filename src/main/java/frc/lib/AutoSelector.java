@@ -91,8 +91,8 @@ public class AutoSelector {
 
   public void disabledPeriodic() {
     m_loop.poll();
-    SmartDashboard.putNumber("Auto Selector Switch Position", getSwitchPosition());
+    SmartDashboard.putNumber("AutoSelectorSwitchPosition", getSwitchPosition());
     SmartDashboard.putString(
-        "Auto", currentAutoOption.isPresent() ? currentAutoOption.get().getName() : "None");
+        "SelectedAutonomousMode", currentAutoOption.isPresent() ? currentAutoOption.get().getName() : "None");
   }
 }

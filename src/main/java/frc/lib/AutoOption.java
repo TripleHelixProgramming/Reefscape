@@ -19,6 +19,7 @@ public class AutoOption {
    * @param color Alliance for which the option is valid
    * @param option Selector switch index for which the option is valid
    * @param autoSupplier Supplies command which runs the autonomous mode
+   * @param name The name of the autonomous mode option
    */
   public AutoOption(Alliance color, int option, Supplier<AutoRoutine> autoSupplier, String name) {
     this.allicanceColor = color;
