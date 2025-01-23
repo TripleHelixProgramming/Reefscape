@@ -93,6 +93,7 @@ public class AutoSelector {
     m_loop.poll();
     SmartDashboard.putNumber("AutoSelectorSwitchPosition", getSwitchPosition());
     SmartDashboard.putString(
-        "SelectedAutonomousMode", currentAutoOption.isPresent() ? currentAutoOption.get().getName() : "None");
+        "SelectedAutonomousMode",
+        currentAutoOption.isPresent() ? currentAutoOption.get().getName() : "None");
   }
 }
