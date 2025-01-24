@@ -1,106 +1,136 @@
 <xml version="1.0">
-<dashboard>
-	<widget field="PowerDistribution[0]" type="PowerDistribution" class="edu.wpi.first.smartdashboard.livewindow.elements.PowerDistribution">
-		<location x="714" y="52"/>
-	</widget>
-	<widget field="HeadingOffset" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="328" y="110"/>
-	</widget>
-	<widget field="Heading" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="358" y="85"/>
-	</widget>
-	<widget field="SelectedAutonomousMode" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="267" y="21"/>
-	</widget>
-	<widget field="AutoSelectorSwitchPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="262" y="44"/>
-	</widget>
-	<widget field="rotateField" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="80" y="66"/>
-	</widget>
-	<widget field="fieldRelative" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="73" y="91"/>
-	</widget>
-	<widget field="RearRightOutputCurrent" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="473" y="539"/>
-	</widget>
-	<widget field="RearRightAbsoluteMagnetOffset" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="435" y="429"/>
-	</widget>
-	<widget field="RearRightRelativeDrivePosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="440" y="516"/>
-	</widget>
-	<widget field="RearRightAbsoluteTurningPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="425" y="476"/>
-	</widget>
-	<widget field="RearRightRelativeTurningPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="428" y="454"/>
-	</widget>
-	<widget field="RearLeftOutputCurrent" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="124" y="544"/>
-	</widget>
-	<widget field="RearLeftAbsoluteMagnetOffset" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="85" y="434"/>
-	</widget>
-	<widget field="RearLeftRelativeDrivePosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="91" y="520"/>
-	</widget>
-	<widget field="RearLeftAbsoluteTurningPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="76" y="483"/>
-	</widget>
-	<widget field="RearLeftRelativeTurningPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="78" y="458"/>
-	</widget>
-	<widget field="FrontRightOutputCurrent" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="470" y="372"/>
-	</widget>
-	<widget field="FrontRightAbsoluteMagnetOffset" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="433" y="266"/>
-	</widget>
-	<widget field="FrontRightRelativeDrivePosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="438" y="349"/>
-	</widget>
-	<widget field="FrontRightAbsoluteTurningPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="425" y="313"/>
-	</widget>
-	<widget field="FrontRightRelativeTurningPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="426" y="290"/>
-	</widget>
-	<widget field="FrontLeftOutputCurrent" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="121" y="377"/>
-	</widget>
-	<widget field="FrontLeftAbsoluteMagnetOffset" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="80" y="267"/>
-	</widget>
-	<widget field="FrontLeftRelativeDrivePosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="88" y="353"/>
-	</widget>
-	<widget field="FrontLeftAbsoluteTurningPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="71" y="314"/>
-	</widget>
-	<widget field="FrontLeftRelativeTurningPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="74" y="291"/>
-	</widget>
-	<widget field="AllianceColorAgreement" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="14" y="41"/>
-	</widget>
-	<widget field="AllianceColor" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="69" y="18"/>
-	</widget>
-	<widget field="Align Encoders" type="Command" class="edu.wpi.first.smartdashboard.gui.elements.Command">
-		<location x="310" y="196"/>
-	</widget>
-</dashboard>
-<live-window>
-</live-window>
-	<hidden field="Auto"/>
-	<hidden field="GyroAngle"/>
-	<hidden field="PDHVoltage"/>
-	<hidden field="FusedAngle2.0"/>
-	<hidden field="PDHTotalCurrent"/>
-	<hidden field="isRed"/>
-	<hidden field="Auto Selector Switch Position"/>
-	<hidden field="RawAngle2.0"/>
-	<hidden field="Choreo Alerts"/>
-	<hidden field="Angle2.0"/>
+  <dashboard>
+    <widget field="PowerDistribution[0]" type="PowerDistribution"
+      class="edu.wpi.first.smartdashboard.livewindow.elements.PowerDistribution">
+      <location x="714" y="52" />
+    </widget>
+    <widget field="HeadingOffset" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="328" y="110" />
+    </widget>
+    <widget field="Heading" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="358" y="85" />
+    </widget>
+    <widget field="SelectedAutonomousMode" type="String"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="267" y="21" />
+    </widget>
+    <widget field="AutoSelectorSwitchPosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="262" y="44" />
+    </widget>
+    <widget field="rotateField" type="Boolean"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="80" y="66" />
+    </widget>
+    <widget field="fieldRelative" type="Boolean"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="73" y="91" />
+    </widget>
+    <widget field="RearRightOutputCurrent" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="473" y="539" />
+    </widget>
+    <widget field="RearRightAbsoluteMagnetOffset" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="435" y="429" />
+    </widget>
+    <widget field="RearRightRelativeDrivePosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="440" y="516" />
+    </widget>
+    <widget field="RearRightAbsoluteTurningPosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="425" y="476" />
+    </widget>
+    <widget field="RearRightRelativeTurningPosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="428" y="454" />
+    </widget>
+    <widget field="RearLeftOutputCurrent" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="124" y="544" />
+    </widget>
+    <widget field="RearLeftAbsoluteMagnetOffset" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="85" y="434" />
+    </widget>
+    <widget field="RearLeftRelativeDrivePosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="91" y="520" />
+    </widget>
+    <widget field="RearLeftAbsoluteTurningPosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="76" y="483" />
+    </widget>
+    <widget field="RearLeftRelativeTurningPosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="78" y="458" />
+    </widget>
+    <widget field="FrontRightOutputCurrent" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="470" y="372" />
+    </widget>
+    <widget field="FrontRightAbsoluteMagnetOffset" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="433" y="266" />
+    </widget>
+    <widget field="FrontRightRelativeDrivePosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="438" y="349" />
+    </widget>
+    <widget field="FrontRightAbsoluteTurningPosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="425" y="313" />
+    </widget>
+    <widget field="FrontRightRelativeTurningPosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="426" y="290" />
+    </widget>
+    <widget field="FrontLeftOutputCurrent" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="121" y="377" />
+    </widget>
+    <widget field="FrontLeftAbsoluteMagnetOffset" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="80" y="267" />
+    </widget>
+    <widget field="FrontLeftRelativeDrivePosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="88" y="353" />
+    </widget>
+    <widget field="FrontLeftAbsoluteTurningPosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="71" y="314" />
+    </widget>
+    <widget field="FrontLeftRelativeTurningPosition" type="Number"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="74" y="291" />
+    </widget>
+    <widget field="AllianceColorAgreement" type="Boolean"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="14" y="41" />
+    </widget>
+    <widget field="AllianceColor" type="String"
+      class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+      <location x="69" y="18" />
+    </widget>
+    <widget field="Align Encoders" type="Command"
+      class="edu.wpi.first.smartdashboard.gui.elements.Command">
+      <location x="310" y="196" />
+    </widget>
+  </dashboard>
+  <live-window>
+  </live-window>
+  <hidden field="Auto" />
+  <hidden field="GyroAngle" />
+  <hidden field="PDHVoltage" />
+  <hidden field="FusedAngle2.0" />
+  <hidden field="PDHTotalCurrent" />
+  <hidden field="isRed" />
+  <hidden field="Auto Selector Switch Position" />
+  <hidden field="RawAngle2.0" />
+  <hidden field="Choreo Alerts" />
+  <hidden field="Angle2.0" />
 </xml>
