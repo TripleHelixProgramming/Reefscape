@@ -1,25 +1,31 @@
 package frc.lib;
 
+import choreo.auto.AutoRoutine;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.autos.ChoreoAuto;
+import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class AutoOption {
-  private Alliance m_color;
-  private int m_option;
-  private Optional<ChoreoAuto> m_auto;
+  private final Alliance allicanceColor;
+  private final int switchNumber;
+  private final Supplier<AutoRoutine> autoSupplier;
+  private final String name;
+  private AutoRoutine autoRoutine;
 
   /**
    * Constructs a selectable autonomous mode option
    *
    * @param color Alliance for which the option is valid
    * @param option Selector switch index for which the option is valid
-   * @param auto Command which runs the autonomous mode
+   * @param autoSupplier Supplies command which runs the autonomous mode
+   * @param name The name of the autonomous mode option
    */
-  public AutoOption(Alliance color, int option, ChoreoAuto auto) {
-    this.m_color = color;
-    this.m_option = option;
-    this.m_auto = Optional.of(auto);
+  public AutoOption(Alliance color, int option, Supplier<AutoRoutine> autoSupplier, String name) {
+    this.allicanceColor = color;
+    this.switchNumber = option;
+    this.autoSupplier = autoSupplier;
+    this.name = name;
   }
 
   /**
@@ -29,29 +35,37 @@ public class AutoOption {
    * @param option Selector switch index for which the option is valid
    */
   public AutoOption(Alliance color, int option) {
-    this.m_color = color;
-    this.m_option = option;
-    this.m_auto = Optional.empty();
+    this(color, option, null, "empty");
   }
 
   /**
    * @return Alliance for which the option is valid
    */
   public Alliance getColor() {
-    return this.m_color;
+    return this.allicanceColor;
   }
 
   /**
    * @return Selector switch index for which the option is valid
    */
   public int getOption() {
-    return this.m_option;
+    return this.switchNumber;
   }
 
   /**
    * @return The command which runs the selected autonomous mode
    */
-  public Optional<ChoreoAuto> getChoreoAuto() {
-    return this.m_auto;
+  public synchronized Optional<Command> getAutoCommand() {
+    if (autoRoutine == null) {
+      if (autoSupplier == null) {
+        return Optional.empty();
+      }
+      autoRoutine = autoSupplier.get();
+    }
+    return Optional.of(autoRoutine.cmd());
+  }
+
+  public String getName() {
+    return this.name;
   }
 }

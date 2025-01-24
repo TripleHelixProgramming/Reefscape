@@ -1,0 +1,78 @@
+{
+ "name":"Pi",
+ "version":1,
+ "type":"Swerve",
+ "variables":{
+  "expressions":{},
+  "poses":{}
+ },
+ "config":{
+  "frontLeft":{
+   "x":{
+    "exp":"12 in",
+    "val":0.30479999999999996
+   },
+   "y":{
+    "exp":"11.25 in",
+    "val":0.28575
+   }
+  },
+  "backLeft":{
+   "x":{
+    "exp":"-12 in",
+    "val":-0.30479999999999996
+   },
+   "y":{
+    "exp":"11.25 in",
+    "val":0.28575
+   }
+  },
+  "mass":{
+   "exp":"100 lbs",
+   "val":45.359237
+  },
+  "inertia":{
+   "exp":"6 kg m ^ 2",
+   "val":6.0
+  },
+  "gearing":{
+   "exp":"6.75",
+   "val":6.75
+  },
+  "radius":{
+   "exp":"1.87 in",
+   "val":0.047498
+  },
+  "vmax":{
+   "exp":"4000 RPM",
+   "val":418.87902047863906
+  },
+  "tmax":{
+   "exp":"1.2 N * m",
+   "val":1.2
+  },
+  "cof":{
+   "exp":"0.6",
+   "val":0.6
+  },
+  "bumper":{
+   "front":{
+    "exp":"18 in",
+    "val":0.4572
+   },
+   "side":{
+    "exp":"19 in",
+    "val":0.4826
+   },
+   "back":{
+    "exp":"18 in",
+    "val":0.4572
+   }
+  },
+  "differentialTrackWidth":{
+   "exp":"22 in",
+   "val":0.5588
+  }
+ },
+ "generationFeatures":[]
+}

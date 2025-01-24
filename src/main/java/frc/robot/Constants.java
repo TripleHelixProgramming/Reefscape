@@ -2,14 +2,30 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public final class Constants {
+
+  public static final class VisionConstants {
+    public static final String kAprilTagLayoutPath =
+        Filesystem.getDeployDirectory() + "/" + "stemgym.json";
+
+    // Define the standard deviations for the pose estimator, which determine how fast the pose
+    // estimate converges to the vision measurement. This should depend on the vision measurement
+    // noise and how many or how frequently vision measurements are applied to the pose estimator.
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+  }
 
   public static final class RobotConstants {
     public static final double kNominalVoltage = 12.0;
@@ -17,6 +33,8 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
+
+    public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
 
     public static final class MotorControllers {
       public static final int kRearRightDriveMotorPort = 18;
@@ -92,7 +110,7 @@ public final class Constants {
     // public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.254,
     // 0.137);
 
-    public static final double kWheelDiameterMeters = 0.10; // 3.7 in; 2023 Competion Robot
+    public static final double kWheelDiameterMeters = 0.047; // 1.87 in. avg diamter 2024 bot
 
     // By default, the drive encoder in position mode measures rotations at the drive motor
     // Convert to meters at the wheel
@@ -145,7 +163,7 @@ public final class Constants {
     // public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
     public static final class TranslationControllerGains {
-      public static final double kP = 1.0;
+      public static final double kP = 4.0;
       public static final double kI = 0.0;
       public static final double kD = 0.0;
     }
@@ -160,5 +178,13 @@ public final class Constants {
     // public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
     //     new TrapezoidProfile.Constraints(
     //         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  }
+
+  public static final class LedConstants {
+    public static final int kLedPort = 0;
+    public static final int kLedBufferLength = 17;
+
+    public static final int kLEDsPerBlock = 2;
+    public static final int kLEDsBetweenBlocks = 1;
   }
 }
