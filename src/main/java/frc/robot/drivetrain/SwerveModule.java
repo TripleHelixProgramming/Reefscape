@@ -7,9 +7,11 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,10 +43,9 @@ public enum SwerveModule {
       DriveConstants.MotorControllers.kRearRightTurningMotorPort,
       DriveConstants.AbsoluteEncoders.kRearRightTurningEncoderPort);
 
-  private final SparkMax m_driveMotor;
+  private final SparkFlex m_driveMotor;
   private final SparkMax m_turningMotor;
-  private final SparkMaxConfig m_defaultMotorConfig = new SparkMaxConfig();
-  private final SparkMaxConfig m_driveMotorConfig = new SparkMaxConfig();
+  private final SparkFlexConfig m_driveMotorConfig = new SparkFlexConfig();
   private final SparkMaxConfig m_turningMotorConfig = new SparkMaxConfig();
 
   private final RelativeEncoder m_driveEncoder;
@@ -59,21 +60,19 @@ public enum SwerveModule {
   private SwerveModule(
       int driveMotorChannel, int turningMotorChannel, int turningAbsoluteEncoderChannel) {
 
-    m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
+    m_driveMotor = new SparkFlex(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
 
     // spotless:off
-    m_defaultMotorConfig
-      .voltageCompensation(RobotConstants.kNominalVoltage)
-      .inverted(false);
-
     m_driveMotorConfig
-        .apply(m_defaultMotorConfig)
-        .idleMode(IdleMode.kCoast)
-        .smartCurrentLimit(ModuleConstants.kDriveMotorCurrentLimit);
+      .voltageCompensation(RobotConstants.kNominalVoltage)
+      .inverted(false)
+      .idleMode(IdleMode.kCoast)
+      .smartCurrentLimit(ModuleConstants.kDriveMotorCurrentLimit);
 
     m_turningMotorConfig
-        .apply(m_defaultMotorConfig)
+        .voltageCompensation(RobotConstants.kNominalVoltage)
+        .inverted(false)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
 
