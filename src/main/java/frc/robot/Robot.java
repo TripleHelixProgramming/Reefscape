@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -24,6 +25,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
+import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.Elevator;
 import frc.robot.vision.Vision;
@@ -52,6 +54,11 @@ public class Robot extends TimedRobot {
   private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
 
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
+
+  private Pose2d[] targetPoses = {
+    new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
+    new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0))
+  };
 
   public Robot() {
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
@@ -178,6 +185,9 @@ public class Robot extends TimedRobot {
         .onTrue(new InstantCommand(() -> m_swerve.setHeadingOffset())
         .ignoringDisable(true));
 
+    m_driver.AIn()
+        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, () -> getNearestPose(m_swerve.getPose(), targetPoses)));
+
   }
   // spotless:on
 
@@ -202,6 +212,21 @@ public class Robot extends TimedRobot {
    */
   public double getPDHCurrent(int CANBusPort) {
     return m_powerDistribution.getCurrent(CANBusPort - 10);
+  }
+
+  public Pose2d getNearestPose(Pose2d currentPose, Pose2d[] targetPoses) {
+    Pose2d closestPose = new Pose2d(5, 5, Rotation2d.fromDegrees(0));
+    double minDistance = Double.MAX_VALUE;
+
+    for (Pose2d targetPose : targetPoses) {
+      double distance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestPose = targetPose;
+      }
+    }
+    return closestPose;
   }
 
   private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {
