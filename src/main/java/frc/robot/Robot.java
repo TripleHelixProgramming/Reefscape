@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -179,7 +180,7 @@ public class Robot extends TimedRobot {
         .ignoringDisable(true));
 
     m_driver.AIn()
-        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, getNearestPose(m_swerve.getPose(), targetPoses)));
+        .whileTrue(createDriveToClosestPoseCommand());
 
   }
   // spotless:on
@@ -212,6 +213,17 @@ public class Robot extends TimedRobot {
     new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0))
   };
 
+  private Command createDriveToClosestPoseCommand() {
+        return new Command() {
+            @Override
+            public void initialize() {
+                Pose2d currentPose = m_swerve.getPose();
+                Pose2d closestPose = getNearestPose(currentPose, targetPoses);
+                new DriveToPoseCommand(m_swerve, m_vision, closestPose).schedule();
+            }
+        };
+    }
+
   public Pose2d getNearestPose(Pose2d currentPose, Pose2d[] targetPoses) {
     Pose2d closestPose = new Pose2d(5, 5, Rotation2d.fromDegrees(0));
     double minDistance = Double.MAX_VALUE;
@@ -220,6 +232,7 @@ public class Robot extends TimedRobot {
       double distance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
 
       if (distance < minDistance) {
+        minDistance = distance;
         closestPose = targetPose;
       }
     }
