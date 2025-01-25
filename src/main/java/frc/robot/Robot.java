@@ -185,10 +185,7 @@ public class Robot extends TimedRobot {
         .ignoringDisable(true));
 
     m_driver.AIn()
-        .onTrue(moveToPoseCommand);
-
-    m_driver.HIn()
-        .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancel(moveToPoseCommand)));
+        .whileTrue(moveToPoseCommand);
 
   }
   // spotless:on

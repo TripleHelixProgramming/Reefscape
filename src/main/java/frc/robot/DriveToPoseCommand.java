@@ -60,7 +60,7 @@ public class DriveToPoseCommand extends Command {
         double yError = Math.abs(targetPose.getY() - currentPose.getY());
         double thetaError = Math.abs(targetPose.getRotation().getRadians() - currentPose.getRotation().getRadians());
 
-        return xError < 0.1 && yError < 0.1 && thetaError < Math.toRadians(3);
+        return xError < 0.05 && yError < 0.05 && thetaError < Math.toRadians(3);
     }
     
     @Override
