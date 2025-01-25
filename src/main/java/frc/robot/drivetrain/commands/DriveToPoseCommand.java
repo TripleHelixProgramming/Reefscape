@@ -74,8 +74,5 @@ public class DriveToPoseCommand extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0, 0, 0);
-    swerve.setChassisSpeeds(chassisSpeeds);
-  }
+  public void end(boolean interrupted) {}
 }
