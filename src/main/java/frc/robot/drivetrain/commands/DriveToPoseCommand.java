@@ -21,19 +21,22 @@ public class DriveToPoseCommand extends Command {
           DriveToPoseControllerGains.kTraP,
           DriveToPoseControllerGains.kTraI,
           DriveToPoseControllerGains.kTraD,
-          new TrapezoidProfile.Constraints(DriveConstants.kMaxTranslationalVelocity.baseUnitMagnitude(), 5));
+          new TrapezoidProfile.Constraints(
+              DriveConstants.kMaxTranslationalVelocity.baseUnitMagnitude(), 5));
   private final ProfiledPIDController yController =
       new ProfiledPIDController(
           DriveToPoseControllerGains.kTraP,
           DriveToPoseControllerGains.kTraI,
           DriveToPoseControllerGains.kTraD,
-          new TrapezoidProfile.Constraints(DriveConstants.kMaxTranslationalVelocity.baseUnitMagnitude(), 5));
+          new TrapezoidProfile.Constraints(
+              DriveConstants.kMaxTranslationalVelocity.baseUnitMagnitude(), 5));
   private final ProfiledPIDController thetaController =
       new ProfiledPIDController(
           DriveToPoseControllerGains.kRotP,
           DriveToPoseControllerGains.kRotI,
           DriveToPoseControllerGains.kRotD,
-          new TrapezoidProfile.Constraints(DriveConstants.kMaxRotationalVelocity.baseUnitMagnitude(), 9));
+          new TrapezoidProfile.Constraints(
+              DriveConstants.kMaxRotationalVelocity.baseUnitMagnitude(), 9));
 
   public DriveToPoseCommand(
       Drivetrain drivetrain, Vision poseEstimator, Supplier<Pose2d> targetPosition) {
@@ -74,7 +77,8 @@ public class DriveToPoseCommand extends Command {
   public boolean isFinished() {
     Pose2d currentPose = swerve.getPose();
     var targetPose = targetPoseSupplier.get();
-    double translationalError = currentPose.getTranslation().getDistance(targetPose.getTranslation());
+    double translationalError =
+        currentPose.getTranslation().getDistance(targetPose.getTranslation());
     double thetaError =
         Math.abs(targetPose.getRotation().getRadians() - currentPose.getRotation().getRadians());
 
