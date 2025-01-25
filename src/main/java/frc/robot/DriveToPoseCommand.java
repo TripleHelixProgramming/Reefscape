@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,7 +13,7 @@ import frc.robot.vision.Vision;
 public class DriveToPoseCommand extends Command {
     public final Drivetrain swerve;
     public final Vision vision;
-    public final Pose2d targetPose;
+    public final Supplier<Pose2d> targetPoseSupplier;
 
     private final PIDController xController = new PIDController(
         DriveToPoseControllerGains.kTraP, 
@@ -26,10 +28,10 @@ public class DriveToPoseCommand extends Command {
         DriveToPoseControllerGains.kRotI, 
         DriveToPoseControllerGains.kRotD);
 
-    public DriveToPoseCommand(Drivetrain drivetrain, Vision poseEstimator, Pose2d targetPosition) {
+    public DriveToPoseCommand(Drivetrain drivetrain, Vision poseEstimator, Supplier<Pose2d> targetPosition) {
         swerve = drivetrain;
         vision = poseEstimator;
-        targetPose = targetPosition;
+        targetPoseSupplier = targetPosition;
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -42,6 +44,7 @@ public class DriveToPoseCommand extends Command {
     @Override
     public void execute() {
         Pose2d currentPose = swerve.getPose();
+        var targetPose = targetPoseSupplier.get();
 
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(
             xController.calculate(currentPose.getX(), targetPose.getX()),
@@ -55,6 +58,7 @@ public class DriveToPoseCommand extends Command {
     @Override
     public boolean isFinished() {
         Pose2d currentPose = swerve.getPose();
+        var targetPose = targetPoseSupplier.get();
         double xError = Math.abs(targetPose.getX() - currentPose.getX());
         double yError = Math.abs(targetPose.getY() - currentPose.getY());
         double thetaError = Math.abs(targetPose.getRotation().getRadians() - currentPose.getRotation().getRadians());

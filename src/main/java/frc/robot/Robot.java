@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -52,6 +51,11 @@ public class Robot extends TimedRobot {
   private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
 
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
+
+  private Pose2d[] targetPoses = {
+    new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
+    new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0))
+  };
 
   public Robot() {
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
@@ -180,7 +184,7 @@ public class Robot extends TimedRobot {
         .ignoringDisable(true));
 
     m_driver.AIn()
-        .whileTrue(createDriveToClosestPoseCommand());
+        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, () -> getNearestPose(m_swerve.getPose(), targetPoses)));
 
   }
   // spotless:on
@@ -207,22 +211,6 @@ public class Robot extends TimedRobot {
   public double getPDHCurrent(int CANBusPort) {
     return m_powerDistribution.getCurrent(CANBusPort - 10);
   }
-
-  Pose2d[] targetPoses = {
-    new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
-    new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0))
-  };
-
-  private Command createDriveToClosestPoseCommand() {
-        return new Command() {
-            @Override
-            public void initialize() {
-                Pose2d currentPose = m_swerve.getPose();
-                Pose2d closestPose = getNearestPose(currentPose, targetPoses);
-                new DriveToPoseCommand(m_swerve, m_vision, closestPose).schedule();
-            }
-        };
-    }
 
   public Pose2d getNearestPose(Pose2d currentPose, Pose2d[] targetPoses) {
     Pose2d closestPose = new Pose2d(5, 5, Rotation2d.fromDegrees(0));
