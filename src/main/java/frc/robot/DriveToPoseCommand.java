@@ -9,7 +9,6 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.vision.Vision;
 
 public class DriveToPoseCommand extends Command {
-
     public final Drivetrain swerve;
     public final Vision vision;
     public final Pose2d targetPose;

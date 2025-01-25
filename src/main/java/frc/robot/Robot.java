@@ -42,8 +42,6 @@ public class Robot extends TimedRobot {
   private final LEDs m_LEDs;
   private final Vision m_vision;
   private final Auto m_auto;
-  private final Pose2d m_targetPose;
-  private final DriveToPoseCommand moveToPoseCommand;
 
   // private final AutoFactory m_autoFactory;
 
@@ -68,10 +66,6 @@ public class Robot extends TimedRobot {
     m_LEDs = new LEDs();
 
     m_vision = new Vision();
-
-    m_targetPose = new Pose2d(1.0, 4.0, Rotation2d.fromDegrees(0));
-
-    moveToPoseCommand = new DriveToPoseCommand(m_swerve, m_vision, m_targetPose);
 
     configureButtonBindings();
     configureEventBindings();
@@ -185,7 +179,7 @@ public class Robot extends TimedRobot {
         .ignoringDisable(true));
 
     m_driver.AIn()
-        .whileTrue(moveToPoseCommand);
+        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, getNearestPose(m_swerve.getPose(), targetPoses)));
 
   }
   // spotless:on
@@ -211,6 +205,25 @@ public class Robot extends TimedRobot {
    */
   public double getPDHCurrent(int CANBusPort) {
     return m_powerDistribution.getCurrent(CANBusPort - 10);
+  }
+
+  Pose2d[] targetPoses = {
+    new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
+    new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0))
+  };
+
+  public Pose2d getNearestPose(Pose2d currentPose, Pose2d[] targetPoses) {
+    Pose2d closestPose = new Pose2d(5, 5, Rotation2d.fromDegrees(0));
+    double minDistance = Double.MAX_VALUE;
+
+    for (Pose2d targetPose : targetPoses) {
+      double distance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
+
+      if (distance < minDistance) {
+        closestPose = targetPose;
+      }
+    }
+    return closestPose;
   }
 
   private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {
