@@ -1,17 +1,15 @@
 package frc.lib;
 
-import choreo.auto.AutoRoutine;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.auto.AutoMode;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class AutoOption {
   private final Alliance allicanceColor;
   private final int switchNumber;
-  private final Supplier<AutoRoutine> autoSupplier;
-  private final String name;
-  private AutoRoutine autoRoutine;
+  private final AutoMode autoMode;
 
   /**
    * Constructs a selectable autonomous mode option
@@ -19,13 +17,11 @@ public class AutoOption {
    * @param color Alliance for which the option is valid
    * @param option Selector switch index for which the option is valid
    * @param autoSupplier Supplies command which runs the autonomous mode
-   * @param name The name of the autonomous mode option
    */
-  public AutoOption(Alliance color, int option, Supplier<AutoRoutine> autoSupplier, String name) {
+  public AutoOption(Alliance color, int option, AutoMode autoMode) {
     this.allicanceColor = color;
     this.switchNumber = option;
-    this.autoSupplier = autoSupplier;
-    this.name = name;
+    this.autoMode = autoMode;
   }
 
   /**
@@ -35,7 +31,7 @@ public class AutoOption {
    * @param option Selector switch index for which the option is valid
    */
   public AutoOption(Alliance color, int option) {
-    this(color, option, null, "empty");
+    this(color, option, null);
   }
 
   /**
@@ -56,16 +52,14 @@ public class AutoOption {
    * @return The command which runs the selected autonomous mode
    */
   public synchronized Optional<Command> getAutoCommand() {
-    if (autoRoutine == null) {
-      if (autoSupplier == null) {
-        return Optional.empty();
-      }
-      autoRoutine = autoSupplier.get();
-    }
-    return Optional.of(autoRoutine.cmd());
+    return (autoMode == null) ? Optional.empty() : Optional.of(autoMode.getAutoRoutine().cmd());
   }
 
-  public String getName() {
-    return this.name;
+  public Optional<Pose2d> getInitialPose() {
+    return (autoMode == null) ? Optional.empty() : autoMode.getInitialPose();
+  }
+
+  public synchronized String getName() {
+    return (autoMode == null) ? "None; this slot reserved for no auto" : autoMode.getName();
   }
 }
