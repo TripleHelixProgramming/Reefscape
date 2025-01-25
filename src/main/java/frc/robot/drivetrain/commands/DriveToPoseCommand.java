@@ -1,9 +1,11 @@
 package frc.robot.drivetrain.commands;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants.DriveToPoseControllerGains;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.vision.Vision;
@@ -14,21 +16,24 @@ public class DriveToPoseCommand extends Command {
   public final Vision vision;
   public final Supplier<Pose2d> targetPoseSupplier;
 
-  private final PIDController xController =
-      new PIDController(
+  private final ProfiledPIDController xController =
+      new ProfiledPIDController(
           DriveToPoseControllerGains.kTraP,
           DriveToPoseControllerGains.kTraI,
-          DriveToPoseControllerGains.kTraD);
-  private final PIDController yController =
-      new PIDController(
+          DriveToPoseControllerGains.kTraD,
+          new TrapezoidProfile.Constraints(DriveConstants.kMaxTranslationalVelocity.baseUnitMagnitude(), 5));
+  private final ProfiledPIDController yController =
+      new ProfiledPIDController(
           DriveToPoseControllerGains.kTraP,
           DriveToPoseControllerGains.kTraI,
-          DriveToPoseControllerGains.kTraD);
-  private final PIDController thetaController =
-      new PIDController(
+          DriveToPoseControllerGains.kTraD,
+          new TrapezoidProfile.Constraints(DriveConstants.kMaxTranslationalVelocity.baseUnitMagnitude(), 5));
+  private final ProfiledPIDController thetaController =
+      new ProfiledPIDController(
           DriveToPoseControllerGains.kRotP,
           DriveToPoseControllerGains.kRotI,
-          DriveToPoseControllerGains.kRotD);
+          DriveToPoseControllerGains.kRotD,
+          new TrapezoidProfile.Constraints(DriveConstants.kMaxRotationalVelocity.baseUnitMagnitude(), 9));
 
   public DriveToPoseCommand(
       Drivetrain drivetrain, Vision poseEstimator, Supplier<Pose2d> targetPosition) {
@@ -42,7 +47,11 @@ public class DriveToPoseCommand extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    xController.reset(swerve.getPose().getX());
+    yController.reset(swerve.getPose().getY());
+    thetaController.reset(swerve.getPose().getRotation().getRadians());
+  }
 
   @Override
   public void execute() {
@@ -65,12 +74,11 @@ public class DriveToPoseCommand extends Command {
   public boolean isFinished() {
     Pose2d currentPose = swerve.getPose();
     var targetPose = targetPoseSupplier.get();
-    double xError = Math.abs(targetPose.getX() - currentPose.getX());
-    double yError = Math.abs(targetPose.getY() - currentPose.getY());
+    double translationalError = currentPose.getTranslation().getDistance(targetPose.getTranslation());
     double thetaError =
         Math.abs(targetPose.getRotation().getRadians() - currentPose.getRotation().getRadians());
 
-    return xError < 0.05 && yError < 0.05 && thetaError < Math.toRadians(3);
+    return translationalError < 0.05 && thetaError < Math.toRadians(3);
   }
 
   @Override
