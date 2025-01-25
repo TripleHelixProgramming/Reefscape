@@ -22,6 +22,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
+import frc.robot.auto.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.Elevator;
@@ -42,7 +43,6 @@ public class Robot extends TimedRobot {
   private final Elevator m_elevator;
   private final LEDs m_LEDs;
   private final Vision m_vision;
-  private final Auto m_auto;
 
   // private final AutoFactory m_autoFactory;
 
@@ -64,9 +64,7 @@ public class Robot extends TimedRobot {
 
     m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
     m_elevator = new Elevator();
-    m_auto = new Auto(m_swerve, m_elevator);
     m_LEDs = new LEDs();
-
     m_vision = new Vision();
 
     configureButtonBindings();
@@ -191,8 +189,8 @@ public class Robot extends TimedRobot {
 
   private void configureAutoOptions() {
     m_autoOptions.add(new AutoOption(Alliance.Red, 4));
-    m_autoOptions.add(
-        new AutoOption(Alliance.Blue, 1, () -> m_auto.exampleRoutine(), "exampleAuto"));
+    m_autoOptions.add(new AutoOption(Alliance.Blue, 1, new ExampleAuto(m_swerve)));
+    m_autoOptions.add(new AutoOption(Alliance.Blue, 2));
   }
 
   /**
