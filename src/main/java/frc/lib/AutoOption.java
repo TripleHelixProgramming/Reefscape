@@ -7,7 +7,7 @@ import frc.robot.auto.AutoMode;
 import java.util.Optional;
 
 public class AutoOption {
-  private final Alliance allicanceColor;
+  private final Alliance allianceColor;
   private final int switchNumber;
   private final AutoMode autoMode;
 
@@ -19,7 +19,7 @@ public class AutoOption {
    * @param autoSupplier Supplies command which runs the autonomous mode
    */
   public AutoOption(Alliance color, int option, AutoMode autoMode) {
-    this.allicanceColor = color;
+    this.allianceColor = color;
     this.switchNumber = option;
     this.autoMode = autoMode;
   }
@@ -38,7 +38,7 @@ public class AutoOption {
    * @return Alliance for which the option is valid
    */
   public Alliance getColor() {
-    return this.allicanceColor;
+    return this.allianceColor;
   }
 
   /**
