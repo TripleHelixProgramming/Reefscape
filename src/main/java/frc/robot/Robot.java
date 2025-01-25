@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -41,6 +42,8 @@ public class Robot extends TimedRobot {
   private final LEDs m_LEDs;
   private final Vision m_vision;
   private final Auto m_auto;
+  private final Pose2d m_targetPose;
+  private final DriveToPoseCommand moveToPoseCommand;
 
   // private final AutoFactory m_autoFactory;
 
@@ -65,6 +68,10 @@ public class Robot extends TimedRobot {
     m_LEDs = new LEDs();
 
     m_vision = new Vision();
+
+    m_targetPose = new Pose2d(1.0, 4.0, Rotation2d.fromDegrees(0));
+
+    moveToPoseCommand = new DriveToPoseCommand(m_swerve, m_vision, m_targetPose);
 
     configureButtonBindings();
     configureEventBindings();
@@ -176,6 +183,12 @@ public class Robot extends TimedRobot {
     m_driver.DIn()
         .onTrue(new InstantCommand(() -> m_swerve.setHeadingOffset())
         .ignoringDisable(true));
+
+    m_driver.AIn()
+        .onTrue(moveToPoseCommand);
+
+    m_driver.HIn()
+        .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancel(moveToPoseCommand)));
 
   }
   // spotless:on
