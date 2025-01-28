@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
@@ -82,6 +84,11 @@ public final class Constants {
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(0.5)), // rear left
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(-0.5)) // rear right
             );
+
+      public static final Pose2d[] kReefTargetPoses = {
+        new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
+        new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0))
+      };
   }
 
   public static final class ModuleConstants {

@@ -53,11 +53,6 @@ public class Robot extends TimedRobot {
 
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
 
-  private Pose2d[] targetPoses = {
-    new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
-    new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0))
-  };
-
   public Robot() {
     m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
 
@@ -183,7 +178,7 @@ public class Robot extends TimedRobot {
         .ignoringDisable(true));
 
     m_driver.AIn()
-        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, () -> getNearestPose(m_swerve.getPose(), targetPoses)));
+        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, () -> getNearestPose(m_swerve.getPose(), DriveConstants.kReefTargetPoses)));
 
   }
   // spotless:on
