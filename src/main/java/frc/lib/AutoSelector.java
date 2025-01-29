@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -17,11 +18,11 @@ import java.util.function.Supplier;
 public class AutoSelector {
 
   private Optional<AutoOption> currentAutoOption;
-  private DigitalInput[] m_switchPositions;
-  private Supplier<Alliance> m_allianceColorSupplier;
-  private List<AutoOption> m_autoOptions;
-  private EventLoop m_loop = new EventLoop();
-  private BooleanEvent m_changedAutoSelection;
+  private DigitalInput[] switchPositions;
+  private Supplier<Alliance> allianceColorSupplier;
+  private List<AutoOption> autoOptions = new ArrayList<>();
+  private EventLoop eventLoop = new EventLoop();
+  private BooleanEvent autoSelectionChanged;
   private StructPublisher<Pose2d> initialPosePublisher =
       NetworkTableInstance.getDefault()
           .getStructTopic("AutonomousInitialPose", Pose2d.struct)
@@ -34,25 +35,27 @@ public class AutoSelector {
    * @param allianceColorSupplier A method that supplies the current alliance color
    * @param autoOptions An array of autonomous mode options
    */
-  public AutoSelector(
-      int[] ports, Supplier<Alliance> allianceColorSupplier, List<AutoOption> autoOptions) {
-    this.m_allianceColorSupplier = allianceColorSupplier;
-    this.m_autoOptions = autoOptions;
+  public AutoSelector(int[] ports, Supplier<Alliance> allianceColorSupplier) {
+    this.allianceColorSupplier = allianceColorSupplier;
 
-    m_switchPositions = new DigitalInput[ports.length];
+    switchPositions = new DigitalInput[ports.length];
     for (int i = 0; i < ports.length; i++) {
-      m_switchPositions[i] = new DigitalInput(ports[i]);
+      switchPositions[i] = new DigitalInput(ports[i]);
     }
 
-    m_changedAutoSelection = new BooleanEvent(m_loop, () -> updateAuto());
+    autoSelectionChanged = new BooleanEvent(eventLoop, () -> updateAuto());
+  }
+
+  public void addAuto(AutoOption newAuto) {
+    autoOptions.add(newAuto);
   }
 
   /**
    * @return The position of the autonomous selection switch
    */
   public int getSwitchPosition() {
-    for (int i = 0; i < m_switchPositions.length; i++) {
-      if (!m_switchPositions[i].get()) {
+    for (int i = 0; i < switchPositions.length; i++) {
+      if (!switchPositions[i].get()) {
         return i + 1;
       }
     }
@@ -60,11 +63,11 @@ public class AutoSelector {
   }
 
   private Alliance getAllianceColor() {
-    return m_allianceColorSupplier.get();
+    return allianceColorSupplier.get();
   }
 
   private Optional<AutoOption> findMatchingOption() {
-    return m_autoOptions.stream()
+    return autoOptions.stream()
         .filter(o -> o.getColor() == getAllianceColor())
         .filter(o -> o.getOption() == getSwitchPosition())
         .findFirst();
@@ -83,7 +86,7 @@ public class AutoSelector {
    * @return Object for binding a command to a change in autonomous mode selection
    */
   public Trigger getChangedAutoSelection() {
-    return m_changedAutoSelection.castTo(Trigger::new);
+    return autoSelectionChanged.castTo(Trigger::new);
   }
 
   /** Schedules the command corresponding to the selected autonomous mode */
@@ -97,7 +100,7 @@ public class AutoSelector {
   }
 
   public void disabledPeriodic() {
-    m_loop.poll();
+    eventLoop.poll();
     SmartDashboard.putNumber("AutoSelectorSwitchPosition", getSwitchPosition());
 
     currentAutoOption.ifPresentOrElse(
@@ -112,5 +115,11 @@ public class AutoSelector {
               "SelectedAutonomousMode", "None; no auto mode assigned to this slot");
           initialPosePublisher.set(new Pose2d());
         });
+  }
+
+  public Optional<Pose2d> getInitialPose() {
+    return currentAutoOption.isPresent()
+        ? currentAutoOption.get().getInitialPose()
+        : Optional.empty();
   }
 }
