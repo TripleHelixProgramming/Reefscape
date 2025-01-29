@@ -163,8 +163,8 @@ public class Robot extends TimedRobot {
         .onTrue(new InstantCommand(() -> swerve.setHeadingOffset())
         .ignoringDisable(true));
 
-    m_driver.AIn()
-        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, () -> getNearestPose(m_swerve.getPose(), targetPoses)));
+    driver.AIn()
+        .whileTrue(new DriveToPoseCommand(swerve, vision, () -> getNearestPose(swerve.getPose(), targetPoses)));
 
   }
   // spotless:on
