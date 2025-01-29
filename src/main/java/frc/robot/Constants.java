@@ -6,6 +6,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
@@ -84,7 +85,23 @@ public final class Constants {
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(0.5)), // rear left
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(-0.5)) // rear right
             );
+      public static final Pose2d blueReefCenter = new Pose2d(Inches.of(176.75),Inches.of(158.5), new Rotation2d());
+      
+      private double radius = Inches.of(46.75).in(Meters);
+      private Rotation2d increment = new Rotation2d(Degrees.of(60.0));
+      private Pose2d blueAB = blueReefCenter.plus(offset(0));
+      private Pose2d blueCD = blueReefCenter.plus(offset(1));
+      private Pose2d blueEF = blueReefCenter.plus(offset(2));
 
+      private Transform2d offset(double multiplier) {
+        Rotation2d rotation = increment.times(multiplier);
+        Translation2d translation =
+        new Translation2d(radius, rotation.plus(new Rotation2d(Math.PI)));
+        return new Transform2d(translation, rotation);
+      }
+      
+      public static final Translation2d redReefCenter = new Translation2d(Inches.of(514.125),Inches.of(158.5));
+      
       public static final Pose2d[] kReefTargetPoses = {
         new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
         new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0))
