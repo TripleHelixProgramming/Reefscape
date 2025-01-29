@@ -116,4 +116,10 @@ public class AutoSelector {
           initialPosePublisher.set(new Pose2d());
         });
   }
+
+  public Optional<Pose2d> getInitialPose() {
+    return currentAutoOption.isPresent()
+        ? currentAutoOption.get().getInitialPose()
+        : Optional.empty();
+  }
 }
