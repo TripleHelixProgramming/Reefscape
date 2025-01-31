@@ -191,6 +191,8 @@ public final class Constants {
 
   public static final class ClimberConstants {
     public static final int kClimberPort = 0;
+    public static final int kClimberServoPort = 0;
+
     public static final int kClimberCurrentLimit = 80;
 
     public static final int kInputSwitchPort = 1;

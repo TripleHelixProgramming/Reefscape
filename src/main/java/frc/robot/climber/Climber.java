@@ -11,6 +11,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,6 +25,8 @@ public class Climber extends SubsystemBase{
 
     private final SparkMaxConfig motorConfig;
 
+    private final Servo servo;
+
     private final RelativeEncoder encoder;
     private final SparkClosedLoopController controller;
 
@@ -33,6 +36,8 @@ public class Climber extends SubsystemBase{
         motor = new SparkMax(ClimberConstants.kClimberPort, MotorType.kBrushless);
 
         motorConfig = new SparkMaxConfig();
+
+        servo = new Servo(ClimberConstants.kClimberServoPort);
 
         motorConfig
             .voltageCompensation(RobotConstants.kNominalVoltage)
@@ -66,10 +71,20 @@ public class Climber extends SubsystemBase{
         SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
 
         SmartDashboard.putBoolean("Climber Sensor", climberSensor.get());
+
+        lockOrUnlockRatchet();
     }
 
     private void resetEncoder() {
         encoder.setPosition(0);
+    }
+
+    private void ratchetUnlock() {
+        servo.set(1);
+    }
+
+    private void ratchetLock() {
+        servo.set(0);
     }
 
     private void setPosition(double position) {
@@ -78,6 +93,11 @@ public class Climber extends SubsystemBase{
 
     private void setVelocity(double targetVelocity) {
         controller.setReference(targetVelocity, ControlType.kVelocity);
+    }
+
+    private void lockOrUnlockRatchet() {
+        if (encoder.getVelocity() > 0) {ratchetUnlock();}
+        else {ratchetLock();}
     }
 
     public Command createSetPositionCommand(double position) {
