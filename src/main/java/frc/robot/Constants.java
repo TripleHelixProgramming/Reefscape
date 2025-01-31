@@ -189,6 +189,22 @@ public final class Constants {
     //         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
+  public static final class ClimberConstants {
+    public static final int kClimberPort = 0;
+    public static final int kClimberCurrentLimit = 80;
+
+    public static final int kInputSwitchPort = 1;
+
+    public static final int kMaxAcceleration = 3;
+    public static final int kMaxVelocity = 3;
+
+    public static final double kP = 0.1;
+    public static final double kI = 0;
+    public static final double kD = 0;
+
+    public static final double kVelocityConversionFactor = 2;
+  }
+
   public static final class LedConstants {
     public static final int kLedPort = 0;
     public static final int kLedBufferLength = 17;
