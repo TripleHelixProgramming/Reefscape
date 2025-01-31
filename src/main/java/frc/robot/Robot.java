@@ -24,6 +24,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.ExampleAuto;
+import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
@@ -39,6 +40,7 @@ public class Robot extends TimedRobot {
       new AutoSelector(
           AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
   private final Drivetrain swerve = new Drivetrain(allianceSelector::fieldRotated);
+  private final Climber climber = new Climber();
   private final LEDs leds = new LEDs();
   private final Vision vision = new Vision();
   private CommandZorroController driver;
