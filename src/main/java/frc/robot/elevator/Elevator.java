@@ -57,15 +57,16 @@ public class Elevator extends SubsystemBase {
     // spotless:off
     globalConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
-        .inverted(false)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ElevatorConstants.kCurrentLimit);
 
     leaderConfig
-        .apply(globalConfig);
+        .apply(globalConfig)
+        .inverted(false);
 
     followerConfig
         .apply(globalConfig)
+        .inverted(true)
         .follow(leaderMotor);
 
     leaderConfig.closedLoop.maxMotion
