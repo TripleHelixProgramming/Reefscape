@@ -184,7 +184,7 @@ public class Robot extends TimedRobot {
         .ignoringDisable(true));
 
     m_driver.AIn()
-        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, () -> m_swerve.getNearestPose(m_swerve.getPose())));
+        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, () -> m_swerve.getNearestPose()));
 
   }
   // spotless:on
