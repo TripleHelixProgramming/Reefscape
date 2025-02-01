@@ -189,17 +189,24 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-
     public static final int kLeaderMotorPort = 0;
     public static final int kFollowerMotorPort = 1;
 
     public static final int kCurrentLimit = 80;
 
-    public static final double kPositionConversionFactor = 1;
-    public static final double kVelocityConversionFactor = 2;
+    // By default, the encoder in position mode measures rotations at the motor
+    // Convert to inches at the final stage
+    public static final double kGearRatio = 15.0;
+    public static final double kSprocketPitchDiameter = 1.7567; // inches
+    public static final double kPositionConversionFactor = 
+      (kSprocketPitchDiameter * Math.PI) / kGearRatio;
 
-    public static final double kMaxAcceleration = 1.0;
-    public static final double kMaxVelocity = 1.0;
+    // By default, the encoder in velocity mode measures RPM at the motor
+    // Convert to inches per second at the final stage
+    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+
+    public static final double kMaxVelocity = 35.0; // inches/s
+    public static final double kMaxAcceleration = 35.0; // inches/s/s
 
     public static final int upperLimitSwitchPort = 0;
     public static final int lowerLimitSwitchPort = 1;
@@ -223,7 +230,7 @@ public final class Constants {
       L3(16.0),
       L4(18.0),
       Intake(20.0),
-      Top(30.0);
+      Top(70.5);
 
       public double height;
 
