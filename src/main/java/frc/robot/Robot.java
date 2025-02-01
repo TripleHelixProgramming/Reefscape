@@ -9,11 +9,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceSelector;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
@@ -47,6 +50,7 @@ public class Robot extends TimedRobot {
   private CommandXboxController operator;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
+    private final EventLoop loop = new EventLoop();
 
   private Pose2d[] targetPoses = {
     new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
@@ -118,6 +122,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     autoSelector.scheduleAuto();
     leds.setDefaultCommand(leds.createEnabledCommand());
+    climber.lockRatchet();
   }
 
   @Override
@@ -128,6 +133,8 @@ public class Robot extends TimedRobot {
     autoSelector.cancelAuto();
     leds.setDefaultCommand(leds.createEnabledCommand());
     swerve.resetHeadingOffset();
+    climber.resetEncoder();
+    climber.lockRatchet();
   }
 
   @Override
@@ -171,7 +178,11 @@ public class Robot extends TimedRobot {
   }
   // spotless:on
 
-  private void configureOperatorButtonBindings() {}
+  private void configureOperatorButtonBindings() {
+    Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
+    climbTrigger.onTrue(climber.createDeployCommand()
+        .andThen(climber.createClimbByControllerCommand(operator.getHID(), 1.0)));
+  }
 
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection().onTrue(leds.createChangeAutoAnimationCommand());

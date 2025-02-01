@@ -215,6 +215,8 @@ public final class Constants {
 
     public static final int kMaxAcceleration = 3; // inches/s
     public static final int kMaxVelocity = 3; // inches/s/s
+
+    public static final double kDeployPosition = 14.0; // inches
   }
 
   public static final class LedConstants {

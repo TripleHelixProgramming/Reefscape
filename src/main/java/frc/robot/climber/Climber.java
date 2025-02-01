@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.RobotConstants;
@@ -59,21 +59,19 @@ public class Climber extends SubsystemBase{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Climber Position", encoder.getPosition());
+        SmartDashboard.putNumber("Climber Position", getPosition());
         SmartDashboard.putBoolean("Cage Sensor", cageSensor.get());
-
-        lockOrUnlockRatchet();
     }
 
-    private void resetEncoder() {
+    public void resetEncoder() {
         encoder.setPosition(0);
     }
 
-    private void ratchetUnlock() {
+    private void unlockRatchet() {
         servo.set(ClimberConstants.kDisengedPosition);
     }
 
-    private void ratchetLock() {
+    public void lockRatchet() {
         servo.set(ClimberConstants.kEngagedPosition);
     }
 
@@ -85,16 +83,45 @@ public class Climber extends SubsystemBase{
         controller.setReference(targetVelocity, ControlType.kVelocity);
     }
 
-    private void lockOrUnlockRatchet() {
-        if (encoder.getVelocity() > 0) {ratchetUnlock();}
-        else {ratchetLock();}
-    }
+    // public Command createSetPositionCommand(double position) {
+    //     return new InstantCommand(() -> setPosition(position));
+    // }
 
-    public Command createSetPositionCommand(double position) {
-        return new InstantCommand(() -> setPosition(position));
-    }
-
+    /**
+     * 
+     * @param controller
+     * @param factor Speed multiplier
+     * @return Command that moves the climber arm using the controller joystick
+     */
     public Command createClimbByControllerCommand(XboxController controller, double factor) {
         return this.run(() -> this.setVelocity(controller.getRightY() * factor));
+    }
+
+    private double getPosition() {
+        return encoder.getPosition();
+    }
+
+    private Boolean isDeployed() {
+        return (Math.abs(encoder.getPosition() - ClimberConstants.kDeployPosition) < 0.1);
+    }
+
+    /**
+     * @return Command that unlocks and deploys the climber arm
+     */
+    public Command createDeployCommand() {
+        return new FunctionalCommand(
+            // initialize
+            () -> {
+                unlockRatchet();
+                setPosition(ClimberConstants.kDeployPosition);
+            },
+            // execute
+            () -> {},
+            // end
+            interrupted -> lockRatchet(),
+            // isFinished
+            () -> isDeployed(),
+            // requirements
+            this);
     }
 }
