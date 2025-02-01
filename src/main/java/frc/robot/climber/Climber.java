@@ -48,6 +48,7 @@ public class Climber extends SubsystemBase{
             .outputRange(-1, 1);
 
         motorConfig.encoder
+            .positionConversionFactor(ClimberConstants.kPositionConversionFactor)
             .velocityConversionFactor(ClimberConstants.kVelocityConversionFactor);
 
         motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);

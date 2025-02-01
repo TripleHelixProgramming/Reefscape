@@ -204,6 +204,7 @@ public final class Constants {
     public static final double kI = 0;
     public static final double kD = 0;
 
+    public static final double kPositionConversionFactor = 2;
     public static final double kVelocityConversionFactor = 2;
   }
 
