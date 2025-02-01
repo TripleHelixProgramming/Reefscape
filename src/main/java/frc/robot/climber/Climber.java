@@ -75,12 +75,12 @@ public class Climber extends SubsystemBase{
         servo.set(ClimberConstants.kEngagedPosition);
     }
 
-    private void setPosition(double position) {
-        encoder.setPosition(position);
+    private void setPosition(double targetPosition) {
+        controller.setReference(targetPosition, ControlType.kMAXMotionPositionControl);
     }
 
     private void setVelocity(double targetVelocity) {
-        controller.setReference(targetVelocity, ControlType.kVelocity);
+        controller.setReference(targetVelocity, ControlType.kMAXMotionVelocityControl);
     }
 
     // public Command createSetPositionCommand(double position) {
@@ -88,9 +88,8 @@ public class Climber extends SubsystemBase{
     // }
 
     /**
-     * 
      * @param controller
-     * @param factor Speed multiplier
+     * @param factor Speed scaling factor
      * @return Command that moves the climber arm using the controller joystick
      */
     public Command createClimbByControllerCommand(XboxController controller, double factor) {
