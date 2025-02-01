@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
 
-  private StructArrayPublisher<Pose2d> reefTargetPositions =
+  private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
           .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
           .publish();
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
 
-    reefTargetPositions.set(DriveConstants.kReefTargetPoses);
+    reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
 
   @Override
