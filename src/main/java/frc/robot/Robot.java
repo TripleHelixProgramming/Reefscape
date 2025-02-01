@@ -23,6 +23,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
+import frc.robot.auto.BlueL4AlgaeAuto;
 import frc.robot.auto.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
@@ -182,7 +183,7 @@ public class Robot extends TimedRobot {
   private void configureAutoOptions() {
     autoSelector.addAuto(new AutoOption(Alliance.Red, 4));
     autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new ExampleAuto(swerve)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2, new BlueL4AlgaeAuto(swerve, elevator)));
   }
 
   /**
