@@ -194,8 +194,8 @@ public final class Constants {
     public static final int kClimberCurrentLimit = 80;
 
     public static final int kRatchetServoPort = 0;
-    public static final double kEngagedPosition = 0.0;
-    public static final double kDisengedPosition = 1.0;
+    public static final double kEngagedPosition = 600.0/1024.0;
+    public static final double kDisengedPosition = 475.0/1024.0;
 
     public static final int kCageSensorPort = 1;
 
