@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
@@ -185,7 +184,7 @@ public class Robot extends TimedRobot {
         .ignoringDisable(true));
 
     m_driver.AIn()
-        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, () -> getNearestPose(m_swerve.getPose(), DriveConstants.kReefTargetPoses)));
+        .whileTrue(new DriveToPoseCommand(m_swerve, m_vision, () -> m_swerve.getNearestPose(m_swerve.getPose())));
 
   }
   // spotless:on
@@ -211,21 +210,6 @@ public class Robot extends TimedRobot {
    */
   public double getPDHCurrent(int CANBusPort) {
     return m_powerDistribution.getCurrent(CANBusPort - 10);
-  }
-
-  public Pose2d getNearestPose(Pose2d currentPose, Pose2d[] targetPoses) {
-    Pose2d closestPose = new Pose2d(5, 5, Rotation2d.fromDegrees(0));
-    double minDistance = Double.MAX_VALUE;
-
-    for (Pose2d targetPose : targetPoses) {
-      double distance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestPose = targetPose;
-      }
-    }
-    return closestPose;
   }
 
   private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {
