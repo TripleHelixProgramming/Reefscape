@@ -255,7 +255,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Pose2d getNearestPose() {
-    Pose2d closestPose = new Pose2d(5, 5, Rotation2d.fromDegrees(0));
+    Pose2d closestPose = new Pose2d();
     double minDistance = Double.MAX_VALUE;
 
     for (Pose2d targetPose : DriveConstants.kReefTargetPoses) {
