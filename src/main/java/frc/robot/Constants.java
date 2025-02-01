@@ -195,12 +195,9 @@ public final class Constants {
 
     public static final int kRatchetServoPort = 0;
     public static final double kEngagedPosition = 0.0;
-    public static final double kDisengedPosition = 0.0;
+    public static final double kDisengedPosition = 1.0;
 
     public static final int kCageSensorPort = 1;
-
-    public static final int kMaxAcceleration = 3;
-    public static final int kMaxVelocity = 3;
 
     public static final double kP = 0.1;
     public static final double kI = 0;
@@ -208,13 +205,16 @@ public final class Constants {
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the winch
-    public static final double kWinchDiameter = 1.0;
+    public static final double kWinchDiameter = 1.0; // inches
     public static final double kGearRatio = 20.0;
     public static final double kPositionConversionFactor = (kWinchDiameter * Math.PI) / kGearRatio;
 
     // By default, the encoder in velocity mode measures RPM at the motor
     // Convert to inches per second at the winch
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+
+    public static final int kMaxAcceleration = 3; // inches/s
+    public static final int kMaxVelocity = 3; // inches/s/s
   }
 
   public static final class LedConstants {
