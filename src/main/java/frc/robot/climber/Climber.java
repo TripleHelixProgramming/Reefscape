@@ -2,13 +2,13 @@ package frc.robot.climber;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
@@ -21,9 +21,9 @@ import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.RobotConstants;
 
 public class Climber extends SubsystemBase{
-    private final SparkMax motor;
+    private final SparkFlex motor;
 
-    private final SparkMaxConfig motorConfig;
+    private final SparkFlexConfig motorConfig;
 
     private final Servo servo;
 
@@ -33,9 +33,9 @@ public class Climber extends SubsystemBase{
     private final DigitalInput climberSensor;
 
     public Climber() {
-        motor = new SparkMax(ClimberConstants.kClimberPort, MotorType.kBrushless);
+        motor = new SparkFlex(ClimberConstants.kClimberPort, MotorType.kBrushless);
 
-        motorConfig = new SparkMaxConfig();
+        motorConfig = new SparkFlexConfig();
 
         servo = new Servo(ClimberConstants.kClimberServoPort);
 
