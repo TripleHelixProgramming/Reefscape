@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -43,6 +44,7 @@ public class Robot extends TimedRobot {
   private final Drivetrain m_swerve;
   private final LEDs m_LEDs;
   private final Vision m_vision;
+  private StructArrayPublisher<Pose2d> reefTargetPositions = NetworkTableInstance.getDefault().getStructArrayTopic("Reef Target Positions", new Pose2d().struct).publish();
 
   // private final AutoFactory m_autoFactory;
 
@@ -85,6 +87,8 @@ public class Robot extends TimedRobot {
 
     m_swerve.setDefaultCommand(
         new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematics, m_driver.getHID()));
+
+    reefTargetPositions.set(DriveConstants.kReefTargetPoses);
   }
 
   @Override
