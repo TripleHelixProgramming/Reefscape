@@ -91,7 +91,7 @@ public final class Constants {
     public static final Pose2d redReefCenter =
         new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI));
 
-    private static double radius = Inches.of(46.75).in(Meters);
+    private static double radius = Inches.of(50.25).in(Meters);
     private static Rotation2d increment = new Rotation2d(Degrees.of(60.0));
 
     private static Pose2d blueAB = blueReefCenter.plus(offset(0));
