@@ -1,8 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -46,10 +46,10 @@ public class Robot extends TimedRobot {
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
 
-  private Pose2d[] targetPoses = {
-    new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
-    new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0))
-  };
+  private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
+      NetworkTableInstance.getDefault()
+          .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
+          .publish();
 
   public Robot() {
     configureButtonBindings();
@@ -71,6 +71,8 @@ public class Robot extends TimedRobot {
 
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
+
+    reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
 
   @Override
@@ -164,7 +166,7 @@ public class Robot extends TimedRobot {
         .ignoringDisable(true));
 
     driver.AIn()
-        .whileTrue(new DriveToPoseCommand(swerve, vision, () -> getNearestPose(swerve.getPose(), targetPoses)));
+        .whileTrue(new DriveToPoseCommand(swerve, vision, () -> swerve.getNearestPose()));
 
   }
   // spotless:on
@@ -190,21 +192,6 @@ public class Robot extends TimedRobot {
    */
   public double getPDHCurrent(int CANBusPort) {
     return powerDistribution.getCurrent(CANBusPort - 10);
-  }
-
-  public Pose2d getNearestPose(Pose2d currentPose, Pose2d[] targetPoses) {
-    Pose2d closestPose = new Pose2d(5, 5, Rotation2d.fromDegrees(0));
-    double minDistance = Double.MAX_VALUE;
-
-    for (Pose2d targetPose : targetPoses) {
-      double distance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestPose = targetPose;
-      }
-    }
-    return closestPose;
   }
 
   private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {

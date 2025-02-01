@@ -253,4 +253,19 @@ public class Drivetrain extends SubsystemBase {
 
     setChassisSpeeds(speeds);
   }
+
+  public Pose2d getNearestPose() {
+    Pose2d closestPose = new Pose2d();
+    double minDistance = Double.MAX_VALUE;
+
+    for (Pose2d targetPose : DriveConstants.kReefTargetPoses) {
+      double distance = getPose().getTranslation().getDistance(targetPose.getTranslation());
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestPose = targetPose;
+      }
+    }
+    return closestPose;
+  }
 }
