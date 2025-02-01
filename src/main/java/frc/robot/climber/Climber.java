@@ -26,9 +26,9 @@ public class Climber extends SubsystemBase{
     private final RelativeEncoder encoder;
     private final SparkClosedLoopController controller;
 
-    private final Servo servo = new Servo(ClimberConstants.kClimberServoPort);
+    private final Servo servo = new Servo(ClimberConstants.kRatchetServoPort);
 
-    private final DigitalInput climberSensor = new DigitalInput(ClimberConstants.kInputSwitchPort);
+    private final DigitalInput cageSensor = new DigitalInput(ClimberConstants.kCageSensorPort);
 
     public Climber() {
         motorConfig
@@ -59,9 +59,8 @@ public class Climber extends SubsystemBase{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
-
-        SmartDashboard.putBoolean("Climber Sensor", climberSensor.get());
+        SmartDashboard.putNumber("Climber Position", encoder.getPosition());
+        SmartDashboard.putBoolean("Cage Sensor", cageSensor.get());
 
         lockOrUnlockRatchet();
     }
@@ -71,11 +70,11 @@ public class Climber extends SubsystemBase{
     }
 
     private void ratchetUnlock() {
-        servo.set(1);
+        servo.set(ClimberConstants.kDisengedPosition);
     }
 
     private void ratchetLock() {
-        servo.set(0);
+        servo.set(ClimberConstants.kEngagedPosition);
     }
 
     private void setPosition(double position) {
