@@ -204,8 +204,15 @@ public final class Constants {
     public static final double kI = 0;
     public static final double kD = 0;
 
-    public static final double kPositionConversionFactor = 2;
-    public static final double kVelocityConversionFactor = 2;
+    // By default, the encoder in position mode measures rotations at the motor
+    // Convert to inches at the winch
+    public static final double kWinchDiameter = 1.0;
+    public static final double kGearRatio = 20.0;
+    public static final double kPositionConversionFactor = (kWinchDiameter * Math.PI) / kGearRatio;
+
+    // By default, the encoder in velocity mode measures RPM at the motor
+    // Convert to inches per second at the winch
+    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
   }
 
   public static final class LedConstants {
