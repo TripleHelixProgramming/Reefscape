@@ -21,24 +21,16 @@ import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.RobotConstants;
 
 public class Climber extends SubsystemBase{
-    private final SparkFlex motor;
-
-    private final SparkFlexConfig motorConfig;
-
-    private final Servo servo;
-
+    private final SparkFlex motor = new SparkFlex(ClimberConstants.kClimberPort, MotorType.kBrushless);
+    private final SparkFlexConfig motorConfig = new SparkFlexConfig();
     private final RelativeEncoder encoder;
     private final SparkClosedLoopController controller;
 
-    private final DigitalInput climberSensor;
+    private final Servo servo = new Servo(ClimberConstants.kClimberServoPort);
+
+    private final DigitalInput climberSensor = new DigitalInput(ClimberConstants.kInputSwitchPort);
 
     public Climber() {
-        motor = new SparkFlex(ClimberConstants.kClimberPort, MotorType.kBrushless);
-
-        motorConfig = new SparkFlexConfig();
-
-        servo = new Servo(ClimberConstants.kClimberServoPort);
-
         motorConfig
             .voltageCompensation(RobotConstants.kNominalVoltage)
             .inverted(false)
@@ -62,8 +54,6 @@ public class Climber extends SubsystemBase{
 
         encoder = motor.getEncoder();
         controller = motor.getClosedLoopController();
-
-        climberSensor = new DigitalInput(ClimberConstants.kInputSwitchPort);
     }
 
     @Override
