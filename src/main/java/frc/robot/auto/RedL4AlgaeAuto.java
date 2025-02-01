@@ -22,8 +22,8 @@ public class RedL4AlgaeAuto extends AutoMode {
 
     AutoRoutine redL4AlgAutoRoutine = super.getAutoFactory().newRoutine("redL4AlgaeRoutine");
 
-    AutoTrajectory redCenterToL4 = redL4AlgAutoRoutine.trajectory("centerToL4");
-    AutoTrajectory redL4ToAlgae = redL4AlgAutoRoutine.trajectory("L4ToAlgae");
+    AutoTrajectory redCenterToL4G = redL4AlgAutoRoutine.trajectory("centerToL4G");
+    AutoTrajectory redL4GToAlgae = redL4AlgAutoRoutine.trajectory("L4GToAlgae");
     AutoTrajectory redAlgaeToProcess = redL4AlgAutoRoutine.trajectory("AlgaeToProcess");
     AutoTrajectory redProcessToSource = redL4AlgAutoRoutine.trajectory("ProcessToSource");
 
@@ -34,7 +34,7 @@ public class RedL4AlgaeAuto extends AutoMode {
 
     @Override
     public Optional<Pose2d> getInitialPose() {
-        return redCenterToL4.getInitialPose();
+        return redCenterToL4G.getInitialPose();
     }
 
     @Override
@@ -42,14 +42,14 @@ public class RedL4AlgaeAuto extends AutoMode {
 
         redL4AlgAutoRoutine
         .active()
-        .onTrue(Commands.parallel(redCenterToL4.cmd(), elevator.createSetPositionCommand(ElevatorPosition.L4)));
+        .onTrue(Commands.parallel(redCenterToL4G.cmd(), elevator.createSetPositionCommand(ElevatorPosition.L4)));
     
-    redCenterToL4
+    redCenterToL4G
         .done()
         // .onTrue(m_intake.createOuttakeComamand)
-        .onTrue(redL4ToAlgae.cmd());
+        .onTrue(redL4GToAlgae.cmd());
     
-    redL4ToAlgae
+    redL4GToAlgae
         .done()
         .onTrue(Commands.sequence(elevator.createSetPositionCommand(ElevatorPosition.L3), /* m_algaeIntake.createIntakeCommand, */ new WaitCommand(0.2), redAlgaeToProcess.cmd()));
     

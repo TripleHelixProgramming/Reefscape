@@ -4,7 +4,148 @@
  "type":"Swerve",
  "variables":{
   "expressions":{},
-  "poses":{}
+  "poses":{
+   "blueAlgae":{
+    "x":{
+     "exp":"5.85 m",
+     "val":5.85
+    },
+    "y":{
+     "exp":"4 m",
+     "val":4.0
+    },
+    "heading":{
+     "exp":"180 rad",
+     "val":180.0
+    }
+   },
+   "blueL4G":{
+    "x":{
+     "exp":"5.85 m",
+     "val":5.85
+    },
+    "y":{
+     "exp":"4.15 m",
+     "val":4.15
+    },
+    "heading":{
+     "exp":"180 rad",
+     "val":180.0
+    }
+   },
+   "blueProcess":{
+    "x":{
+     "exp":"6.4 m",
+     "val":6.4
+    },
+    "y":{
+     "exp":"0.48 m",
+     "val":0.48
+    },
+    "heading":{
+     "exp":"-90 rad",
+     "val":-90.0
+    }
+   },
+   "blueRightFeeder":{
+    "x":{
+     "exp":"1 m",
+     "val":1.0
+    },
+    "y":{
+     "exp":"1 m",
+     "val":1.0
+    },
+    "heading":{
+     "exp":"234 deg",
+     "val":4.084070449666731
+    }
+   },
+   "blueStartingPose":{
+    "x":{
+     "exp":"7.2 m",
+     "val":7.2
+    },
+    "y":{
+     "exp":"4.15 m",
+     "val":4.15
+    },
+    "heading":{
+     "exp":"180 rad",
+     "val":180.0
+    }
+   },
+   "redAlgae":{
+    "x":{
+     "exp":"11.75 m",
+     "val":11.75
+    },
+    "y":{
+     "exp":"4 m",
+     "val":4.0
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "redFeeder":{
+    "x":{
+     "exp":"16.43 m",
+     "val":16.43
+    },
+    "y":{
+     "exp":"7.1 m",
+     "val":7.1
+    },
+    "heading":{
+     "exp":"54 deg",
+     "val":0.942477796076938
+    }
+   },
+   "redL4G":{
+    "x":{
+     "exp":"11.75 m",
+     "val":11.75
+    },
+    "y":{
+     "exp":"4.15 m",
+     "val":4.15
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "redProcess":{
+    "x":{
+     "exp":"11.5 m",
+     "val":11.5
+    },
+    "y":{
+     "exp":"7.55 m",
+     "val":7.55
+    },
+    "heading":{
+     "exp":"90 rad",
+     "val":90.0
+    }
+   },
+   "redStart":{
+    "x":{
+     "exp":"10.35 m",
+     "val":10.35
+    },
+    "y":{
+     "exp":"4.15 m",
+     "val":4.15
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   }
+  }
  },
  "config":{
   "frontLeft":{

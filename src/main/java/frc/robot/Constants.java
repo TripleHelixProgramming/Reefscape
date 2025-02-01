@@ -108,6 +108,12 @@ public final class Constants {
     private static Pose2d redIJ = redReefCenter.plus(offset(4));
     private static Pose2d redKL = redReefCenter.plus(offset(5));
 
+    private static Transform2d feederStationOffset = new Transform2d(Inches.of(-18), Inches.of(0), new Rotation2d(0));
+    private static Pose2d blueRightFeeder = new Pose2d(Inches.of(33.51), Inches.of(25.80), new Rotation2d(Degrees.of(54+180))).plus(feederStationOffset);
+    private static Pose2d blueLeftFeeder = new Pose2d(Inches.of(33.51), Inches.of(291.20), new Rotation2d(Degrees.of(306+180))).plus(feederStationOffset);
+    private static Pose2d redRightFeeder = new Pose2d(Inches.of(657.37), Inches.of(291.20), new Rotation2d(Degrees.of(234+180))).plus(feederStationOffset);
+    private static Pose2d redLeftFeeder = new Pose2d(Inches.of(657.37), Inches.of(25.8), new Rotation2d(Degrees.of(126+180))).plus(feederStationOffset);
+
     private static Transform2d offset(double multiplier) {
       Rotation2d rotation = increment.times(multiplier);
       Translation2d translation = new Translation2d(radius, rotation.plus(new Rotation2d(Math.PI)));
@@ -128,7 +134,11 @@ public final class Constants {
       redEF,
       redGH,
       redIJ,
-      redKL
+      redKL,
+      blueRightFeeder,
+      blueLeftFeeder,
+      redRightFeeder,
+      redLeftFeeder
     };
   }
 
