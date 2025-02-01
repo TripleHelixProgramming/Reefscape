@@ -44,7 +44,10 @@ public class Robot extends TimedRobot {
   private final Drivetrain m_swerve;
   private final LEDs m_LEDs;
   private final Vision m_vision;
-  private StructArrayPublisher<Pose2d> reefTargetPositions = NetworkTableInstance.getDefault().getStructArrayTopic("Reef Target Positions", new Pose2d().struct).publish();
+  private StructArrayPublisher<Pose2d> reefTargetPositions =
+      NetworkTableInstance.getDefault()
+          .getStructArrayTopic("Reef Target Positions", new Pose2d().struct)
+          .publish();
 
   // private final AutoFactory m_autoFactory;
 

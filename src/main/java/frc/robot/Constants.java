@@ -85,30 +85,31 @@ public final class Constants {
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(0.5)), // rear left
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(-0.5)) // rear right
             );
-      public static final Pose2d blueReefCenter = new Pose2d(Inches.of(176.75),Inches.of(158.5), new Rotation2d());
-      
-      private static double radius = Inches.of(46.75).in(Meters);
-      private static Rotation2d increment = new Rotation2d(Degrees.of(60.0));
-      private static Pose2d blueAB = blueReefCenter.plus(offset(0));
-      private static Pose2d blueCD = blueReefCenter.plus(offset(1));
-      private static Pose2d blueEF = blueReefCenter.plus(offset(2));
+    public static final Pose2d blueReefCenter =
+        new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d());
 
-      private static Transform2d offset(double multiplier) {
-        Rotation2d rotation = increment.times(multiplier);
-        Translation2d translation =
-        new Translation2d(radius, rotation.plus(new Rotation2d(Math.PI)));
-        return new Transform2d(translation, rotation);
-      }
-      
-      public static final Translation2d redReefCenter = new Translation2d(Inches.of(514.125),Inches.of(158.5));
-      
-      public static final Pose2d[] kReefTargetPoses = {
-        new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
-        new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0)),
-        blueAB,
-        blueCD,
-        blueEF
-      };
+    private static double radius = Inches.of(46.75).in(Meters);
+    private static Rotation2d increment = new Rotation2d(Degrees.of(60.0));
+    private static Pose2d blueAB = blueReefCenter.plus(offset(0));
+    private static Pose2d blueCD = blueReefCenter.plus(offset(1));
+    private static Pose2d blueEF = blueReefCenter.plus(offset(2));
+
+    private static Transform2d offset(double multiplier) {
+      Rotation2d rotation = increment.times(multiplier);
+      Translation2d translation = new Translation2d(radius, rotation.plus(new Rotation2d(Math.PI)));
+      return new Transform2d(translation, rotation);
+    }
+
+    public static final Translation2d redReefCenter =
+        new Translation2d(Inches.of(514.125), Inches.of(158.5));
+
+    public static final Pose2d[] kReefTargetPoses = {
+      new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
+      new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0)),
+      blueAB,
+      blueCD,
+      blueEF
+    };
   }
 
   public static final class ModuleConstants {
