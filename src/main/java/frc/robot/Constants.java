@@ -208,6 +208,47 @@ public final class Constants {
     }
   }
 
+  public static final class CoralIntakeConstants {
+    public static final int kIntakeMotorPort = 0;
+    public static final int kRotationMotorPort = 1;
+
+    public static final int kCurrentLimit = 30;
+
+    public static final double kVelocityP = 0.1;
+    public static final double kVelocityI = 0.0;
+    public static final double kVelocityD = 0.0;
+
+    public static final double kPositionP = 0.1;
+    public static final double kPositionI = 0.0;
+    public static final double kPositionD = 0.0;
+
+    public static final double kPositionConversionFactor = 10;
+    public static final double kVelocityConversionFactor = 20;
+
+    public static final int kCoralSensorPort = 3;
+  }
+
+  public static final class AlgaeIntakeConstants {
+    public static final int kIntakeLeaderMotorPort = 0;
+    public static final int kIntakeFollowerMotorPort = 2;
+    public static final int kRotationMotorPort = 3;
+
+    public static final int kCurrentLimit = 30;
+
+    public static final double kVelocityP = 0.1;
+    public static final double kVelocityI = 0.0;
+    public static final double kVelocityD = 0.0;
+
+    public static final double kPositionP = 0.1;
+    public static final double kPositionI = 0.0;
+    public static final double kPositionD = 0.0;
+
+    public static final double kPositionConversionFactor = 10;
+    public static final double kVelocityConversionFactor = 20;
+
+    public static final int kAlgaeSensorPort = 4;
+  }
+
   public static final class AutoConstants {
     public static final int kAllianceColorSelectorPort = 10;
 
