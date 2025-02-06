@@ -85,22 +85,23 @@ public final class Constants {
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(0.5)), // rear left
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(-0.5)) // rear right
             );
+
     public static final Pose2d blueReefCenter =
-        new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d());
-
+      new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d());
+    
     public static final Pose2d redReefCenter =
-        new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI));
-
+      new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI));
+    
     private static double radius = Inches.of(50.25).in(Meters);
     private static Rotation2d increment = new Rotation2d(Degrees.of(60.0));
-
+    
     private static Pose2d blueAB = blueReefCenter.plus(offset(0));
     private static Pose2d blueCD = blueReefCenter.plus(offset(1));
     private static Pose2d blueEF = blueReefCenter.plus(offset(2));
     private static Pose2d blueGH = blueReefCenter.plus(offset(3));
     private static Pose2d blueIJ = blueReefCenter.plus(offset(4));
     private static Pose2d blueKL = blueReefCenter.plus(offset(5));
-
+    
     private static Pose2d redAB = redReefCenter.plus(offset(0));
     private static Pose2d redCD = redReefCenter.plus(offset(1));
     private static Pose2d redEF = redReefCenter.plus(offset(2));
@@ -216,6 +217,47 @@ public final class Constants {
       public static int kDown = 180;
       public static int kLeft = 270;
     }
+  }
+
+  public static final class CoralIntakeConstants {
+    public static final int kIntakeMotorPort = 0;
+    public static final int kRotationMotorPort = 1;
+
+    public static final int kCurrentLimit = 30;
+
+    public static final double kVelocityP = 0.1;
+    public static final double kVelocityI = 0.0;
+    public static final double kVelocityD = 0.0;
+
+    public static final double kPositionP = 0.1;
+    public static final double kPositionI = 0.0;
+    public static final double kPositionD = 0.0;
+
+    public static final double kPositionConversionFactor = 10;
+    public static final double kVelocityConversionFactor = 20;
+
+    public static final int kCoralSensorPort = 3;
+  }
+
+  public static final class AlgaeIntakeConstants {
+    public static final int kIntakeLeaderMotorPort = 0;
+    public static final int kIntakeFollowerMotorPort = 2;
+    public static final int kRotationMotorPort = 3;
+
+    public static final int kCurrentLimit = 30;
+
+    public static final double kVelocityP = 0.1;
+    public static final double kVelocityI = 0.0;
+    public static final double kVelocityD = 0.0;
+
+    public static final double kPositionP = 0.1;
+    public static final double kPositionI = 0.0;
+    public static final double kPositionD = 0.0;
+
+    public static final double kPositionConversionFactor = 10;
+    public static final double kVelocityConversionFactor = 20;
+
+    public static final int kAlgaeSensorPort = 4;
   }
 
   public static final class AutoConstants {

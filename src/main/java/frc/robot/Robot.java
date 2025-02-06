@@ -42,9 +42,9 @@ public class Robot extends TimedRobot {
       new AutoSelector(
           AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
   private final Drivetrain swerve = new Drivetrain(allianceSelector::fieldRotated);
-  private final Elevator elevator = new Elevator();
   private final LEDs leds = new LEDs();
   private final Vision vision = new Vision();
+  private final Elevator elevator = new Elevator();
   private CommandZorroController driver;
   private CommandXboxController operator;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
@@ -86,10 +86,18 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(driver.getHID());
     SmartDashboard.putData(operator.getHID());
     SmartDashboard.putData(powerDistribution);
+    SmartDashboard.putData(driver.getHID());
+    SmartDashboard.putData(operator.getHID());
+    SmartDashboard.putData(powerDistribution);
   }
 
   @Override
   public void disabledInit() {
+    leds.setDefaultCommand(
+        leds.createDisabledCommand(
+            autoSelector::getSwitchPosition,
+            allianceSelector::getAllianceColor,
+            allianceSelector::agreementInAllianceInputs));
     leds.setDefaultCommand(
         leds.createDisabledCommand(
             autoSelector::getSwitchPosition,
@@ -182,6 +190,9 @@ public class Robot extends TimedRobot {
   }
 
   private void configureAutoOptions() {
+    autoSelector.addAuto(new AutoOption(Alliance.Red, 4));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new ExampleAuto(swerve)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2));
     autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4AlgaeAuto(swerve, elevator)));
     autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4AlgaeAuto(swerve, elevator)));
     autoSelector.addAuto(new AutoOption(Alliance.Blue, 2, new ExampleAuto(swerve)));
