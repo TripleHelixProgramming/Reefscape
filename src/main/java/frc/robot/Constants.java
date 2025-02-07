@@ -87,21 +87,21 @@ public final class Constants {
             );
 
     public static final Pose2d blueReefCenter =
-      new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d());
-    
+        new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d());
+
     public static final Pose2d redReefCenter =
-      new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI));
-    
+        new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI));
+
     private static double radius = Inches.of(50.25).in(Meters);
     private static Rotation2d increment = new Rotation2d(Degrees.of(60.0));
-    
+
     private static Pose2d blueAB = blueReefCenter.plus(offset(0));
     private static Pose2d blueCD = blueReefCenter.plus(offset(1));
     private static Pose2d blueEF = blueReefCenter.plus(offset(2));
     private static Pose2d blueGH = blueReefCenter.plus(offset(3));
     private static Pose2d blueIJ = blueReefCenter.plus(offset(4));
     private static Pose2d blueKL = blueReefCenter.plus(offset(5));
-    
+
     private static Pose2d redAB = redReefCenter.plus(offset(0));
     private static Pose2d redCD = redReefCenter.plus(offset(1));
     private static Pose2d redEF = redReefCenter.plus(offset(2));
@@ -109,11 +109,20 @@ public final class Constants {
     private static Pose2d redIJ = redReefCenter.plus(offset(4));
     private static Pose2d redKL = redReefCenter.plus(offset(5));
 
-    private static Transform2d feederStationOffset = new Transform2d(Inches.of(-18), Inches.of(0), new Rotation2d(0));
-    private static Pose2d blueRightFeeder = new Pose2d(Inches.of(33.51), Inches.of(25.80), new Rotation2d(Degrees.of(54+180))).plus(feederStationOffset);
-    private static Pose2d blueLeftFeeder = new Pose2d(Inches.of(33.51), Inches.of(291.20), new Rotation2d(Degrees.of(306+180))).plus(feederStationOffset);
-    private static Pose2d redRightFeeder = new Pose2d(Inches.of(657.37), Inches.of(291.20), new Rotation2d(Degrees.of(234+180))).plus(feederStationOffset);
-    private static Pose2d redLeftFeeder = new Pose2d(Inches.of(657.37), Inches.of(25.8), new Rotation2d(Degrees.of(126+180))).plus(feederStationOffset);
+    private static Transform2d feederStationOffset =
+        new Transform2d(Inches.of(-18), Inches.of(0), new Rotation2d(0));
+    private static Pose2d blueRightFeeder =
+        new Pose2d(Inches.of(33.51), Inches.of(25.80), new Rotation2d(Degrees.of(54 + 180)))
+            .plus(feederStationOffset);
+    private static Pose2d blueLeftFeeder =
+        new Pose2d(Inches.of(33.51), Inches.of(291.20), new Rotation2d(Degrees.of(306 + 180)))
+            .plus(feederStationOffset);
+    private static Pose2d redRightFeeder =
+        new Pose2d(Inches.of(657.37), Inches.of(291.20), new Rotation2d(Degrees.of(234 + 180)))
+            .plus(feederStationOffset);
+    private static Pose2d redLeftFeeder =
+        new Pose2d(Inches.of(657.37), Inches.of(25.8), new Rotation2d(Degrees.of(126 + 180)))
+            .plus(feederStationOffset);
 
     private static Transform2d offset(double multiplier) {
       Rotation2d rotation = increment.times(multiplier);
@@ -307,8 +316,8 @@ public final class Constants {
     // Convert to inches at the final stage
     public static final double kGearRatio = 15.0;
     public static final double kSprocketPitchDiameter = 1.7567; // inches
-    public static final double kPositionConversionFactor = 
-      (kSprocketPitchDiameter * Math.PI) / kGearRatio;
+    public static final double kPositionConversionFactor =
+        (kSprocketPitchDiameter * Math.PI) / kGearRatio;
 
     // By default, the encoder in velocity mode measures RPM at the motor
     // Convert to inches per second at the final stage

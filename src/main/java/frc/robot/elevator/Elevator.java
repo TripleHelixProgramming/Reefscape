@@ -156,6 +156,10 @@ public class Elevator extends SubsystemBase {
     controller.setReference(targetVelocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
   }
 
+  public ElevatorPosition getElevatorPosition() {
+    return currentPosition;
+  }
+
   public Command createSetPositionCommand(ElevatorPosition position) {
     return new InstantCommand(() -> this.setPosition(position));
   }

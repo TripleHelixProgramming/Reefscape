@@ -9,7 +9,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,110 +17,117 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AlgaeIntakeConstants;
 import frc.robot.Constants.RobotConstants;
 
-public class AlgaeIntake extends SubsystemBase{
-    
-    private final SparkMax intakeLeaderMotor = new SparkMax(AlgaeIntakeConstants.kIntakeLeaderMotorPort, MotorType.kBrushless);
-    private final SparkMax intakeFollowerMotor = new SparkMax(AlgaeIntakeConstants.kIntakeFollowerMotorPort, MotorType.kBrushless);
-    private final SparkMax rotationMotor = new SparkMax(AlgaeIntakeConstants.kRotationMotorPort, MotorType.kBrushless);
+public class AlgaeIntake extends SubsystemBase {
 
-    private final SparkMaxConfig intakeConfig = new SparkMaxConfig();
-    private final SparkMaxConfig intakeFollowerConfig = new SparkMaxConfig();
-    private final SparkMaxConfig rotationConfig = new SparkMaxConfig();
+  private final SparkMax intakeLeaderMotor =
+      new SparkMax(AlgaeIntakeConstants.kIntakeLeaderMotorPort, MotorType.kBrushless);
+  private final SparkMax intakeFollowerMotor =
+      new SparkMax(AlgaeIntakeConstants.kIntakeFollowerMotorPort, MotorType.kBrushless);
+  private final SparkMax rotationMotor =
+      new SparkMax(AlgaeIntakeConstants.kRotationMotorPort, MotorType.kBrushless);
 
-    private final RelativeEncoder intakeEncoder;
-    private final RelativeEncoder rotationEncoder;
+  private final SparkMaxConfig intakeConfig = new SparkMaxConfig();
+  private final SparkMaxConfig intakeFollowerConfig = new SparkMaxConfig();
+  private final SparkMaxConfig rotationConfig = new SparkMaxConfig();
 
-    private final SparkClosedLoopController intakeController;
-    private final SparkClosedLoopController rotationController;
+  private final RelativeEncoder intakeEncoder;
+  private final RelativeEncoder rotationEncoder;
 
-    private final DigitalInput coralSensor = new DigitalInput(AlgaeIntakeConstants.kAlgaeSensorPort);
+  private final SparkClosedLoopController intakeController;
+  private final SparkClosedLoopController rotationController;
 
-    public AlgaeIntake() {
-        intakeConfig
-            .voltageCompensation(RobotConstants.kNominalVoltage)
-            .idleMode(IdleMode.kCoast)
-            .smartCurrentLimit(AlgaeIntakeConstants.kCurrentLimit)
-            .inverted(false);
+  private final DigitalInput coralSensor = new DigitalInput(AlgaeIntakeConstants.kAlgaeSensorPort);
 
-        rotationConfig
-            .voltageCompensation(RobotConstants.kNominalVoltage)
-            .idleMode(IdleMode.kBrake)
-            .smartCurrentLimit(AlgaeIntakeConstants.kCurrentLimit)
-            .inverted(false);
+  public AlgaeIntake() {
+    intakeConfig
+        .voltageCompensation(RobotConstants.kNominalVoltage)
+        .idleMode(IdleMode.kCoast)
+        .smartCurrentLimit(AlgaeIntakeConstants.kCurrentLimit)
+        .inverted(false);
 
-        intakeConfig.closedLoop
-            .p(AlgaeIntakeConstants.kVelocityP)
-            .i(AlgaeIntakeConstants.kVelocityI)
-            .d(AlgaeIntakeConstants.kVelocityD)
-            .outputRange(-1, 1);
+    rotationConfig
+        .voltageCompensation(RobotConstants.kNominalVoltage)
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(AlgaeIntakeConstants.kCurrentLimit)
+        .inverted(false);
 
-        intakeConfig.encoder
-            .velocityConversionFactor(AlgaeIntakeConstants.kVelocityConversionFactor)
-            .positionConversionFactor(AlgaeIntakeConstants.kPositionConversionFactor);
+    intakeConfig
+        .closedLoop
+        .p(AlgaeIntakeConstants.kVelocityP)
+        .i(AlgaeIntakeConstants.kVelocityI)
+        .d(AlgaeIntakeConstants.kVelocityD)
+        .outputRange(-1, 1);
 
-        rotationConfig.closedLoop
-            .p(AlgaeIntakeConstants.kPositionP)
-            .i(AlgaeIntakeConstants.kPositionI)
-            .d(AlgaeIntakeConstants.kPositionD)
-            .outputRange(-1, 1);
+    intakeConfig
+        .encoder
+        .velocityConversionFactor(AlgaeIntakeConstants.kVelocityConversionFactor)
+        .positionConversionFactor(AlgaeIntakeConstants.kPositionConversionFactor);
 
-        rotationConfig.encoder
-            .velocityConversionFactor(AlgaeIntakeConstants.kVelocityConversionFactor)
-            .positionConversionFactor(AlgaeIntakeConstants.kPositionConversionFactor);
+    rotationConfig
+        .closedLoop
+        .p(AlgaeIntakeConstants.kPositionP)
+        .i(AlgaeIntakeConstants.kPositionI)
+        .d(AlgaeIntakeConstants.kPositionD)
+        .outputRange(-1, 1);
 
-        intakeFollowerConfig
-            .apply(intakeConfig)
-            .follow(intakeLeaderMotor);
+    rotationConfig
+        .encoder
+        .velocityConversionFactor(AlgaeIntakeConstants.kVelocityConversionFactor)
+        .positionConversionFactor(AlgaeIntakeConstants.kPositionConversionFactor);
 
-        intakeLeaderMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        rotationMotor.configure(rotationConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    intakeFollowerConfig.apply(intakeConfig).follow(intakeLeaderMotor);
 
-        intakeEncoder = intakeLeaderMotor.getEncoder();
-        rotationEncoder = rotationMotor.getEncoder();
+    intakeLeaderMotor.configure(
+        intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    rotationMotor.configure(
+        rotationConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        intakeController = intakeLeaderMotor.getClosedLoopController();
-        rotationController = rotationMotor.getClosedLoopController();
-    }
+    intakeEncoder = intakeLeaderMotor.getEncoder();
+    rotationEncoder = rotationMotor.getEncoder();
 
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Rotation Position", rotationEncoder.getPosition());
-        SmartDashboard.putNumber("Intake Velocity", intakeEncoder.getVelocity());
+    intakeController = intakeLeaderMotor.getClosedLoopController();
+    rotationController = rotationMotor.getClosedLoopController();
+  }
 
-        SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
-    }
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Rotation Position", rotationEncoder.getPosition());
+    SmartDashboard.putNumber("Intake Velocity", intakeEncoder.getVelocity());
 
-    private void resetIntakeEncoder() {
-        intakeEncoder.setPosition(0.0);
-    }
+    SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
+  }
 
-    private void resetRotationEncoder() {
-        rotationEncoder.setPosition(0.0);
-    }
+  private void resetIntakeEncoder() {
+    intakeEncoder.setPosition(0.0);
+  }
 
-    private void getRotationPosition() {
-        rotationEncoder.getPosition();
-    }
+  private void resetRotationEncoder() {
+    rotationEncoder.setPosition(0.0);
+  }
 
-    private void setRotationPosition(double position) {
-        rotationController.setReference(position, ControlType.kPosition);
-    }
+  private void getRotationPosition() {
+    rotationEncoder.getPosition();
+  }
 
-    private void setIntakeVelocity(double velocity) {
-        intakeController.setReference(velocity, ControlType.kVelocity);
-    }
+  private void setRotationPosition(double position) {
+    rotationController.setReference(position, ControlType.kPosition);
+  }
 
-    public Trigger hasCoral = new Trigger(() -> coralSensor.get());
+  private void setIntakeVelocity(double velocity) {
+    intakeController.setReference(velocity, ControlType.kVelocity);
+  }
 
-    public Command createStopIntakeCommand() {
-        return this.runOnce(() -> setIntakeVelocity(0));
-    }
+  public Trigger hasCoral = new Trigger(() -> coralSensor.get());
 
-    public Command createSetRotationPositionCommand(double position) {
-        return this.runOnce(() -> setRotationPosition(position));
-    }
+  public Command createStopIntakeCommand() {
+    return this.runOnce(() -> setIntakeVelocity(0));
+  }
 
-    public Command createSetIntakeVelocityCommand(double velocity) {
-        return this.run(() -> setIntakeVelocity(velocity));
-    }
+  public Command createSetRotationPositionCommand(double position) {
+    return this.runOnce(() -> setRotationPosition(position));
+  }
+
+  public Command createSetIntakeVelocityCommand(double velocity) {
+    return this.run(() -> setIntakeVelocity(velocity));
+  }
 }
