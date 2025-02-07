@@ -24,8 +24,8 @@ import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPosition;
+import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;
 import frc.robot.auto.ExampleAuto;
@@ -196,30 +196,69 @@ public class Robot extends TimedRobot {
 
   private void configureOperatorButtonBindings() {
 
-    operator.y()
-        .onTrue(new ParallelCommandGroup(elevator.createSetPositionCommand(ElevatorPosition.L4), coralIntake.createSetRotationPositionCommand(90), algaeIntake.createSetRotationPositionCommand(0)));
+    operator
+        .y()
+        .onTrue(
+            new ParallelCommandGroup(
+                elevator.createSetPositionCommand(ElevatorPosition.L4),
+                coralIntake.createSetRotationPositionCommand(90),
+                algaeIntake.createSetRotationPositionCommand(0)));
 
-    operator.a()
-        .onTrue(new ParallelCommandGroup(elevator.createSetPositionCommand(ElevatorPosition.L1), coralIntake.createSetRotationPositionCommand(0), algaeIntake.createSetRotationPositionCommand(180)));
+    operator
+        .a()
+        .onTrue(
+            new ParallelCommandGroup(
+                elevator.createSetPositionCommand(ElevatorPosition.L1),
+                coralIntake.createSetRotationPositionCommand(0),
+                algaeIntake.createSetRotationPositionCommand(180)));
 
-    operator.b()
-        .onTrue(new ParallelCommandGroup(elevator.createSetPositionCommand(ElevatorPosition.L2), coralIntake.createSetRotationPositionCommand(75), algaeIntake.createSetRotationPositionCommand(90)));
+    operator
+        .b()
+        .onTrue(
+            new ParallelCommandGroup(
+                elevator.createSetPositionCommand(ElevatorPosition.L2),
+                coralIntake.createSetRotationPositionCommand(75),
+                algaeIntake.createSetRotationPositionCommand(90)));
 
-    operator.x()
-        .onTrue(new ParallelCommandGroup(elevator.createSetPositionCommand(ElevatorPosition.L3), coralIntake.createSetRotationPositionCommand(75), algaeIntake.createSetRotationPositionCommand(90)));
+    operator
+        .x()
+        .onTrue(
+            new ParallelCommandGroup(
+                elevator.createSetPositionCommand(ElevatorPosition.L3),
+                coralIntake.createSetRotationPositionCommand(75),
+                algaeIntake.createSetRotationPositionCommand(90)));
 
-    operator.start()
-        .onTrue(new ParallelCommandGroup(elevator.createSetPositionCommand(ElevatorPosition.Intake), coralIntake.createSetRotationPositionCommand(45), algaeIntake.createSetRotationPositionCommand(0)));
+    operator
+        .start()
+        .onTrue(
+            new ParallelCommandGroup(
+                elevator.createSetPositionCommand(ElevatorPosition.Intake),
+                coralIntake.createSetRotationPositionCommand(45),
+                algaeIntake.createSetRotationPositionCommand(0)));
 
-    operator.povUp()
-        .onTrue(new ParallelCommandGroup(elevator.createSetPositionCommand(ElevatorPosition.Top), coralIntake.createSetRotationPositionCommand(0), algaeIntake.createSetRotationPositionCommand(115)));
+    operator
+        .povUp()
+        .onTrue(
+            new ParallelCommandGroup(
+                elevator.createSetPositionCommand(ElevatorPosition.Top),
+                coralIntake.createSetRotationPositionCommand(0),
+                algaeIntake.createSetRotationPositionCommand(115)));
 
-    new JoystickButton(operator.getHID(), Button.kLeftStick.value).whileTrue(elevator.createJoystickControlCommand(operator.getHID(), 0.5));
+    new JoystickButton(operator.getHID(), Button.kLeftStick.value)
+        .whileTrue(elevator.createJoystickControlCommand(operator.getHID(), 0.5));
 
-    operator.rightBumper()
-        .whileTrue(coralIntake.createSetIntakeVelocityCommand(5).onlyIf(() -> elevator.getElevatorPosition() == ElevatorPosition.Intake));
-    operator.rightBumper()
-        .whileTrue(algaeIntake.createSetIntakeVelocityCommand(5).onlyIf(() -> elevator.getElevatorPosition() != ElevatorPosition.Intake));
+    operator
+        .rightBumper()
+        .whileTrue(
+            coralIntake
+                .createSetIntakeVelocityCommand(5)
+                .onlyIf(() -> elevator.getElevatorPosition() == ElevatorPosition.Intake));
+    operator
+        .rightBumper()
+        .whileTrue(
+            algaeIntake
+                .createSetIntakeVelocityCommand(5)
+                .onlyIf(() -> elevator.getElevatorPosition() != ElevatorPosition.Intake));
   }
 
   private void configureEventBindings() {
