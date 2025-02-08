@@ -40,15 +40,15 @@ public final class Constants {
     public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
 
     public static final class MotorControllers {
-      public static final int kRearRightDriveMotorPort = 18;
+      public static final int kRearRightDriveMotorPort = 10;
       public static final int kFrontRightDriveMotorPort = 20;
       public static final int kFrontLeftDriveMotorPort = 28;
-      public static final int kRearLeftDriveMotorPort = 10;
+      public static final int kRearLeftDriveMotorPort = 12;
 
-      public static final int kRearRightTurningMotorPort = 19;
+      public static final int kRearRightTurningMotorPort = 11;
       public static final int kFrontRightTurningMotorPort = 21;
       public static final int kFrontLeftTurningMotorPort = 29;
-      public static final int kRearLeftTurningMotorPort = 11;
+      public static final int kRearLeftTurningMotorPort = 13;
     }
 
     public static final class AbsoluteEncoders {
@@ -62,10 +62,10 @@ public final class Constants {
     }
 
     // Distance between centers of right and left wheels on robot
-    public static final Distance kTrackWidth = Inches.of(24);
+    public static final Distance kTrackWidth = Inches.of(21);
 
     // Distance between front and rear wheels on robot
-    public static final Distance kWheelBase = Inches.of(22.5);
+    public static final Distance kWheelBase = Inches.of(27);
 
     // Robot radius
     public static final double kRadius = 0.423;
