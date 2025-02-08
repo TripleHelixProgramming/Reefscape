@@ -20,11 +20,11 @@ import frc.robot.Constants.RobotConstants;
 public class AlgaeIntake extends SubsystemBase {
 
   private final SparkMax intakeLeaderMotor =
-      new SparkMax(AlgaeIntakeConstants.kIntakeLeaderMotorPort, MotorType.kBrushless);
+      new SparkMax(AlgaeIntakeConstants.kRollerLeaderMotorPort, MotorType.kBrushless);
   private final SparkMax intakeFollowerMotor =
-      new SparkMax(AlgaeIntakeConstants.kIntakeFollowerMotorPort, MotorType.kBrushless);
+      new SparkMax(AlgaeIntakeConstants.kRollerFollowerMotorPort, MotorType.kBrushless);
   private final SparkMax rotationMotor =
-      new SparkMax(AlgaeIntakeConstants.kRotationMotorPort, MotorType.kBrushless);
+      new SparkMax(AlgaeIntakeConstants.kWristMotorPort, MotorType.kBrushless);
 
   private final SparkMaxConfig intakeConfig = new SparkMaxConfig();
   private final SparkMaxConfig intakeFollowerConfig = new SparkMaxConfig();
@@ -72,7 +72,7 @@ public class AlgaeIntake extends SubsystemBase {
 
     rotationConfig
         .encoder
-        .positionConversionFactor(AlgaeIntakeConstants.kAlgaeRotationPositionConversionFactor);
+        .positionConversionFactor(AlgaeIntakeConstants.kAlgaeWristPositionConversionFactor);
 
     intakeFollowerConfig.apply(intakeConfig).follow(intakeLeaderMotor);
 

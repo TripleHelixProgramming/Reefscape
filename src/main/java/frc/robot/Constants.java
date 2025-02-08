@@ -2,8 +2,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import org.opencv.core.Mat;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -234,8 +232,8 @@ public final class Constants {
   }
 
   public static final class CoralIntakeConstants {
-    public static final int kIntakeMotorPort = 0;
-    public static final int kRotationMotorPort = 1;
+    public static final int kRollerMotorPort = 23;
+    public static final int kWristMotorPort = 22;
 
     public static final double kVelocityP = 0.1;
     public static final double kVelocityI = 0.0;
@@ -252,14 +250,14 @@ public final class Constants {
 
     public static final int kCoralSensorPort = 3;
 
-    public static final double kCoralRotationGearRatio = 5 * (42 / 18); // 5:1 for motor and 42:18 for the belt
-    public static final double kCoralRotationPositionConversionFactor = 360 / (2 * Math.PI * kCoralRotationGearRatio); // converts radians to degrees
+    public static final double kCoralWristGearRatio = 5 * (42 / 18); // 5:1 for motor and 42:18 for the belt
+    public static final double kCoralWristPositionConversionFactor = 360 / (2 * Math.PI * kCoralWristGearRatio); // converts radians to degrees
   }
 
   public static final class AlgaeIntakeConstants {
-    public static final int kIntakeLeaderMotorPort = 0;
-    public static final int kIntakeFollowerMotorPort = 2;
-    public static final int kRotationMotorPort = 3;
+    public static final int kRollerLeaderMotorPort = 15;
+    public static final int kRollerFollowerMotorPort = 16;
+    public static final int kWristMotorPort = 14;
 
     public static final double kVelocityP = 0.1;
     public static final double kVelocityI = 0.0;
@@ -276,8 +274,8 @@ public final class Constants {
 
     public static final int kAlgaeSensorPort = 4;
 
-    public static final double kAlgaeRotationGearRatio = 5 * (36 / 18); // 5:1 for motor, 36:18 for belt
-    public static final double kAlgaeRotationPositionConversionFactor = 360 / (2 * Math.PI * kAlgaeRotationGearRatio); // converts radians to degrees
+    public static final double kAlgaeWristGearRatio = 5 * (36 / 18); // 5:1 for motor, 36:18 for belt
+    public static final double kAlgaeWristPositionConversionFactor = 360 / (2 * Math.PI * kAlgaeWristGearRatio); // converts radians to degrees
   }
 
   public static final class AutoConstants {
@@ -318,8 +316,8 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final int kLeaderMotorPort = 0;
-    public static final int kFollowerMotorPort = 1;
+    public static final int kLeaderMotorPort = 24;
+    public static final int kFollowerMotorPort = 25;
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the final stage

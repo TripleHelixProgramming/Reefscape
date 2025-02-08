@@ -20,9 +20,9 @@ import frc.robot.Constants.RobotConstants;
 public class CoralIntake extends SubsystemBase {
 
   private final SparkMax intakeMotor =
-      new SparkMax(CoralIntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
+      new SparkMax(CoralIntakeConstants.kRollerMotorPort, MotorType.kBrushless);
   private final SparkMax rotationMotor =
-      new SparkMax(CoralIntakeConstants.kRotationMotorPort, MotorType.kBrushless);
+      new SparkMax(CoralIntakeConstants.kWristMotorPort, MotorType.kBrushless);
 
   private final SparkMaxConfig intakeConfig = new SparkMaxConfig();
   private final SparkMaxConfig rotationConfig = new SparkMaxConfig();
@@ -69,7 +69,7 @@ public class CoralIntake extends SubsystemBase {
 
     rotationConfig
         .encoder
-        .positionConversionFactor(CoralIntakeConstants.kCoralRotationPositionConversionFactor);
+        .positionConversionFactor(CoralIntakeConstants.kCoralWristPositionConversionFactor);
 
     intakeMotor.configure(
         intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
