@@ -9,12 +9,10 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,14 +30,11 @@ public class AlgaeIntake extends SubsystemBase {
       new SparkMax(AlgaeIntakeConstants.kWristMotorPort, MotorType.kBrushless);
 
   private final SparkAbsoluteEncoder wristEncoder;
-
-  private final AbsoluteEncoderConfig absoluteEncoderConfig = new AbsoluteEncoderConfig();
+  private final RelativeEncoder rollerEncoder;
 
   private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
   private final SparkMaxConfig rollerFollowerConfig = new SparkMaxConfig();
   private final SparkMaxConfig wristConfig = new SparkMaxConfig();
-
-  private final RelativeEncoder rollerEncoder;
 
   private final SparkClosedLoopController rollerController;
   private final SparkClosedLoopController wristController;
@@ -47,56 +42,54 @@ public class AlgaeIntake extends SubsystemBase {
   private final DigitalInput coralSensor = new DigitalInput(AlgaeIntakeConstants.kAlgaeSensorPort);
 
   public AlgaeIntake() {
-    wristEncoder = wristMotor.getAbsoluteEncoder();
-
-    absoluteEncoderConfig
-        .positionConversionFactor(AlgaeIntakeConstants
-        .kAlgaeWristPositionConversionFactor).inverted(false);
-
+    // spotless:off
     rollerConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
-    wristConfig
-        .voltageCompensation(RobotConstants.kNominalVoltage)
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
-        .inverted(false);
-
-    rollerConfig
-        .closedLoop
+    rollerConfig.closedLoop
         .p(AlgaeIntakeConstants.kVelocityP)
         .i(AlgaeIntakeConstants.kVelocityI)
         .d(AlgaeIntakeConstants.kVelocityD)
         .outputRange(-1, 1);
 
-    rollerConfig
-        .encoder
+    rollerConfig.encoder
         .velocityConversionFactor(AlgaeIntakeConstants.kVelocityConversionFactor)
         .positionConversionFactor(AlgaeIntakeConstants.kPositionConversionFactor);
 
+    rollerFollowerConfig
+        .apply(rollerConfig)
+        .follow(rollerLeaderMotor);
+
     wristConfig
-        .closedLoop
+        .voltageCompensation(RobotConstants.kNominalVoltage)
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
+        .inverted(false);
+    
+    wristConfig.absoluteEncoder
+        .positionConversionFactor(AlgaeIntakeConstants.kAlgaeWristPositionConversionFactor)
+        .inverted(false);
+    
+    wristConfig.closedLoop
         .p(AlgaeIntakeConstants.kPositionP)
         .i(AlgaeIntakeConstants.kPositionI)
         .d(AlgaeIntakeConstants.kPositionD)
         .outputRange(-1, 1)
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-
-    wristConfig
-        .encoder
-        .positionConversionFactor(AlgaeIntakeConstants.kAlgaeWristPositionConversionFactor);
-
-    rollerFollowerConfig.apply(rollerConfig).follow(rollerLeaderMotor);
+    // spotless:on
 
     rollerLeaderMotor.configure(
         rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    rollerFollowerMotor.configure(
+        rollerFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);  
     wristMotor.configure(
         wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     rollerEncoder = rollerLeaderMotor.getEncoder();
+    wristEncoder = wristMotor.getAbsoluteEncoder();
 
     rollerController = rollerLeaderMotor.getClosedLoopController();
     wristController = wristMotor.getClosedLoopController();
