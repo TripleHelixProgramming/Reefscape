@@ -61,13 +61,15 @@ public class Climber extends SubsystemBase{
     public void periodic() {
         SmartDashboard.putNumber("Climber Position", getPosition());
         SmartDashboard.putBoolean("Cage Sensor", cageSensor.get());
+
+        SmartDashboard.putNumber("Servo", servo.get());
     }
 
     public void resetEncoder() {
         encoder.setPosition(0);
     }
 
-    private void unlockRatchet() {
+    public void unlockRatchet() {
         servo.set(ClimberConstants.kDisengedPosition);
     }
 

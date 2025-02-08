@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -182,6 +183,9 @@ public class Robot extends TimedRobot {
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
     climbTrigger.onTrue(climber.createDeployCommand()
         .andThen(climber.createClimbByControllerCommand(operator.getHID(), 1.0)));
+
+    operator.back().whileTrue(new InstantCommand(climber::unlockRatchet))
+    .whileFalse(new InstantCommand(climber::lockRatchet));
   }
 
   private void configureEventBindings() {
