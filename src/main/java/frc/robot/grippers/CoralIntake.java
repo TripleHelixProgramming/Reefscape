@@ -29,8 +29,8 @@ public class CoralIntake extends SubsystemBase {
   private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
   private final SparkMaxConfig wristConfig = new SparkMaxConfig();
 
-  private final SparkAbsoluteEncoder wristEncoder;
   private final RelativeEncoder rollerEncoder;
+  private final SparkAbsoluteEncoder wristEncoder;
 
   private final SparkClosedLoopController rollerController;
   private final SparkClosedLoopController wristController;

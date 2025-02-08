@@ -28,17 +28,17 @@ public class AlgaeIntake extends SubsystemBase {
   private final SparkMax wristMotor =
       new SparkMax(AlgaeIntakeConstants.kWristMotorPort, MotorType.kBrushless);
 
-  private final SparkAbsoluteEncoder wristEncoder;
-  private final RelativeEncoder rollerEncoder;
-
   private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
   private final SparkMaxConfig rollerFollowerConfig = new SparkMaxConfig();
   private final SparkMaxConfig wristConfig = new SparkMaxConfig();
+  
+  private final RelativeEncoder rollerEncoder;
+  private final SparkAbsoluteEncoder wristEncoder;
 
   private final SparkClosedLoopController rollerController;
   private final SparkClosedLoopController wristController;
 
-  private final DigitalInput coralSensor = new DigitalInput(AlgaeIntakeConstants.kAlgaeSensorPort);
+  private final DigitalInput algaeSensor = new DigitalInput(AlgaeIntakeConstants.kAlgaeSensorPort);
 
   public AlgaeIntake() {
     // spotless:off
@@ -99,7 +99,7 @@ public class AlgaeIntake extends SubsystemBase {
     SmartDashboard.putNumber("Rotation Position", wristEncoder.getPosition());
     SmartDashboard.putNumber("Intake Velocity", rollerEncoder.getVelocity());
 
-    SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
+    SmartDashboard.putBoolean("Algae Sensor", algaeSensor.get());
   }
 
   private void resetIntakeEncoder() {
@@ -118,7 +118,7 @@ public class AlgaeIntake extends SubsystemBase {
     rollerController.setReference(velocity, ControlType.kVelocity);
   }
 
-  public Trigger hasCoral = new Trigger(() -> coralSensor.get());
+  public Trigger hasCoral = new Trigger(() -> algaeSensor.get());
 
   public Command createStopIntakeCommand() {
     return this.runOnce(() -> setIntakeVelocity(0));
