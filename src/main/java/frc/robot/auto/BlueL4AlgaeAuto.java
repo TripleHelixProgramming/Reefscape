@@ -4,19 +4,27 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ElevatorConstants.ElevatorPosition;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.Elevator;
+import frc.robot.grippers.AlgaeIntake;
+import frc.robot.grippers.CoralIntake;
+
 import java.util.Optional;
 
 public class BlueL4AlgaeAuto extends AutoMode {
 
   Elevator elevator;
+  CoralIntake coralIntake;
+  AlgaeIntake algaeIntake;
 
-  public BlueL4AlgaeAuto(Drivetrain drivetrain, Elevator elevatorsubsystem) {
+  public BlueL4AlgaeAuto(Drivetrain drivetrain, Elevator elevatorsubsystem, CoralIntake coralIntakeSubsystem, AlgaeIntake algaeIntakeSubsystem) {
     super(drivetrain);
     elevator = elevatorsubsystem;
+    coralIntake = coralIntakeSubsystem;
+    algaeIntake = algaeIntakeSubsystem;
   }
 
   AutoRoutine blueL4AlgAutoRoutine = super.getAutoFactory().newRoutine("BlueL4AlgaeRoutine");
@@ -47,22 +55,21 @@ public class BlueL4AlgaeAuto extends AutoMode {
 
     blueCenterToL4G
         .done()
-        // .onTrue(m_intake.createOuttakeComamand)
-        .onTrue(blueL4GToAlgae.cmd());
+        .onTrue(new SequentialCommandGroup(new WaitCommand(0.1), coralIntake.createSetIntakeVelocityCommand(-5.0), new WaitCommand(0.2), blueL4GToAlgae.cmd()));
 
     blueL4GToAlgae
         .done()
         .onTrue(
             Commands.sequence(
                 elevator.createSetPositionCommand(
-                    ElevatorPosition.L3), /* m_algaeIntake.createIntakeCommand, */
+                    ElevatorPosition.L3), 
+                algaeIntake.createSetIntakeVelocityCommand(5),
                 new WaitCommand(0.2),
                 blueAlgaeToProcess.cmd()));
 
     blueAlgaeToProcess
         .done()
-        // .onTrue(algaeIntake.createOuttakeCommand);
-        .onTrue(blueProcessToSource.cmd());
+        .onTrue(new SequentialCommandGroup(algaeIntake.createSetIntakeVelocityCommand(-5), new WaitCommand(0.2), blueProcessToSource.cmd()));
 
     return blueL4AlgAutoRoutine;
   }

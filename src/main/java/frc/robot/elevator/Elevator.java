@@ -58,7 +58,7 @@ public class Elevator extends SubsystemBase {
     globalConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(ElevatorConstants.kCurrentLimit);
+        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit);
 
     leaderConfig
         .apply(globalConfig)

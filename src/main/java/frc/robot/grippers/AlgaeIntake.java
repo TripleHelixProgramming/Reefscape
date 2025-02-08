@@ -42,13 +42,13 @@ public class AlgaeIntake extends SubsystemBase {
     intakeConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kCoast)
-        .smartCurrentLimit(AlgaeIntakeConstants.kCurrentLimit)
+        .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
     rotationConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(AlgaeIntakeConstants.kCurrentLimit)
+        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
         .inverted(false);
 
     intakeConfig

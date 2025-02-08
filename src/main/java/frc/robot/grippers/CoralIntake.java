@@ -39,13 +39,13 @@ public class CoralIntake extends SubsystemBase {
     intakeConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kCoast)
-        .smartCurrentLimit(CoralIntakeConstants.kCurrentLimit)
+        .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
     rotationConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(CoralIntakeConstants.kCurrentLimit)
+        .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
     intakeConfig
