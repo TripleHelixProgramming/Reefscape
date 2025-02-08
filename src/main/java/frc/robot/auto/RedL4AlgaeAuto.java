@@ -11,7 +11,6 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.Elevator;
 import frc.robot.grippers.AlgaeIntake;
 import frc.robot.grippers.CoralIntake;
-
 import java.util.Optional;
 
 public class RedL4AlgaeAuto extends AutoMode {
@@ -20,7 +19,11 @@ public class RedL4AlgaeAuto extends AutoMode {
   CoralIntake coralIntake;
   AlgaeIntake algaeIntake;
 
-  public RedL4AlgaeAuto(Drivetrain drivetrain, Elevator elevatorsubsystem, CoralIntake coralIntakeSubsystem, AlgaeIntake algaeIntakeSubsystem) {
+  public RedL4AlgaeAuto(
+      Drivetrain drivetrain,
+      Elevator elevatorsubsystem,
+      CoralIntake coralIntakeSubsystem,
+      AlgaeIntake algaeIntakeSubsystem) {
     super(drivetrain);
     elevator = elevatorsubsystem;
     coralIntake = coralIntakeSubsystem;
@@ -55,21 +58,29 @@ public class RedL4AlgaeAuto extends AutoMode {
 
     redCenterToL4G
         .done()
-        .onTrue(new SequentialCommandGroup(new WaitCommand(0.1), coralIntake.createSetIntakeVelocityCommand(-5.0), new WaitCommand(0.2), redL4GToAlgae.cmd()));
+        .onTrue(
+            new SequentialCommandGroup(
+                new WaitCommand(0.1),
+                coralIntake.createSetIntakeVelocityCommand(-5.0),
+                new WaitCommand(0.2),
+                redL4GToAlgae.cmd()));
 
     redL4GToAlgae
         .done()
         .onTrue(
             Commands.sequence(
-                elevator.createSetPositionCommand(
-                    ElevatorPosition.L3), 
+                elevator.createSetPositionCommand(ElevatorPosition.L3),
                 algaeIntake.createSetIntakeVelocityCommand(5),
                 new WaitCommand(0.2),
                 redAlgaeToProcess.cmd()));
 
     redAlgaeToProcess
         .done()
-        .onTrue(new SequentialCommandGroup(algaeIntake.createSetIntakeVelocityCommand(-5), new WaitCommand(0.2), redProcessToSource.cmd()));
+        .onTrue(
+            new SequentialCommandGroup(
+                algaeIntake.createSetIntakeVelocityCommand(-5),
+                new WaitCommand(0.2),
+                redProcessToSource.cmd()));
 
     return redL4AlgAutoRoutine;
   }

@@ -8,10 +8,9 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -84,7 +83,7 @@ public class AlgaeIntake extends SubsystemBase {
     rollerLeaderMotor.configure(
         rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     rollerFollowerMotor.configure(
-        rollerFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);  
+        rollerFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     wristMotor.configure(
         wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 

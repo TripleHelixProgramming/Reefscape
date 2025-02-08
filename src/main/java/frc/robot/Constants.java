@@ -245,13 +245,16 @@ public final class Constants {
 
     public static final double kCoralGearRatio = 5.0;
     public static final double kCoralShaftDiamter = 2.0; // inches
-    public static final double kPositionConversionFactor = (kCoralShaftDiamter * Math.PI) / kCoralGearRatio;
+    public static final double kPositionConversionFactor =
+        (kCoralShaftDiamter * Math.PI) / kCoralGearRatio;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final int kCoralSensorPort = 3;
 
-    public static final double kCoralWristGearRatio = 5 * (42 / 18); // 5:1 for motor and 42:18 for the belt
-    public static final double kCoralWristPositionConversionFactor = 360 / (2 * Math.PI * kCoralWristGearRatio); // converts radians to degrees
+    public static final double kCoralWristGearRatio =
+        5 * (42 / 18); // 5:1 for motor and 42:18 for the belt
+    public static final double kCoralWristPositionConversionFactor =
+        360 / (2 * Math.PI * kCoralWristGearRatio); // converts radians to degrees
   }
 
   public static final class AlgaeIntakeConstants {
@@ -269,13 +272,16 @@ public final class Constants {
 
     public static final double kAlgaeGearRatio = 5.0;
     public static final double kAlgaeShaftDiamter = 2.0; // inches
-    public static final double kPositionConversionFactor = (kAlgaeShaftDiamter * Math.PI) / kAlgaeGearRatio;
+    public static final double kPositionConversionFactor =
+        (kAlgaeShaftDiamter * Math.PI) / kAlgaeGearRatio;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final int kAlgaeSensorPort = 4;
 
-    public static final double kAlgaeWristGearRatio = 5 * (36 / 18); // 5:1 for motor, 36:18 for belt
-    public static final double kAlgaeWristPositionConversionFactor = 360 / (2 * Math.PI * kAlgaeWristGearRatio); // converts radians to degrees
+    public static final double kAlgaeWristGearRatio =
+        5 * (36 / 18); // 5:1 for motor, 36:18 for belt
+    public static final double kAlgaeWristPositionConversionFactor =
+        360 / (2 * Math.PI * kAlgaeWristGearRatio); // converts radians to degrees
   }
 
   public static final class AutoConstants {

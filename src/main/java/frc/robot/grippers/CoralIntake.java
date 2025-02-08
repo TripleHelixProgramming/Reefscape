@@ -8,11 +8,9 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,9 +30,6 @@ public class CoralIntake extends SubsystemBase {
   private final SparkMaxConfig wristConfig = new SparkMaxConfig();
 
   private final SparkAbsoluteEncoder wristEncoder;
-
-  private final AbsoluteEncoderConfig absoluteEncoderConfig = new AbsoluteEncoderConfig();
-
   private final RelativeEncoder rollerEncoder;
 
   private final SparkClosedLoopController rollerController;
@@ -43,43 +38,40 @@ public class CoralIntake extends SubsystemBase {
   private final DigitalInput coralSensor = new DigitalInput(CoralIntakeConstants.kCoralSensorPort);
 
   public CoralIntake() {
-    wristEncoder = wristMotor.getAbsoluteEncoder();
-
+    // spotless:off
     rollerConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
-    wristConfig
-        .voltageCompensation(RobotConstants.kNominalVoltage)
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
-        .inverted(false);
-
-    rollerConfig
-        .closedLoop
+    rollerConfig.closedLoop
         .p(CoralIntakeConstants.kVelocityP)
         .i(CoralIntakeConstants.kVelocityI)
         .d(CoralIntakeConstants.kVelocityD)
         .outputRange(-1, 1);
 
-    rollerConfig
-        .encoder
+    rollerConfig.encoder
         .velocityConversionFactor(CoralIntakeConstants.kVelocityConversionFactor)
         .positionConversionFactor(CoralIntakeConstants.kPositionConversionFactor);
 
     wristConfig
-        .closedLoop
+        .voltageCompensation(RobotConstants.kNominalVoltage)
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
+        .inverted(false);
+    
+    wristConfig.closedLoop
         .p(CoralIntakeConstants.kPositionP)
         .i(CoralIntakeConstants.kPositionI)
         .d(CoralIntakeConstants.kPositionD)
         .outputRange(-1, 1)
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 
-    wristConfig
-        .encoder
-        .positionConversionFactor(CoralIntakeConstants.kCoralWristPositionConversionFactor);
+    wristConfig.absoluteEncoder
+        .positionConversionFactor(CoralIntakeConstants.kCoralWristPositionConversionFactor)
+        .inverted(false);
+    // spotless:on
 
     rollerMotor.configure(
         rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -87,6 +79,7 @@ public class CoralIntake extends SubsystemBase {
         wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     rollerEncoder = rollerMotor.getEncoder();
+    wristEncoder = wristMotor.getAbsoluteEncoder();
 
     rollerController = rollerMotor.getClosedLoopController();
     wristController = wristMotor.getClosedLoopController();
