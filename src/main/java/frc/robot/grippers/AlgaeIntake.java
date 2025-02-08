@@ -72,8 +72,7 @@ public class AlgaeIntake extends SubsystemBase {
 
     rotationConfig
         .encoder
-        .velocityConversionFactor(AlgaeIntakeConstants.kVelocityConversionFactor)
-        .positionConversionFactor(AlgaeIntakeConstants.kPositionConversionFactor);
+        .positionConversionFactor(AlgaeIntakeConstants.kAlgaeRotationPositionConversionFactor);
 
     intakeFollowerConfig.apply(intakeConfig).follow(intakeLeaderMotor);
 

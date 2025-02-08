@@ -246,6 +246,9 @@ public final class Constants {
     public static final double kVelocityConversionFactor = 20;
 
     public static final int kCoralSensorPort = 3;
+
+    public static final double kCoralRotationGearRatio = 10.0; // 5:1 for motor and 2:1 for the belt
+    public static final double kCoralRotationPositionConversionFactor = 360 / (2 * Math.PI * kCoralRotationGearRatio); // converts radians to degrees
   }
 
   public static final class AlgaeIntakeConstants {
@@ -267,6 +270,9 @@ public final class Constants {
     public static final double kVelocityConversionFactor = 20;
 
     public static final int kAlgaeSensorPort = 4;
+
+    public static final double kAlgaeRotationGearRatio = 20 / 3; // 5:1 for motor, 24:18 for belt
+    public static final double kAlgaeRotationPositionConversionFactor = 360 / (2 * Math.PI * kAlgaeRotationGearRatio); // converts radians to degrees
   }
 
   public static final class AutoConstants {

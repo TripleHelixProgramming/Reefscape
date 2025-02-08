@@ -69,8 +69,7 @@ public class CoralIntake extends SubsystemBase {
 
     rotationConfig
         .encoder
-        .velocityConversionFactor(CoralIntakeConstants.kVelocityConversionFactor)
-        .positionConversionFactor(CoralIntakeConstants.kPositionConversionFactor);
+        .positionConversionFactor(CoralIntakeConstants.kCoralRotationPositionConversionFactor);
 
     intakeMotor.configure(
         intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
