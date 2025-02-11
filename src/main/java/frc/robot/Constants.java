@@ -4,6 +4,9 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
@@ -37,15 +40,15 @@ public final class Constants {
     public static final Matrix<N3, N1> kStateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
 
     public static final class MotorControllers {
-      public static final int kRearRightDriveMotorPort = 18;
+      public static final int kRearRightDriveMotorPort = 10;
       public static final int kFrontRightDriveMotorPort = 20;
       public static final int kFrontLeftDriveMotorPort = 28;
-      public static final int kRearLeftDriveMotorPort = 10;
+      public static final int kRearLeftDriveMotorPort = 12;
 
-      public static final int kRearRightTurningMotorPort = 19;
+      public static final int kRearRightTurningMotorPort = 11;
       public static final int kFrontRightTurningMotorPort = 21;
       public static final int kFrontLeftTurningMotorPort = 29;
-      public static final int kRearLeftTurningMotorPort = 11;
+      public static final int kRearLeftTurningMotorPort = 13;
     }
 
     public static final class AbsoluteEncoders {
@@ -59,10 +62,10 @@ public final class Constants {
     }
 
     // Distance between centers of right and left wheels on robot
-    public static final Distance kTrackWidth = Inches.of(24);
+    public static final Distance kTrackWidth = Inches.of(21);
 
     // Distance between front and rear wheels on robot
-    public static final Distance kWheelBase = Inches.of(22.5);
+    public static final Distance kWheelBase = Inches.of(27);
 
     // Robot radius
     public static final double kRadius = 0.423;
@@ -82,6 +85,51 @@ public final class Constants {
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(0.5)), // rear left
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(-0.5)) // rear right
             );
+    public static final Pose2d blueReefCenter =
+        new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d());
+
+    public static final Pose2d redReefCenter =
+        new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI));
+
+    private static double radius = Inches.of(50.25).in(Meters);
+    private static Rotation2d increment = new Rotation2d(Degrees.of(60.0));
+
+    private static Pose2d blueAB = blueReefCenter.plus(offset(0));
+    private static Pose2d blueCD = blueReefCenter.plus(offset(1));
+    private static Pose2d blueEF = blueReefCenter.plus(offset(2));
+    private static Pose2d blueGH = blueReefCenter.plus(offset(3));
+    private static Pose2d blueIJ = blueReefCenter.plus(offset(4));
+    private static Pose2d blueKL = blueReefCenter.plus(offset(5));
+
+    private static Pose2d redAB = redReefCenter.plus(offset(0));
+    private static Pose2d redCD = redReefCenter.plus(offset(1));
+    private static Pose2d redEF = redReefCenter.plus(offset(2));
+    private static Pose2d redGH = redReefCenter.plus(offset(3));
+    private static Pose2d redIJ = redReefCenter.plus(offset(4));
+    private static Pose2d redKL = redReefCenter.plus(offset(5));
+
+    private static Transform2d offset(double multiplier) {
+      Rotation2d rotation = increment.times(multiplier);
+      Translation2d translation = new Translation2d(radius, rotation.plus(new Rotation2d(Math.PI)));
+      return new Transform2d(translation, rotation);
+    }
+
+    public static final Pose2d[] kReefTargetPoses = {
+      new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
+      new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0)),
+      blueAB,
+      blueCD,
+      blueEF,
+      blueGH,
+      blueIJ,
+      blueKL,
+      redAB,
+      redCD,
+      redEF,
+      redGH,
+      redIJ,
+      redKL
+    };
   }
 
   public static final class ModuleConstants {
@@ -100,6 +148,15 @@ public final class Constants {
       public static final double kP = 10.0; // 1.5;
       public static final double kI = 0.0; // 2023 Competition Robot
       public static final double kD = 0.0; // 2023 Competition Robot
+    }
+
+    public static final class DriveToPoseControllerGains {
+      public static final double kTraP = 1.0;
+      public static final double kTraI = 0.0;
+      public static final double kTraD = 0.0;
+      public static final double kRotP = 1.5;
+      public static final double kRotI = 0.0;
+      public static final double kRotD = 0.0;
     }
 
     // Not adjusted

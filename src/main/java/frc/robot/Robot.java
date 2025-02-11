@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,50 +23,35 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
+import frc.robot.auto.ExampleAuto;
 import frc.robot.drivetrain.Drivetrain;
+import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.vision.Vision;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Robot extends TimedRobot {
-
-  private List<AutoOption> m_autoOptions = new ArrayList<>();
-
-  private final PowerDistribution m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
-  private final AllianceSelector m_allianceSelector;
-  private final AutoSelector m_autoSelector;
-  private final Drivetrain m_swerve;
-  private final LEDs m_LEDs;
-  private final Vision m_vision;
-  private final Auto m_auto;
-
-  // private final AutoFactory m_autoFactory;
-
-  private CommandZorroController m_driver;
-  private CommandXboxController m_operator;
-
-  private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
-
+  private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
+  private final AllianceSelector allianceSelector =
+      new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
+  private final AutoSelector autoSelector =
+      new AutoSelector(
+          AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
+  private final Drivetrain swerve = new Drivetrain(allianceSelector::fieldRotated);
+  private final LEDs leds = new LEDs();
+  private final Vision vision = new Vision();
+  private CommandZorroController driver;
+  private CommandXboxController operator;
+  private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
 
+  private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
+      NetworkTableInstance.getDefault()
+          .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
+          .publish();
+
   public Robot() {
-    m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
-
-    m_autoSelector =
-        new AutoSelector(
-            AutoConstants.kAutonomousModeSelectorPorts,
-            m_allianceSelector::getAllianceColor,
-            m_autoOptions);
-
-    m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
-    m_auto = new Auto(m_swerve);
-    m_LEDs = new LEDs();
-
-    m_vision = new Vision();
-
     configureButtonBindings();
     configureEventBindings();
     configureAutoOptions();
@@ -73,7 +59,7 @@ public class Robot extends TimedRobot {
     // Create a button on Smart Dashboard to reset the encoders.
     SmartDashboard.putData(
         "Align Encoders",
-        new InstantCommand(() -> m_swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
+        new InstantCommand(() -> swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
   }
 
   @Override
@@ -83,26 +69,28 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
 
-    m_swerve.setDefaultCommand(
-        new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematics, m_driver.getHID()));
+    swerve.setDefaultCommand(
+        new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
+
+    reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     checkVision();
-    SmartDashboard.putData(m_driver.getHID());
-    SmartDashboard.putData(m_operator.getHID());
-    SmartDashboard.putData(m_powerDistribution);
+    SmartDashboard.putData(driver.getHID());
+    SmartDashboard.putData(operator.getHID());
+    SmartDashboard.putData(powerDistribution);
   }
 
   @Override
   public void disabledInit() {
-    m_LEDs.setDefaultCommand(
-        m_LEDs.createDisabledCommand(
-            m_autoSelector::getSwitchPosition,
-            m_allianceSelector::getAllianceColor,
-            m_allianceSelector::agreementInAllianceInputs));
+    leds.setDefaultCommand(
+        leds.createDisabledCommand(
+            autoSelector::getSwitchPosition,
+            allianceSelector::getAllianceColor,
+            allianceSelector::agreementInAllianceInputs));
   }
 
   @Override
@@ -113,23 +101,23 @@ public class Robot extends TimedRobot {
      * Only check if controllers changed every kUSBCheckNumLoops loops of disablePeriodic().
      * This prevents us from hammering on some routines that cause the RIO to lock up.
      */
-    m_usb_check_delay--;
-    if (0 >= m_usb_check_delay) {
-      m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
+    usbCheckDelay--;
+    if (0 >= usbCheckDelay) {
+      usbCheckDelay = OIConstants.kUSBCheckNumLoops;
       if (ControllerPatroller.getInstance().controllersChanged()) {
         // Reset the joysticks & button mappings.
         configureButtonBindings();
       }
     }
 
-    m_allianceSelector.disabledPeriodic();
-    m_autoSelector.disabledPeriodic();
+    allianceSelector.disabledPeriodic();
+    autoSelector.disabledPeriodic();
   }
 
   @Override
   public void autonomousInit() {
-    m_autoSelector.scheduleAuto();
-    m_LEDs.setDefaultCommand(m_LEDs.createEnabledCommand());
+    autoSelector.scheduleAuto();
+    leds.setDefaultCommand(leds.createEnabledCommand());
   }
 
   @Override
@@ -137,9 +125,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    m_autoSelector.cancelAuto();
-    m_LEDs.setDefaultCommand(m_LEDs.createEnabledCommand());
-    m_swerve.resetHeadingOffset();
+    autoSelector.cancelAuto();
+    leds.setDefaultCommand(leds.createEnabledCommand());
+    swerve.resetHeadingOffset();
   }
 
   @Override
@@ -162,8 +150,8 @@ public class Robot extends TimedRobot {
 
     // We use two different types of controllers - Joystick & XboxController.
     // Create objects of the specific types.
-    m_driver = new CommandZorroController(cp.findDriverPort());
-    m_operator = new CommandXboxController(cp.findOperatorPort());
+    driver = new CommandZorroController(cp.findDriverPort());
+    operator = new CommandXboxController(cp.findOperatorPort());
 
     configureDriverButtonBindings();
     configureOperatorButtonBindings();
@@ -173,9 +161,12 @@ public class Robot extends TimedRobot {
   private void configureDriverButtonBindings() {
 
     // Reset heading
-    m_driver.DIn()
-        .onTrue(new InstantCommand(() -> m_swerve.setHeadingOffset())
+    driver.DIn()
+        .onTrue(new InstantCommand(() -> swerve.setHeadingOffset())
         .ignoringDisable(true));
+
+    driver.AIn()
+        .whileTrue(new DriveToPoseCommand(swerve, vision, () -> swerve.getNearestPose()));
 
   }
   // spotless:on
@@ -183,13 +174,13 @@ public class Robot extends TimedRobot {
   private void configureOperatorButtonBindings() {}
 
   private void configureEventBindings() {
-    m_autoSelector.getChangedAutoSelection().onTrue(m_LEDs.createChangeAutoAnimationCommand());
+    autoSelector.getChangedAutoSelection().onTrue(leds.createChangeAutoAnimationCommand());
   }
 
   private void configureAutoOptions() {
-    m_autoOptions.add(new AutoOption(Alliance.Red, 4));
-    m_autoOptions.add(
-        new AutoOption(Alliance.Blue, 1, () -> m_auto.exampleRoutine(), "exampleAuto"));
+    autoSelector.addAuto(new AutoOption(Alliance.Red, 4));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new ExampleAuto(swerve)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2));
   }
 
   /**
@@ -200,7 +191,7 @@ public class Robot extends TimedRobot {
    * @return Current in Amps on the PDH channel corresponding to the motor channel
    */
   public double getPDHCurrent(int CANBusPort) {
-    return m_powerDistribution.getCurrent(CANBusPort - 10);
+    return powerDistribution.getCurrent(CANBusPort - 10);
   }
 
   private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {
@@ -213,11 +204,11 @@ public class Robot extends TimedRobot {
   }
 
   protected void checkVision() {
-    m_vision
+    vision
         .getPoseEstimates()
         .forEach(
             est -> {
-              m_swerve.addVisionMeasurement(
+              swerve.addVisionMeasurement(
                   est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
               getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
             });
