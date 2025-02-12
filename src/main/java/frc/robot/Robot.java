@@ -10,20 +10,25 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController.Axis;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceSelector;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.ExampleAuto;
+import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
@@ -39,12 +44,14 @@ public class Robot extends TimedRobot {
       new AutoSelector(
           AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
   private final Drivetrain swerve = new Drivetrain(allianceSelector::fieldRotated);
+  private final Climber climber = new Climber();
   private final LEDs leds = new LEDs();
   private final Vision vision = new Vision();
   private CommandZorroController driver;
   private CommandXboxController operator;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
+  private final EventLoop loop = new EventLoop();
 
   private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
@@ -72,15 +79,18 @@ public class Robot extends TimedRobot {
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
 
+    climber.setDefaultCommand(climber.createDefaultClimberCommand());
+
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
 
   @Override
   public void robotPeriodic() {
+    loop.poll();
     CommandScheduler.getInstance().run();
     checkVision();
-    SmartDashboard.putData(driver.getHID());
-    SmartDashboard.putData(operator.getHID());
+    SmartDashboard.putData("Driver Controller", driver.getHID());
+    SmartDashboard.putData("Operator Controller", operator.getHID());
     SmartDashboard.putData(powerDistribution);
   }
 
@@ -118,6 +128,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     autoSelector.scheduleAuto();
     leds.setDefaultCommand(leds.createEnabledCommand());
+    climber.lockRatchet();
   }
 
   @Override
@@ -128,6 +139,8 @@ public class Robot extends TimedRobot {
     autoSelector.cancelAuto();
     leds.setDefaultCommand(leds.createEnabledCommand());
     swerve.resetHeadingOffset();
+    climber.resetEncoder();
+    climber.lockRatchet();
   }
 
   @Override
@@ -171,7 +184,20 @@ public class Robot extends TimedRobot {
   }
   // spotless:on
 
-  private void configureOperatorButtonBindings() {}
+  private void configureOperatorButtonBindings() {
+    Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
+    climbTrigger.onTrue(
+        climber
+            .createDeployCommand()
+            .andThen(
+                climber.createClimbByControllerCommand(
+                    operator.getHID(), -ClimberConstants.kMaxVelocity)));
+
+    operator
+        .back()
+        .whileTrue(new InstantCommand(climber::unlockRatchet))
+        .whileFalse(new InstantCommand(climber::lockRatchet));
+  }
 
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection().onTrue(leds.createChangeAutoAnimationCommand());

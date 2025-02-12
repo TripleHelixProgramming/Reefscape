@@ -237,6 +237,38 @@ public final class Constants {
     //         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
+  public static final class ClimberConstants {
+    public static final int kClimberPort = 17;
+    public static final int kClimberCurrentLimit = 80;
+
+    public static final int kRatchetServoPort = 1;
+    public static final double kEngagedPosition = 600.0 / 1024.0;
+    public static final double kDisengedPosition = 475.0 / 1024.0;
+
+    public static final int kCageSensorPort = 1;
+
+    public static final double kP = 0.1;
+    public static final double kI = 0;
+    public static final double kD = 0;
+
+    // By default, the encoder in position mode measures rotations at the motor
+    // Convert to inches at the winch
+    public static final double kWinchDiameter = 1.0; // inches
+    public static final double kGearRatio = 20.0;
+    public static final double kPositionConversionFactor = (kWinchDiameter * Math.PI) / kGearRatio;
+
+    // By default, the encoder in velocity mode measures RPM at the motor
+    // Convert to inches per second at the winch
+    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+
+    public static final double kMaxVelocity = 10.0; // inches/s
+
+    public static final double kMaxVelocityFactor = kMaxVelocity / kVelocityConversionFactor;
+    public static final double kMaxAcceleration = kMaxVelocityFactor; // 100% accel in 1s
+
+    public static final double kDeployPosition = 12.0; // inches
+  }
+
   public static final class LedConstants {
     public static final int kLedPort = 0;
     public static final int kLedBufferLength = 17;
