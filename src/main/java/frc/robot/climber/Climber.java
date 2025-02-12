@@ -103,7 +103,7 @@ public class Climber extends SubsystemBase{
      * @return Command that moves the climber arm using the controller joystick
      */
     public Command createClimbByControllerCommand(XboxController controller, double factor) {
-        return this.run(() -> this.setVelocity(controller.getRightY() * factor));
+        return this.run(() -> this.setVelocity(Math.max(0.0, controller.getRightY()) * factor));
     }
 
     private double getPosition() {

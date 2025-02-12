@@ -187,7 +187,7 @@ public class Robot extends TimedRobot {
   private void configureOperatorButtonBindings() {
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
     climbTrigger.onTrue(climber.createDeployCommand()
-        .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityFactor)));
+        .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocity)));
 
     operator.back().whileTrue(new InstantCommand(climber::unlockRatchet))
     .whileFalse(new InstantCommand(climber::lockRatchet));
