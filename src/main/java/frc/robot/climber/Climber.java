@@ -63,6 +63,9 @@ public class Climber extends SubsystemBase{
         SmartDashboard.putBoolean("Cage Sensor", cageSensor.get());
 
         SmartDashboard.putNumber("Servo", servo.get());
+
+        SmartDashboard.putNumber("Climber Motor Current", motor.getOutputCurrent());
+        SmartDashboard.putBoolean("isfinished for Command", createDeployCommand().isFinished());
     }
 
     public void resetEncoder() {
