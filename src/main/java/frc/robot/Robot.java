@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
   private CommandXboxController operator;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
-    private final EventLoop loop = new EventLoop();
+  private final EventLoop loop = new EventLoop();
 
   private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
@@ -186,11 +186,17 @@ public class Robot extends TimedRobot {
 
   private void configureOperatorButtonBindings() {
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
-    climbTrigger.onTrue(climber.createDeployCommand()
-        .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocity)));
+    climbTrigger.onTrue(
+        climber
+            .createDeployCommand()
+            .andThen(
+                climber.createClimbByControllerCommand(
+                    operator.getHID(), -ClimberConstants.kMaxVelocity)));
 
-    operator.back().whileTrue(new InstantCommand(climber::unlockRatchet))
-    .whileFalse(new InstantCommand(climber::lockRatchet));
+    operator
+        .back()
+        .whileTrue(new InstantCommand(climber::unlockRatchet))
+        .whileFalse(new InstantCommand(climber::lockRatchet));
   }
 
   private void configureEventBindings() {
