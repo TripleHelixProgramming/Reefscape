@@ -23,6 +23,7 @@ import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
@@ -77,6 +78,8 @@ public class Robot extends TimedRobot {
 
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
+
+    climber.setDefaultCommand(climber.createDefaultClimberCommand());
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -184,7 +187,7 @@ public class Robot extends TimedRobot {
   private void configureOperatorButtonBindings() {
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
     climbTrigger.onTrue(climber.createDeployCommand()
-        .andThen(climber.createClimbByControllerCommand(operator.getHID(), 1.0)));
+        .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityFactor)));
 
     operator.back().whileTrue(new InstantCommand(climber::unlockRatchet))
     .whileFalse(new InstantCommand(climber::lockRatchet));

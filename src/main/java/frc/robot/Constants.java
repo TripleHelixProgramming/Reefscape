@@ -261,10 +261,12 @@ public final class Constants {
     // Convert to inches per second at the winch
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kMaxVelocity = 15.0; // inches/s/s
-    public static final double kMaxAcceleration = 15.0; // inches/s
+    public static final double kMaxVelocity = 10.0; // inches/s
 
-    public static final double kDeployPosition = 14.0; // inches
+    public static final double kMaxVelocityFactor = kMaxVelocity / kVelocityConversionFactor;
+    public static final double kMaxAcceleration = kMaxVelocityFactor; // 100% accel in 1s
+
+    public static final double kDeployPosition = 12.0; // inches
   }
 
   public static final class LedConstants {

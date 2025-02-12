@@ -37,10 +37,6 @@ public class Climber extends SubsystemBase{
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(ClimberConstants.kClimberCurrentLimit);
 
-        motorConfig.closedLoop.maxMotion
-            .maxAcceleration(ClimberConstants.kMaxAcceleration)
-            .maxVelocity(ClimberConstants.kMaxVelocity);
-
         motorConfig.closedLoop
             .p(ClimberConstants.kP)
             .i(ClimberConstants.kI)
@@ -50,6 +46,14 @@ public class Climber extends SubsystemBase{
         motorConfig.encoder
             .positionConversionFactor(ClimberConstants.kPositionConversionFactor)
             .velocityConversionFactor(ClimberConstants.kVelocityConversionFactor);
+
+        motorConfig.closedLoop.maxMotion
+            .maxAcceleration(ClimberConstants.kMaxAcceleration)
+            .maxVelocity(ClimberConstants.kMaxVelocityFactor);
+
+        motorConfig.softLimit
+            .reverseSoftLimit(0.0)
+            .reverseSoftLimitEnabled(true);
 
         motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
@@ -66,6 +70,7 @@ public class Climber extends SubsystemBase{
 
         SmartDashboard.putNumber("Climber Motor Current", motor.getOutputCurrent());
         SmartDashboard.putBoolean("isfinished for Command", createDeployCommand().isFinished());
+        SmartDashboard.putNumber("Output Voltage Climber", motor.get());
     }
 
     public void resetEncoder() {
@@ -109,6 +114,10 @@ public class Climber extends SubsystemBase{
         return (Math.abs(encoder.getPosition() - ClimberConstants.kDeployPosition) < 0.1);
     }
 
+    public Command createDefaultClimberCommand() {
+        return this.run(() -> motor.set(0.0));
+    }
+
     /**
      * @return Command that unlocks and deploys the climber arm
      */
@@ -122,7 +131,9 @@ public class Climber extends SubsystemBase{
             // execute
             () -> {},
             // end
-            interrupted -> lockRatchet(),
+            interrupted -> {lockRatchet();
+                            motor.set(0.0);
+                            },
             // isFinished
             () -> isDeployed(),
             // requirements
