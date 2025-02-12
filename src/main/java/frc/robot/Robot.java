@@ -86,8 +86,8 @@ public class Robot extends TimedRobot {
     loop.poll();
     CommandScheduler.getInstance().run();
     checkVision();
-    SmartDashboard.putData(driver.getHID());
-    SmartDashboard.putData(operator.getHID());
+    SmartDashboard.putData("Driver Controller", driver.getHID());
+    SmartDashboard.putData("Operator Controller", operator.getHID());
     SmartDashboard.putData(powerDistribution);
   }
 
