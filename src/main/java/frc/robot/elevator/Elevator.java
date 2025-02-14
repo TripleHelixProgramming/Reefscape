@@ -123,13 +123,11 @@ public class Elevator extends SubsystemBase {
       resetEncoder();
     }
 
-    SmartDashboard.putNumber("Lead Elevator Voltage", leaderMotor.get()); // TODO nonworking
-    SmartDashboard.putNumber("Follower Elevator Voltage", followerMotor.get()); // TODO nonworking
+    SmartDashboard.putNumber("Lead Elevator Voltage", leaderMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Follower Elevator Voltage", followerMotor.getAppliedOutput());
     SmartDashboard.putNumber("Lead Elevator Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Follower Elevator Current", followerMotor.getOutputCurrent());
-    SmartDashboard.putBoolean("Elevator Leader Motor Inverted", leaderMotor.getInverted());
-    SmartDashboard.putBoolean("Elevator Following Motor Inverted", followerMotor.getInverted());
-
+ 
     SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
   }
 

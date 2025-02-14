@@ -390,7 +390,7 @@ public final class Constants {
 
     public static enum ElevatorPosition {
       Floor(0.0),
-      Reset(0.14),
+      Reset(0.12),
       L1(6.0),
       L2(7.0),
       L3(8.0),
