@@ -27,8 +27,8 @@ import frc.robot.Constants.RobotConstants;
 
 public class Elevator extends SubsystemBase {
 
-  private final SparkMax leaderMotor;
-  private final SparkMax followerMotor;
+  private final SparkMax leaderMotor = new SparkMax(ElevatorConstants.kLeaderMotorPort, MotorType.kBrushless);
+  private final SparkMax followerMotor = new SparkMax(ElevatorConstants.kFollowerMotorPort, MotorType.kBrushless);
 
   private final SparkMaxConfig globalConfig = new SparkMaxConfig();
   private final SparkMaxConfig leaderConfig = new SparkMaxConfig();
@@ -38,7 +38,6 @@ public class Elevator extends SubsystemBase {
   private final SparkClosedLoopController controller;
 
   private final DigitalInput lowerLimitSwitch;
-  private final DigitalInput upperLimitSwitch;
 
   private final EventLoop loop = new EventLoop();
 
@@ -51,9 +50,6 @@ public class Elevator extends SubsystemBase {
    * IntakeConstants.kConstraints);
    */
   public Elevator() {
-    leaderMotor = new SparkMax(ElevatorConstants.kLeaderMotorPort, MotorType.kBrushless);
-    followerMotor = new SparkMax(ElevatorConstants.kFollowerMotorPort, MotorType.kBrushless);
-
     // spotless:off
     globalConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
@@ -70,8 +66,8 @@ public class Elevator extends SubsystemBase {
         .follow(leaderMotor);
 
     leaderConfig.closedLoop.maxMotion
-        .maxAcceleration(ElevatorConstants.kMaxAcceleration)
-        .maxVelocity(ElevatorConstants.kMaxVelocity);
+        .maxVelocity(ElevatorConstants.kMaxVelocityRPM)
+        .maxAcceleration(ElevatorConstants.kMaxAccelerationRPMPerSecond);
 
     leaderConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -90,6 +86,12 @@ public class Elevator extends SubsystemBase {
     leaderConfig.encoder
         .positionConversionFactor(ElevatorConstants.kPositionConversionFactor)
         .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
+
+    leaderConfig.softLimit
+        .reverseSoftLimit(0.0)
+        .reverseSoftLimitEnabled(true)
+        .forwardSoftLimit(5)
+        .forwardSoftLimitEnabled(true);
     // spotless:on
 
     leaderMotor.configure(
@@ -101,7 +103,6 @@ public class Elevator extends SubsystemBase {
     encoder = leaderMotor.getEncoder();
 
     lowerLimitSwitch = new DigitalInput(ElevatorConstants.lowerLimitSwitchPort);
-    upperLimitSwitch = new DigitalInput(ElevatorConstants.upperLimitSwitchPort);
 
     BooleanEvent atLowerLimit = new BooleanEvent(loop, lowerLimitSwitch::get);
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
@@ -126,7 +127,6 @@ public class Elevator extends SubsystemBase {
     }
 
     SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
-    SmartDashboard.putBoolean("Lower Limit Switch", upperLimitSwitch.get());
   }
 
   private ElevatorPosition getCurrentPosition() {
@@ -143,7 +143,7 @@ public class Elevator extends SubsystemBase {
     nextPosition = positions[nextIndex];
   }
 
-  private void resetEncoder() {
+  public void resetEncoder() {
     encoder.setPosition(0);
   }
 

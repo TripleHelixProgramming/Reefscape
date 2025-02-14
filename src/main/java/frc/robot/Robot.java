@@ -28,6 +28,7 @@ import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPosition;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
@@ -92,6 +93,8 @@ public class Robot extends TimedRobot {
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
 
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
+
+    elevator.createJoystickControlCommand(operator.getHID(), ElevatorConstants.kMaxVelocityInchesPerSecond);
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -158,6 +161,7 @@ public class Robot extends TimedRobot {
     swerve.resetHeadingOffset();
     climber.resetEncoder();
     climber.lockRatchet();
+    elevator.resetEncoder(); //TODO: replace with lower limit switch
   }
 
   @Override
@@ -254,8 +258,8 @@ public class Robot extends TimedRobot {
                 coralIntake.createSetRotationPositionCommand(0),
                 algaeIntake.createSetRotationPositionCommand(115)));
 
-    new JoystickButton(operator.getHID(), Button.kLeftStick.value)
-        .whileTrue(elevator.createJoystickControlCommand(operator.getHID(), 0.5));
+    // new JoystickButton(operator.getHID(), Button.kLeftStick.value)
+    //     .whileTrue(elevator.createJoystickControlCommand(operator.getHID(), 0.5));
 
     operator
         .rightBumper()
@@ -276,7 +280,7 @@ public class Robot extends TimedRobot {
             .createDeployCommand()
             .andThen(
                 climber.createClimbByControllerCommand(
-                    operator.getHID(), -ClimberConstants.kMaxVelocity)));
+                    operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
 
     operator
         .back()

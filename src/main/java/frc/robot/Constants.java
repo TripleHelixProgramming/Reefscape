@@ -337,10 +337,10 @@ public final class Constants {
     // Convert to inches per second at the winch
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kMaxVelocity = 10.0; // inches/s
+    public static final double kMaxVelocityInchesPerSecond = 10.0;
 
-    public static final double kMaxVelocityFactor = kMaxVelocity / kVelocityConversionFactor;
-    public static final double kMaxAcceleration = kMaxVelocityFactor; // 100% accel in 1s
+    public static final double kMaxVelocityRPM = kMaxVelocityInchesPerSecond / kVelocityConversionFactor;
+    public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
 
     public static final double kDeployPosition = 12.0; // inches
   }
@@ -368,11 +368,12 @@ public final class Constants {
     // Convert to inches per second at the final stage
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kMaxVelocity = 35.0; // inches/s
-    public static final double kMaxAcceleration = 35.0; // inches/s/s
+    public static final double kMaxVelocityInchesPerSecond = 35.0;
 
-    public static final int upperLimitSwitchPort = 0;
-    public static final int lowerLimitSwitchPort = 1;
+    public static final double kMaxVelocityRPM = kMaxVelocityInchesPerSecond / kVelocityConversionFactor;
+    public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
+
+    public static final int lowerLimitSwitchPort = 9;
 
     public final class ElevatorControllerPositionGains {
       public static final double kP = 0.1;

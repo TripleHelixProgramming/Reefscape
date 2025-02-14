@@ -31,31 +31,31 @@ public class Climber extends SubsystemBase {
   private final DigitalInput cageSensor = new DigitalInput(ClimberConstants.kCageSensorPort);
 
   public Climber() {
+    // spotless:off
     motorConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .inverted(false)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ClimberConstants.kClimberCurrentLimit);
 
-    motorConfig
-        .closedLoop
+    motorConfig.closedLoop
         .p(ClimberConstants.kP)
         .i(ClimberConstants.kI)
         .d(ClimberConstants.kD)
         .outputRange(-1, 1);
 
-    motorConfig
-        .encoder
+    motorConfig.encoder
         .positionConversionFactor(ClimberConstants.kPositionConversionFactor)
         .velocityConversionFactor(ClimberConstants.kVelocityConversionFactor);
 
-    motorConfig
-        .closedLoop
-        .maxMotion
-        .maxAcceleration(ClimberConstants.kMaxAcceleration)
-        .maxVelocity(ClimberConstants.kMaxVelocityFactor);
+    motorConfig.closedLoop.maxMotion
+        .maxVelocity(ClimberConstants.kMaxVelocityRPM)
+        .maxAcceleration(ClimberConstants.kMaxAccelerationRPMPerSecond);
 
-    motorConfig.softLimit.reverseSoftLimit(0.0).reverseSoftLimitEnabled(true);
+    motorConfig.softLimit
+        .reverseSoftLimit(0.0)
+        .reverseSoftLimitEnabled(true);
+    // spotless:on
 
     motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
