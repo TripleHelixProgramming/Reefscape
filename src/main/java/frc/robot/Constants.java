@@ -368,9 +368,10 @@ public final class Constants {
     // Convert to inches per second at the final stage
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kMaxVelocityInchesPerSecond = 35.0;
+    public static final double kFineVelocityInchesPerSecond = 5.0;
+    public static final double kRapidVelocityInchesPerSecond = 35.0;
 
-    public static final double kMaxVelocityRPM = kMaxVelocityInchesPerSecond / kVelocityConversionFactor;
+    public static final double kMaxVelocityRPM = kRapidVelocityInchesPerSecond / kVelocityConversionFactor;
     public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
 
     public static final int lowerLimitSwitchPort = 9;

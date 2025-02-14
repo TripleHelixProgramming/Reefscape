@@ -11,6 +11,8 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -54,11 +56,11 @@ public class Elevator extends SubsystemBase {
     globalConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit);
+        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
+        .inverted(false);
 
     leaderConfig
-        .apply(globalConfig)
-        .inverted(false);
+        .apply(globalConfig);
 
     followerConfig
         .apply(globalConfig)
@@ -70,12 +72,13 @@ public class Elevator extends SubsystemBase {
 
     leaderConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+
         .p(ElevatorControllerPositionGains.kP , ClosedLoopSlot.kSlot0)
         .i(ElevatorControllerPositionGains.kI, ClosedLoopSlot.kSlot0)
         .d(ElevatorControllerPositionGains.kD, ClosedLoopSlot.kSlot0)
         // .iZone()
-        // .velocityFF(ElevatorConstants.kFF)
         .outputRange(-1, 1, ClosedLoopSlot.kSlot0)
+        
         .p(ElevatorControllerVelocityGains.kP, ClosedLoopSlot.kSlot1)
         .i(ElevatorControllerVelocityGains.kI, ClosedLoopSlot.kSlot1)
         .d(ElevatorControllerVelocityGains.kD, ClosedLoopSlot.kSlot1)
@@ -87,7 +90,7 @@ public class Elevator extends SubsystemBase {
         .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
 
     leaderConfig.softLimit
-        .reverseSoftLimit(-0.2)
+        .reverseSoftLimit(0.0)
         .reverseSoftLimitEnabled(true)
         .forwardSoftLimit(5.0)
         .forwardSoftLimitEnabled(true);
@@ -177,7 +180,7 @@ public class Elevator extends SubsystemBase {
   public Command createJoystickControlCommand(XboxController controller, double factor) {
     return this.run(
         () -> {
-          this.setVelocity(controller.getLeftY() * factor);
+          this.setVelocity(MathUtil.applyDeadband(controller.getLeftY(), 0.02) * factor);
         });
   }
 

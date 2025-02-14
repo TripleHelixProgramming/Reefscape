@@ -92,7 +92,7 @@ public class Robot extends TimedRobot {
 
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
 
-    elevator.setDefaultCommand(elevator.createJoystickControlCommand(operator.getHID(), ElevatorConstants.kMaxVelocityInchesPerSecond));
+    elevator.setDefaultCommand(elevator.createJoystickControlCommand(operator.getHID(), ElevatorConstants.kFineVelocityInchesPerSecond));
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
