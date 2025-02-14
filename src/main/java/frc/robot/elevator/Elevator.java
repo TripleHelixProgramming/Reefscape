@@ -90,9 +90,9 @@ public class Elevator extends SubsystemBase {
         .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
 
     leaderConfig.softLimit
-        .reverseSoftLimit(0.0)
+        .reverseSoftLimit(ElevatorPosition.Floor.height)
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(5.0)
+        .forwardSoftLimit(ElevatorPosition.Max.height)
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
@@ -123,10 +123,12 @@ public class Elevator extends SubsystemBase {
       resetEncoder();
     }
 
-    SmartDashboard.putNumber("Lead Elevator Voltage", leaderMotor.get());
-    SmartDashboard.putNumber("Follower Elevator Voltage", followerMotor.get());
+    SmartDashboard.putNumber("Lead Elevator Voltage", leaderMotor.get()); // TODO nonworking
+    SmartDashboard.putNumber("Follower Elevator Voltage", followerMotor.get()); // TODO nonworking
     SmartDashboard.putNumber("Lead Elevator Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Follower Elevator Current", followerMotor.getOutputCurrent());
+    SmartDashboard.putBoolean("Elevator Leader Motor Inverted", leaderMotor.getInverted());
+    SmartDashboard.putBoolean("Elevator Following Motor Inverted", followerMotor.getInverted());
 
     SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
   }
@@ -146,7 +148,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void resetEncoder() {
-    encoder.setPosition(0);
+    encoder.setPosition(ElevatorPosition.Reset.height);
   }
 
   private void setPosition(ElevatorPosition position) {
@@ -180,7 +182,7 @@ public class Elevator extends SubsystemBase {
   public Command createJoystickControlCommand(XboxController controller, double factor) {
     return this.run(
         () -> {
-          this.setVelocity(MathUtil.applyDeadband(controller.getLeftY(), 0.02) * factor);
+          this.setVelocity(MathUtil.applyDeadband(-controller.getLeftY(), 0.02) * factor);
         });
   }
 

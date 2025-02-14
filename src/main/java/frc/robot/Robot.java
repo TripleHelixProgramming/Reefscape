@@ -251,7 +251,7 @@ public class Robot extends TimedRobot {
         .povUp()
         .onTrue(
             new ParallelCommandGroup(
-                elevator.createSetPositionCommand(ElevatorPosition.Top),
+                elevator.createSetPositionCommand(ElevatorPosition.Max),
                 coralIntake.createSetRotationPositionCommand(0),
                 algaeIntake.createSetRotationPositionCommand(115)));
 

@@ -390,12 +390,13 @@ public final class Constants {
 
     public static enum ElevatorPosition {
       Floor(0.0),
-      L1(12.0),
-      L2(14.0),
-      L3(16.0),
-      L4(18.0),
-      Intake(20.0),
-      Top(70.5);
+      Reset(0.14),
+      L1(6.0),
+      L2(7.0),
+      L3(8.0),
+      L4(9.0),
+      Intake(10.0),
+      Max(11.94);
 
       public double height;
 
