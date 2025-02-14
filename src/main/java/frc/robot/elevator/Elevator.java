@@ -1,5 +1,7 @@
 package frc.robot.elevator;
 
+import java.util.function.Predicate;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -62,8 +64,7 @@ public class Elevator extends SubsystemBase {
 
     followerConfig
         .apply(globalConfig)
-        .inverted(true)
-        .follow(leaderMotor);
+        .follow(leaderMotor, true);
 
     leaderConfig.closedLoop.maxMotion
         .maxVelocity(ElevatorConstants.kMaxVelocityRPM)
@@ -88,7 +89,7 @@ public class Elevator extends SubsystemBase {
         .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
 
     leaderConfig.softLimit
-        .reverseSoftLimit(0.0)
+        .reverseSoftLimit(-0.2)
         .reverseSoftLimitEnabled(true)
         .forwardSoftLimit(5)
         .forwardSoftLimitEnabled(true);
@@ -104,7 +105,7 @@ public class Elevator extends SubsystemBase {
 
     lowerLimitSwitch = new DigitalInput(ElevatorConstants.lowerLimitSwitchPort);
 
-    BooleanEvent atLowerLimit = new BooleanEvent(loop, lowerLimitSwitch::get);
+    BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
     currentPosition = ElevatorPosition.Floor;
@@ -125,6 +126,11 @@ public class Elevator extends SubsystemBase {
       SmartDashboard.putBoolean("Reset Encoder", false);
       resetEncoder();
     }
+
+    SmartDashboard.putNumber("Lead Elevator Voltage", leaderMotor.get());
+    SmartDashboard.putNumber("Follower Elevator Voltage", followerMotor.get());
+    SmartDashboard.putNumber("Lead Elevator Current", leaderMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Follower Elevator Current", followerMotor.getOutputCurrent());
 
     SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
   }

@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
 
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
 
-    elevator.createJoystickControlCommand(operator.getHID(), ElevatorConstants.kMaxVelocityInchesPerSecond);
+    elevator.setDefaultCommand(elevator.createJoystickControlCommand(operator.getHID(), ElevatorConstants.kMaxVelocityInchesPerSecond));
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -161,7 +161,6 @@ public class Robot extends TimedRobot {
     swerve.resetHeadingOffset();
     climber.resetEncoder();
     climber.lockRatchet();
-    elevator.resetEncoder(); //TODO: replace with lower limit switch
   }
 
   @Override
