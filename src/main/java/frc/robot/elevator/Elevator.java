@@ -89,7 +89,7 @@ public class Elevator extends SubsystemBase {
     leaderConfig.softLimit
         .reverseSoftLimit(-0.2)
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(5)
+        .forwardSoftLimit(5.0)
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
