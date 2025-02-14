@@ -1,7 +1,5 @@
 package frc.robot.elevator;
 
-import java.util.function.Predicate;
-
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -36,10 +34,10 @@ public class Elevator extends SubsystemBase {
   private final SparkMaxConfig leaderConfig = new SparkMaxConfig();
   private final SparkMaxConfig followerConfig = new SparkMaxConfig();
 
-  private final RelativeEncoder encoder;
-  private final SparkClosedLoopController controller;
+  private final RelativeEncoder encoder = leaderMotor.getEncoder();
+  private final SparkClosedLoopController controller = leaderMotor.getClosedLoopController();
 
-  private final DigitalInput lowerLimitSwitch;
+  private final DigitalInput lowerLimitSwitch = new DigitalInput(ElevatorConstants.lowerLimitSwitchPort);
 
   private final EventLoop loop = new EventLoop();
 
@@ -99,11 +97,6 @@ public class Elevator extends SubsystemBase {
         leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     followerMotor.configure(
         followerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-    controller = leaderMotor.getClosedLoopController();
-    encoder = leaderMotor.getEncoder();
-
-    lowerLimitSwitch = new DigitalInput(ElevatorConstants.lowerLimitSwitchPort);
 
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
