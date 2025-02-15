@@ -44,7 +44,7 @@ public class Elevator extends SubsystemBase {
 
   private final EventLoop loop = new EventLoop();
 
-  private ElevatorPosition targetState;
+  private ElevatorPosition targetState = ElevatorPosition.Floor;
   private double targetHeight;
 
   /**
@@ -68,8 +68,9 @@ public class Elevator extends SubsystemBase {
         .follow(leaderMotor, true);
 
     leaderConfig.closedLoop.maxMotion
-        .maxVelocity(ElevatorConstants.kMaxVelocityRPM)
-        .maxAcceleration(ElevatorConstants.kMaxAccelerationRPMPerSecond);
+        .maxVelocity(ElevatorConstants.kRapidVelocityInchesPerSecond)
+        .maxAcceleration(ElevatorConstants.kRapidAccelerationInchesPerSecondPerSecond)
+        .allowedClosedLoopError(ElevatorConstants.kAllowableHeightError);
 
     leaderConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -106,6 +107,7 @@ public class Elevator extends SubsystemBase {
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
     targetHeight = encoder.getPosition();
+    controller.setReference(targetHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
   }
 
   @Override
@@ -115,8 +117,8 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Height", encoder.getPosition());
     SmartDashboard.putNumber("Elevator Velocity", encoder.getVelocity());
 
-    SmartDashboard.putString("Elevator Target Position Name", getTargetPosition().name());
-    SmartDashboard.putNumber("Elevator Target Position Height", getTargetPosition().height);
+    SmartDashboard.putString("Elevator Target Position Name", getTargetState().name());
+    SmartDashboard.putNumber("Elevator Target Position Height", targetHeight);
 
     if (SmartDashboard.getBoolean("Elevator Reset Encoder", false)) {
       SmartDashboard.putBoolean("Elevator Reset Encoder", false);
@@ -132,7 +134,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putBoolean("Elevator isAtHeight", isAtTargetHeight());
   }
 
-  public ElevatorPosition getTargetPosition() {
+  public ElevatorPosition getTargetState() {
     return this.targetState;
   }
 
@@ -180,7 +182,7 @@ public class Elevator extends SubsystemBase {
   public Command createJoystickControlCommand(XboxController controller, double factor) {
     return this.run(
         () -> {
-          targetHeight += MathUtil.applyDeadband(-controller.getLeftY(), 0.02) * factor * RobotConstants.kPeriod;
+          targetHeight += MathUtil.applyDeadband(-controller.getLeftY(), 0.05) * factor * RobotConstants.kPeriod;
           this.setPosition(targetHeight);
         });
   }

@@ -370,16 +370,18 @@ public final class Constants {
 
     public static final double kFineVelocityInchesPerSecond = 15.0;
     public static final double kRapidVelocityInchesPerSecond = 100.0;
+    public static final double kTimeToMaxVelocity = 0.02;
 
     public static final double kMaxVelocityRPM = kRapidVelocityInchesPerSecond / kVelocityConversionFactor;
-    public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
+    public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM / kTimeToMaxVelocity;
+    public static final double kRapidAccelerationInchesPerSecondPerSecond = kRapidVelocityInchesPerSecond / kTimeToMaxVelocity;
 
     public static final int lowerLimitSwitchPort = 9;
 
     public static final double kAllowableHeightError = 0.2;
 
     public final class ElevatorControllerPositionGains {
-      public static final double kP = 0.01;
+      public static final double kP = 0.0001;
       public static final double kI = 0.0;
       public static final double kD = 0.0;
     }

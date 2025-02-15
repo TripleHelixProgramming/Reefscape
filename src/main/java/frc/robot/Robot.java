@@ -254,12 +254,12 @@ public class Robot extends TimedRobot {
     // Intake with coral gripper
     operator.rightBumper()
         .whileTrue(coralIntake.createSetIntakeVelocityCommand(5)
-        .onlyIf(() -> elevator.getTargetPosition() == ElevatorPosition.Intake));
+        .onlyIf(() -> elevator.getTargetState() == ElevatorPosition.Intake));
     
     // Intake with algae gripper
     operator.rightBumper()
         .whileTrue(algaeIntake.createSetIntakeVelocityCommand(5)
-        .onlyIf(() -> elevator.getTargetPosition() != ElevatorPosition.Intake));
+        .onlyIf(() -> elevator.getTargetState() != ElevatorPosition.Intake));
 
     // Actuate climber winch
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
