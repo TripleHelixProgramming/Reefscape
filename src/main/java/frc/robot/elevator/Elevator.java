@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorControllerPositionGains;
 import frc.robot.Constants.ElevatorConstants.ElevatorControllerVelocityGains;
@@ -44,7 +44,7 @@ public class Elevator extends SubsystemBase {
 
   private final EventLoop loop = new EventLoop();
 
-  private ElevatorPosition currentPosition;
+  private ElevatorPosition targetPosition;
   private ElevatorPosition nextPosition;
 
   /**
@@ -105,8 +105,7 @@ public class Elevator extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    currentPosition = ElevatorPosition.Floor;
-    nextPosition = currentPosition;
+    targetPosition = ElevatorPosition.Floor;
   }
 
   @Override
@@ -116,8 +115,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Height", encoder.getPosition());
     SmartDashboard.putNumber("Elevator Velocity", encoder.getVelocity());
 
-    SmartDashboard.putString("Elevator Position Current", getCurrentPosition().name());
-    SmartDashboard.putString("Elevator Position Next", getNextPosition().name());
+    SmartDashboard.putString("Elevator Target Position", getTargetPosition().name());
 
     if (SmartDashboard.getBoolean("Elevator Reset Encoder", false)) {
       SmartDashboard.putBoolean("Elevator Reset Encoder", false);
@@ -130,10 +128,11 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Follower Elevator Current", followerMotor.getOutputCurrent());
 
     SmartDashboard.putBoolean("Elevator Lower Limit Switch", lowerLimitSwitch.get());
+    SmartDashboard.putBoolean("Elevator isAtHeight", isAtTargetHeight());
   }
 
-  private ElevatorPosition getCurrentPosition() {
-    return this.currentPosition;
+  private ElevatorPosition getTargetPosition() {
+    return this.targetPosition;
   }
 
   private ElevatorPosition getNextPosition() {
@@ -142,7 +141,7 @@ public class Elevator extends SubsystemBase {
 
   private void incrementState(int increment) {
     ElevatorPosition[] positions = ElevatorPosition.values();
-    int nextIndex = (currentPosition.ordinal() + increment) % positions.length;
+    int nextIndex = (targetPosition.ordinal() + increment) % positions.length;
     nextPosition = positions[nextIndex];
   }
 
@@ -150,25 +149,33 @@ public class Elevator extends SubsystemBase {
     encoder.setPosition(ElevatorPosition.Reset.height);
   }
 
-  private void setPosition(ElevatorPosition position) {
-    currentPosition = position;
-    controller.setReference(position.height, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+  private void setPosition(ElevatorPosition targetPosition) {
+    controller.setReference(targetPosition.height, ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
   private void setVelocity(double targetVelocity) {
     controller.setReference(targetVelocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
   }
 
-  public ElevatorPosition getElevatorPosition() {
-    return currentPosition;
-  }
-
-  private Boolean isAtHeight(ElevatorPosition targetPosition) {
+  public Boolean isAtTargetHeight() {
     return (Math.abs(encoder.getPosition() - targetPosition.height) < 0.1);
   }
 
   public Command createSetPositionCommand(ElevatorPosition position) {
-    return new InstantCommand(() -> this.setPosition(position)).until(() -> isAtHeight(position));
+    return new FunctionalCommand(
+        // initialize
+        () -> {
+          targetPosition = position;
+          setPosition(position);
+        },
+        // execute
+        () -> {},
+        // end
+        interrupted -> {},
+        // isFinished
+        this::isAtTargetHeight,
+        // requirements
+        this);
   }
 
   public Command createGoToNextPositionCommand() {
