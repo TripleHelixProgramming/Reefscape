@@ -44,8 +44,8 @@ public class Elevator extends SubsystemBase {
 
   private final EventLoop loop = new EventLoop();
 
-  private ElevatorPosition targetPosition;
-  private ElevatorPosition nextPosition;
+  private ElevatorPosition targetState;
+  private double targetHeight;
 
   /**
    * private final ProfiledPIDController m_positionController = new ProfiledPIDController(
@@ -105,7 +105,7 @@ public class Elevator extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    targetPosition = ElevatorPosition.Floor;
+    targetHeight = encoder.getPosition();
   }
 
   @Override
@@ -133,25 +133,15 @@ public class Elevator extends SubsystemBase {
   }
 
   public ElevatorPosition getTargetPosition() {
-    return this.targetPosition;
-  }
-
-  private ElevatorPosition getNextPosition() {
-    return this.nextPosition;
-  }
-
-  private void incrementState(int increment) {
-    ElevatorPosition[] positions = ElevatorPosition.values();
-    int nextIndex = (targetPosition.ordinal() + increment) % positions.length;
-    nextPosition = positions[nextIndex];
+    return this.targetState;
   }
 
   public void resetEncoder() {
     encoder.setPosition(ElevatorPosition.Reset.height);
   }
 
-  private void setPosition(ElevatorPosition targetPosition) {
-    controller.setReference(targetPosition.height, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
+  private void setPosition(double targetHeight) {
+    controller.setReference(targetHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
   }
 
   private void setVelocity(double targetVelocity) {
@@ -159,15 +149,16 @@ public class Elevator extends SubsystemBase {
   }
 
   private Boolean isAtTargetHeight() {
-    return (Math.abs(encoder.getPosition() - targetPosition.height) < ElevatorConstants.kAllowableHeightError);
+    return (Math.abs(encoder.getPosition() - targetState.height) < ElevatorConstants.kAllowableHeightError);
   }
 
   public Command createSetPositionCommand(ElevatorPosition position) {
     return new FunctionalCommand(
         // initialize
         () -> {
-          targetPosition = position;
-          setPosition(position);
+          targetState = position;
+          targetHeight = position.height;
+          setPosition(position.height);
         },
         // execute
         () -> {},
@@ -177,10 +168,6 @@ public class Elevator extends SubsystemBase {
         this::isAtTargetHeight,
         // requirements
         this);
-  }
-
-  public Command createGoToNextPositionCommand() {
-    return new InstantCommand(() -> this.setPosition(nextPosition));
   }
 
   public Command createStopCommand() {
@@ -193,15 +180,8 @@ public class Elevator extends SubsystemBase {
   public Command createJoystickControlCommand(XboxController controller, double factor) {
     return this.run(
         () -> {
-          this.setVelocity(MathUtil.applyDeadband(-controller.getLeftY(), 0.02) * factor);
+          targetHeight += MathUtil.applyDeadband(-controller.getLeftY(), 0.02) * factor * RobotConstants.kPeriod;
+          this.setPosition(targetHeight);
         });
-  }
-
-  public Command createNextStateCommand() {
-    return this.runOnce(() -> incrementState(1));
-  }
-
-  public Command createPreviousStateCommand() {
-    return this.runOnce(() -> incrementState(-1));
   }
 }
