@@ -113,6 +113,10 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putBoolean("Elevator isAtHeight", controller.atGoal());
   }
 
+  public double getProportionOfMaxHeight() {
+    return encoder.getPosition() / ElevatorState.Max.height;
+  }
+
   public void resetPositionController() {
     controller.reset(encoder.getPosition());
     controller.setGoal(encoder.getPosition());

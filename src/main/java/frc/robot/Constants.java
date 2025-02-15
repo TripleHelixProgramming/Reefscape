@@ -83,6 +83,8 @@ public final class Constants {
         MetersPerSecond.of(4.0); // max 4.5
     public static final AngularVelocity kMaxRotationalVelocity =
         RadiansPerSecond.of(5.0); // max 5.0
+    public static final LinearVelocity kMinTranslationVelocity = 
+        MetersPerSecond.of(1.0);
 
     // The locations for the modules must be relative to the center of the robot.
     // Positive x values represent moving toward the front of the robot

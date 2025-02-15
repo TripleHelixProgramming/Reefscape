@@ -19,7 +19,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants.RotationControllerGains;
 import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
@@ -27,14 +26,18 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.VisionConstants;
 import java.util.Arrays;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 /** Constructs a swerve drive style drivetrain. */
 public class Drivetrain extends SubsystemBase {
 
   private BooleanSupplier m_fieldRotatedSupplier;
 
-  static LinearVelocity kMaxSpeed = Constants.DriveConstants.kMaxTranslationalVelocity;
-  static AngularVelocity kMaxAngularSpeed = Constants.DriveConstants.kMaxRotationalVelocity;
+  private DoubleSupplier elevatorHeightSupplier;
+
+  static LinearVelocity kMaxSpeed = DriveConstants.kMaxTranslationalVelocity;
+  static LinearVelocity kMinSpeed = DriveConstants.kMinTranslationVelocity;
+  static AngularVelocity kMaxAngularSpeed = DriveConstants.kMaxRotationalVelocity;
 
   private final SwerveDriveKinematics m_kinematics = DriveConstants.kDriveKinematics;
 
@@ -61,9 +64,11 @@ public class Drivetrain extends SubsystemBase {
   private StructPublisher<Pose2d> m_visionPosePublisher =
       NetworkTableInstance.getDefault().getStructTopic("Vision", Pose2d.struct).publish();
 
-  public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
+  public Drivetrain(BooleanSupplier fieldRotatedSupplier, DoubleSupplier elevatorHeight) {
 
     this.m_fieldRotatedSupplier = fieldRotatedSupplier;
+
+    this.elevatorHeightSupplier = elevatorHeight;
 
     canandgyro.setYaw(0);
 
@@ -128,7 +133,8 @@ public class Drivetrain extends SubsystemBase {
     var swerveModuleStates =
         kinematics.toSwerveModuleStates(
             ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod));
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
+    LinearVelocity speedPenalty = (kMaxSpeed.minus(kMinSpeed)).times(elevatorHeightSupplier.getAsDouble());
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed.minus(speedPenalty));
     for (SwerveModule module : SwerveModule.values()) {
       module.setDesiredState(swerveModuleStates[module.ordinal()]);
     }

@@ -54,11 +54,11 @@ public class Robot extends TimedRobot {
   private final AutoSelector autoSelector =
       new AutoSelector(
           AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
-  private final Drivetrain swerve = new Drivetrain(allianceSelector::fieldRotated);
+  private final Elevator elevator = new Elevator();
+  private final Drivetrain swerve = new Drivetrain(allianceSelector::fieldRotated, elevator::getProportionOfMaxHeight);
   private final Climber climber = new Climber();
   private final LEDs leds = new LEDs();
   private final Vision vision = new Vision();
-  private final Elevator elevator = new Elevator();
   private final CoralIntake coralIntake = new CoralIntake();
   private final AlgaeIntake algaeIntake = new AlgaeIntake();
   private CommandZorroController driver;
