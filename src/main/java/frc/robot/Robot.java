@@ -263,6 +263,10 @@ public class Robot extends TimedRobot {
         .whileTrue(algaeIntake.createSetIntakeVelocityCommand(5)
         .onlyIf(() -> elevator.getTargetState() != ElevatorState.Intake));
 
+    Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
+    Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
+    elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(elevator.createJoystickControlCommand(operator.getHID()));
+
     // Actuate climber winch
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
     climbTrigger.onTrue(climber.createDeployCommand()
