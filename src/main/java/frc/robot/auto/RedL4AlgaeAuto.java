@@ -4,8 +4,11 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.AlgaeIntakeConstants.AlgaeIntakeStates;
+import frc.robot.Constants.CoralIntakeConstants.CoralIntakeStates;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.Elevator;
@@ -54,7 +57,10 @@ public class RedL4AlgaeAuto extends AutoMode {
         .active()
         .onTrue(
             Commands.parallel(
-                redCenterToL4G.cmd(), elevator.createSetPositionCommand(ElevatorState.L4)));
+                redCenterToL4G.cmd(), 
+                elevator.createSetPositionCommand(ElevatorState.L4), 
+                coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L4.angle), 
+                algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle)));
 
     redCenterToL4G
         .done()
@@ -69,10 +75,17 @@ public class RedL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                elevator.createSetPositionCommand(ElevatorState.L3),
+                new ParallelCommandGroup(
+                  elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
+                  coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+                  algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L3.angle)),
                 algaeIntake.createSetIntakeVelocityCommand(5),
                 new WaitCommand(0.2),
-                redAlgaeToProcess.cmd()));
+                new ParallelCommandGroup(
+                  redAlgaeToProcess.cmd(),
+                  elevator.createSetPositionCommand(ElevatorState.Processor),
+                  algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Processor.angle)
+                )));
 
     redAlgaeToProcess
         .done()
@@ -80,7 +93,9 @@ public class RedL4AlgaeAuto extends AutoMode {
             new SequentialCommandGroup(
                 algaeIntake.createSetIntakeVelocityCommand(-5),
                 new WaitCommand(0.2),
-                redProcessToSource.cmd()));
+                new ParallelCommandGroup(
+                  redProcessToSource.cmd(),
+                  elevator.createSetPositionCommand(ElevatorState.Intake))));
 
     return redL4AlgAutoRoutine;
   }
