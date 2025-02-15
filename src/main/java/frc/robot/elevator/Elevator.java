@@ -131,7 +131,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putBoolean("Elevator isAtHeight", isAtTargetHeight());
   }
 
-  private ElevatorPosition getTargetPosition() {
+  public ElevatorPosition getTargetPosition() {
     return this.targetPosition;
   }
 
