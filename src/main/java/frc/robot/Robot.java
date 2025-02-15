@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
 
-    climber.setDefaultCommand(climber.createDefaultClimberCommand());
+    climber.setDefaultCommand(climber.createStopCommand());
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -138,8 +138,7 @@ public class Robot extends TimedRobot {
     autoSelector.cancelAuto();
     leds.setDefaultCommand(leds.createEnabledCommand());
     swerve.resetHeadingOffset();
-    climber.resetEncoder();
-    climber.lockRatchet();
+    climber.reset();
   }
 
   @Override

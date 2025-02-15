@@ -64,12 +64,11 @@ public class Climber extends SubsystemBase {
     SmartDashboard.putNumber("Output Voltage Climber", motor.get());
   }
 
-  public void resetPositionController() {
-    controller.reset(encoder.getPosition());
-  }
-
-  public void resetEncoder() {
+  public void reset() {
     encoder.setPosition(0);
+    controller.reset(encoder.getPosition());
+    controller.setGoal(encoder.getPosition());
+    lockRatchet();
   }
 
   public void unlockRatchet() {
@@ -100,7 +99,7 @@ public class Climber extends SubsystemBase {
     return encoder.getPosition();
   }
 
-  public Command createDefaultClimberCommand() {
+  public Command createStopCommand() {
     return this.run(() -> motor.set(0.0));
   }
 
