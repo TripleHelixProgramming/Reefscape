@@ -359,7 +359,7 @@ public final class Constants {
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the final stage
-    public static final double kGearRatio = 15.0;
+    public static final double kGearRatio = 15.0 / 3.0; 
     public static final double kSprocketPitchDiameter = 1.7567; // inches
     public static final double kPositionConversionFactor =
         (kSprocketPitchDiameter * Math.PI) / kGearRatio;
@@ -368,8 +368,8 @@ public final class Constants {
     // Convert to inches per second at the final stage
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kFineVelocityInchesPerSecond = 5.0;
-    public static final double kRapidVelocityInchesPerSecond = 35.0;
+    public static final double kFineVelocityInchesPerSecond = 15.0;
+    public static final double kRapidVelocityInchesPerSecond = 100.0;
 
     public static final double kMaxVelocityRPM = kRapidVelocityInchesPerSecond / kVelocityConversionFactor;
     public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
@@ -390,13 +390,13 @@ public final class Constants {
 
     public static enum ElevatorPosition {
       Floor(0.0),
-      Reset(0.12),
-      L1(6.0),
-      L2(7.0),
-      L3(8.0),
-      L4(9.0),
-      Intake(10.0),
-      Max(11.94);
+      Reset(0.36),
+      L1(18.0),
+      L2(21.0),
+      L3(24.0),
+      L4(27.0),
+      Intake(30.0),
+      Max(35.82);
 
       public double height;
 
