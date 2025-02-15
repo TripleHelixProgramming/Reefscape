@@ -26,7 +26,6 @@ import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
@@ -92,8 +91,7 @@ public class Robot extends TimedRobot {
 
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
 
-    elevator.setDefaultCommand(
-        elevator.createJoystickControlCommand(operator.getHID()));
+    elevator.setDefaultCommand(elevator.createJoystickControlCommand(operator.getHID()));
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }

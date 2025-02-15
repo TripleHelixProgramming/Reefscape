@@ -164,7 +164,10 @@ public class Elevator extends SubsystemBase {
           double targetPosition = controller.getGoal().position;
 
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          targetPosition += joystickInput * ElevatorConstants.kFineVelocityInchesPerSecond * RobotConstants.kPeriod;
+          targetPosition +=
+              joystickInput
+                  * ElevatorConstants.kFineVelocityInchesPerSecond
+                  * RobotConstants.kPeriod;
 
           if (isInRange(targetPosition)) controller.setGoal(targetPosition);
           leaderMotor.set(controller.calculate(encoder.getPosition()));

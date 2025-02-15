@@ -37,6 +37,11 @@ public final class Constants {
 
     public static final int kDefaultNEOCurrentLimit = 80;
     public static final int kDefaultNEO550CurretnLimit = 30;
+
+    public static enum GripperStates {
+      CORAL,
+      ALGAE
+    };
   }
 
   public static final class DriveConstants {
@@ -256,6 +261,21 @@ public final class Constants {
         5 * (42 / 18); // 5:1 for motor and 42:18 for the belt
     public static final double kCoralWristPositionConversionFactor =
         360 / (2 * Math.PI * kCoralWristGearRatio); // converts radians to degrees
+
+    public static enum CoralIntakeStates {
+      L1(90),
+      L2(55),
+      L3(55),
+      L4(25),
+      Intake(125),
+      AlgaeMode(125);
+
+      public double angle;
+
+      private CoralIntakeStates(double angle) {
+        this.angle = angle;
+      }
+    }
   }
 
   public static final class AlgaeIntakeConstants {
@@ -283,6 +303,21 @@ public final class Constants {
         5 * (36 / 18); // 5:1 for motor, 36:18 for belt
     public static final double kAlgaeWristPositionConversionFactor =
         360 / (2 * Math.PI * kAlgaeWristGearRatio); // converts radians to degrees
+
+    public static enum AlgaeIntakeStates {
+      Floor(-10),
+      Processor(0),
+      L2(-10),
+      L3(-10),
+      Barge(50),
+      CoralMode(90);
+
+      public double angle;
+
+      private AlgaeIntakeStates(double angle) {
+        this.angle = angle;
+      }
+    }
   }
 
   public static final class AutoConstants {
@@ -404,6 +439,9 @@ public final class Constants {
       L3(24.0),
       L4(27.0),
       Intake(12.0),
+      Processor(12.0),
+      AlgaeL2(30),
+      AlgaeL3(46.5),
       Max(30.00);
 
       public double height;
