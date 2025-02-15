@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -339,7 +340,8 @@ public final class Constants {
 
     public static final double kMaxVelocityInchesPerSecond = 10.0;
 
-    public static final double kMaxVelocityRPM = kMaxVelocityInchesPerSecond / kVelocityConversionFactor;
+    public static final double kMaxVelocityRPM =
+        kMaxVelocityInchesPerSecond / kVelocityConversionFactor;
     public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
 
     public static final double kDeployPosition = 12.0; // inches
@@ -359,7 +361,7 @@ public final class Constants {
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the final stage
-    public static final double kGearRatio = 15.0 / 3.0; 
+    public static final double kGearRatio = 15.0 / 3.0;
     public static final double kSprocketPitchDiameter = 1.7567; // inches
     public static final double kPositionConversionFactor =
         (kSprocketPitchDiameter * Math.PI) / kGearRatio;
@@ -370,41 +372,43 @@ public final class Constants {
 
     public static final double kFineVelocityInchesPerSecond = 15.0;
     public static final double kRapidVelocityInchesPerSecond = 100.0;
-    public static final double kTimeToMaxVelocity = 0.02;
 
-    public static final double kMaxVelocityRPM = kRapidVelocityInchesPerSecond / kVelocityConversionFactor;
-    public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM / kTimeToMaxVelocity;
-    public static final double kRapidAccelerationInchesPerSecondPerSecond = kRapidVelocityInchesPerSecond / kTimeToMaxVelocity;
+    public static final double kTimeToMaxVelocity = 0.02;
+    // public static final double kMaxVelocityRPM = kRapidVelocityInchesPerSecond /
+    // kVelocityConversionFactor;
+    // public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM /
+    // kTimeToMaxVelocity;
+    public static final double kRapidAccelerationInchesPerSecondPerSecond =
+        kRapidVelocityInchesPerSecond / kTimeToMaxVelocity;
 
     public static final int lowerLimitSwitchPort = 9;
 
     public static final double kAllowableHeightError = 0.2;
 
-    public final class ElevatorControllerPositionGains {
+    public final class ElevatorController {
       public static final double kP = 0.1;
       public static final double kI = 0.0;
       public static final double kD = 0.0;
+      public static final Constraints kConstraints =
+          new Constraints(
+              kRapidVelocityInchesPerSecond, kRapidAccelerationInchesPerSecondPerSecond);
     }
 
-    public final class ElevatorControllerVelocityGains {
-      public static final double kP = 0.01;
-      public static final double kI = 0.0;
-      public static final double kD = 0.0;
-    }
-
-    public static enum ElevatorPosition {
+    public static enum ElevatorState {
+      Unknown(0.0),
+      Min(0.0),
       Floor(0.0),
       Reset(0.36),
       L1(18.0),
       L2(21.0),
       L3(24.0),
       L4(27.0),
-      Intake(30.0),
-      Max(35.82);
+      Intake(12.0),
+      Max(30.00);
 
       public double height;
 
-      private ElevatorPosition(double height) {
+      private ElevatorState(double height) {
         this.height = height;
       }
     }

@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.ElevatorConstants.ElevatorPosition;
+import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.Elevator;
 import frc.robot.grippers.AlgaeIntake;
@@ -54,7 +54,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .active()
         .onTrue(
             Commands.parallel(
-                blueCenterToL4G.cmd(), elevator.createSetPositionCommand(ElevatorPosition.L4)));
+                blueCenterToL4G.cmd(), elevator.createSetPositionCommand(ElevatorState.L4)));
 
     blueCenterToL4G
         .done()
@@ -69,7 +69,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                elevator.createSetPositionCommand(ElevatorPosition.L3),
+                elevator.createSetPositionCommand(ElevatorState.L3),
                 algaeIntake.createSetIntakeVelocityCommand(5),
                 new WaitCommand(0.2),
                 blueAlgaeToProcess.cmd()));

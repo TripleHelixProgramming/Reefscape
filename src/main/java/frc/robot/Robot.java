@@ -27,7 +27,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorPosition;
+import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;
@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    // Starts recording to data log
+    // Start recording to data log
     // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html#logging-joystick-data
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
@@ -92,7 +92,8 @@ public class Robot extends TimedRobot {
 
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
 
-    elevator.setDefaultCommand(elevator.createJoystickControlCommand(operator.getHID(), ElevatorConstants.kFineVelocityInchesPerSecond));
+    elevator.setDefaultCommand(
+        elevator.createJoystickControlCommand(operator.getHID()));
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -159,6 +160,7 @@ public class Robot extends TimedRobot {
     swerve.resetHeadingOffset();
     climber.resetEncoder();
     climber.lockRatchet();
+    elevator.resetPositionController();
   }
 
   @Override
@@ -212,54 +214,54 @@ public class Robot extends TimedRobot {
     // Set elevator and grippers to L4
     operator.y().onTrue(
         new ParallelCommandGroup(
-            elevator.createSetPositionCommand(ElevatorPosition.L4),
+            elevator.createSetPositionCommand(ElevatorState.L4),
             coralIntake.createSetRotationPositionCommand(90),
             algaeIntake.createSetRotationPositionCommand(0)));
 
     // Set elevator and grippers to L1
     operator.a().onTrue(
         new ParallelCommandGroup(
-            elevator.createSetPositionCommand(ElevatorPosition.L1),
+            elevator.createSetPositionCommand(ElevatorState.L1),
             coralIntake.createSetRotationPositionCommand(0),
             algaeIntake.createSetRotationPositionCommand(180)));
 
     // Set elevator and grippers to L2
     operator.b().onTrue(
         new ParallelCommandGroup(
-            elevator.createSetPositionCommand(ElevatorPosition.L2),
+            elevator.createSetPositionCommand(ElevatorState.L2),
             coralIntake.createSetRotationPositionCommand(75),
             algaeIntake.createSetRotationPositionCommand(90)));
 
     // Set elevator and grippers to L3
     operator.x().onTrue(
         new ParallelCommandGroup(
-            elevator.createSetPositionCommand(ElevatorPosition.L3),
+            elevator.createSetPositionCommand(ElevatorState.L3),
             coralIntake.createSetRotationPositionCommand(75),
             algaeIntake.createSetRotationPositionCommand(90)));
 
     // Set elevator and grippers to intake position
     operator.start().onTrue(
         new ParallelCommandGroup(
-            elevator.createSetPositionCommand(ElevatorPosition.Intake),
+            elevator.createSetPositionCommand(ElevatorState.Intake),
             coralIntake.createSetRotationPositionCommand(45),
             algaeIntake.createSetRotationPositionCommand(0)));
 
     // Set elevator and grippers to maximum height
     operator.povUp().onTrue(
         new ParallelCommandGroup(
-            elevator.createSetPositionCommand(ElevatorPosition.Max),
+            elevator.createSetPositionCommand(ElevatorState.Max),
             coralIntake.createSetRotationPositionCommand(0),
             algaeIntake.createSetRotationPositionCommand(115)));
 
     // Intake with coral gripper
     operator.rightBumper()
         .whileTrue(coralIntake.createSetIntakeVelocityCommand(5)
-        .onlyIf(() -> elevator.getTargetState() == ElevatorPosition.Intake));
+        .onlyIf(() -> elevator.getTargetState() == ElevatorState.Intake));
     
     // Intake with algae gripper
     operator.rightBumper()
         .whileTrue(algaeIntake.createSetIntakeVelocityCommand(5)
-        .onlyIf(() -> elevator.getTargetState() != ElevatorPosition.Intake));
+        .onlyIf(() -> elevator.getTargetState() != ElevatorState.Intake));
 
     // Actuate climber winch
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);

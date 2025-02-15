@@ -31,7 +31,7 @@ public class AlgaeIntake extends SubsystemBase {
   private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
   private final SparkMaxConfig rollerFollowerConfig = new SparkMaxConfig();
   private final SparkMaxConfig wristConfig = new SparkMaxConfig();
-  
+
   private final RelativeEncoder rollerEncoder;
   private final SparkAbsoluteEncoder wristEncoder;
 

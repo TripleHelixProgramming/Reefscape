@@ -1,19 +1,14 @@
 package frc.robot.elevator;
 
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -21,40 +16,38 @@ import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorControllerPositionGains;
-import frc.robot.Constants.ElevatorConstants.ElevatorControllerVelocityGains;
-import frc.robot.Constants.ElevatorConstants.ElevatorPosition;
+import frc.robot.Constants.ElevatorConstants.ElevatorController;
+import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.Constants.RobotConstants;
 
 public class Elevator extends SubsystemBase {
 
-  private final SparkMax leaderMotor = new SparkMax(ElevatorConstants.kLeaderMotorPort, MotorType.kBrushless);
-  private final SparkMax followerMotor = new SparkMax(ElevatorConstants.kFollowerMotorPort, MotorType.kBrushless);
+  private final SparkMax leaderMotor =
+      new SparkMax(ElevatorConstants.kLeaderMotorPort, MotorType.kBrushless);
+  private final SparkMax followerMotor =
+      new SparkMax(ElevatorConstants.kFollowerMotorPort, MotorType.kBrushless);
+  private final DigitalInput lowerLimitSwitch =
+      new DigitalInput(ElevatorConstants.lowerLimitSwitchPort);
 
   private final SparkMaxConfig globalConfig = new SparkMaxConfig();
   private final SparkMaxConfig leaderConfig = new SparkMaxConfig();
   private final SparkMaxConfig followerConfig = new SparkMaxConfig();
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
-  private final SparkClosedLoopController controller = leaderMotor.getClosedLoopController();
 
-  private final DigitalInput lowerLimitSwitch = new DigitalInput(ElevatorConstants.lowerLimitSwitchPort);
+  private final ProfiledPIDController controller =
+      new ProfiledPIDController(
+          ElevatorController.kP,
+          ElevatorController.kI,
+          ElevatorController.kD,
+          ElevatorController.kConstraints);
 
   private final EventLoop loop = new EventLoop();
 
-  private ElevatorPosition targetState = ElevatorPosition.Floor;
-  private double targetHeight;
+  private ElevatorState targetState = ElevatorState.Unknown;
 
-  private ControlType controlMode = ControlType.kMAXMotionPositionControl;
-
-  /**
-   * private final ProfiledPIDController m_positionController = new ProfiledPIDController(
-   * IntakeConstants.kPositionP, IntakeConstants.kPositionI, IntakeConstants.kPositionD,
-   * IntakeConstants.kConstraints);
-   */
   public Elevator() {
     // spotless:off
     globalConfig
@@ -70,35 +63,14 @@ public class Elevator extends SubsystemBase {
         .apply(globalConfig)
         .follow(leaderMotor, true);
 
-    leaderConfig.closedLoop.maxMotion
-        .maxVelocity(ElevatorConstants.kRapidVelocityInchesPerSecond)
-        .maxAcceleration(ElevatorConstants.kRapidAccelerationInchesPerSecondPerSecond)
-        .allowedClosedLoopError(ElevatorConstants.kAllowableHeightError)
-        .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal);
-
-    leaderConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-
-        .p(ElevatorControllerPositionGains.kP , ClosedLoopSlot.kSlot0)
-        .i(ElevatorControllerPositionGains.kI, ClosedLoopSlot.kSlot0)
-        .d(ElevatorControllerPositionGains.kD, ClosedLoopSlot.kSlot0)
-        // .iZone()
-        .outputRange(-1, 1, ClosedLoopSlot.kSlot0)
-        
-        .p(ElevatorControllerVelocityGains.kP, ClosedLoopSlot.kSlot1)
-        .i(ElevatorControllerVelocityGains.kI, ClosedLoopSlot.kSlot1)
-        .d(ElevatorControllerVelocityGains.kD, ClosedLoopSlot.kSlot1)
-        // .velocityFF(ElevatorConstants.kFF, ClosedLoopSlot.kSlot1)
-        .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
-
     leaderConfig.encoder
         .positionConversionFactor(ElevatorConstants.kPositionConversionFactor)
         .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
 
     leaderConfig.softLimit
-        .reverseSoftLimit(ElevatorPosition.Floor.height)
+        .reverseSoftLimit(ElevatorState.Floor.height)
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(ElevatorPosition.Max.height)
+        .forwardSoftLimit(ElevatorState.Max.height)
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
@@ -110,8 +82,10 @@ public class Elevator extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    targetHeight = encoder.getPosition();
-    controller.setReference(targetHeight, controlMode, ClosedLoopSlot.kSlot0);
+    controller.setTolerance(ElevatorConstants.kAllowableHeightError);
+    // controller.setIZone();
+    // controller.setIntegratorRange();
+    resetPositionController();
   }
 
   @Override
@@ -121,8 +95,8 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Height", encoder.getPosition());
     SmartDashboard.putNumber("Elevator Velocity", encoder.getVelocity());
 
-    SmartDashboard.putString("Elevator Target Position Name", getTargetState().name());
-    SmartDashboard.putNumber("Elevator Target Position Height", targetHeight);
+    SmartDashboard.putString("Elevator Target State", getTargetState().name());
+    SmartDashboard.putNumber("Elevator Target Height", controller.getGoal().position);
 
     if (SmartDashboard.getBoolean("Elevator Reset Encoder", false)) {
       SmartDashboard.putBoolean("Elevator Reset Encoder", false);
@@ -130,48 +104,43 @@ public class Elevator extends SubsystemBase {
     }
 
     SmartDashboard.putNumber("Elevator Lead Applied Duty Cycle", leaderMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Elevator Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
+    SmartDashboard.putNumber(
+        "Elevator Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
     SmartDashboard.putNumber("Elevator Lead Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Elevator Follower Current", followerMotor.getOutputCurrent());
 
     SmartDashboard.putBoolean("Elevator Lower Limit Switch", !lowerLimitSwitch.get());
-    SmartDashboard.putBoolean("Elevator isAtHeight", isAtTargetHeight());
+    SmartDashboard.putBoolean("Elevator isAtHeight", controller.atGoal());
   }
 
-  public ElevatorPosition getTargetState() {
+  public void resetPositionController() {
+    controller.reset(encoder.getPosition());
+    controller.setGoal(encoder.getPosition());
+  }
+
+  public ElevatorState getTargetState() {
     return this.targetState;
   }
 
-  public void resetEncoder() {
-    encoder.setPosition(ElevatorPosition.Reset.height);
+  private void resetEncoder() {
+    encoder.setPosition(ElevatorState.Reset.height);
   }
 
-  private void setPosition(double targetHeight) {
-    controller.setReference(targetHeight, controlMode, ClosedLoopSlot.kSlot0);
-  }
-
-  private void setVelocity(double targetVelocity) {
-    controller.setReference(targetVelocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
-  }
-
-  private Boolean isAtTargetHeight() {
-    return (Math.abs(encoder.getPosition() - targetState.height) < ElevatorConstants.kAllowableHeightError);
-  }
-
-  public Command createSetPositionCommand(ElevatorPosition position) {
+  public Command createSetPositionCommand(ElevatorState state) {
     return new FunctionalCommand(
         // initialize
         () -> {
-          targetState = position;
-          targetHeight = position.height;
-          setPosition(position.height);
+          targetState = state;
+          controller.setGoal(targetState.height);
         },
         // execute
-        () -> {},
+        () -> {
+          leaderMotor.set(controller.calculate(encoder.getPosition()));
+        },
         // end
         interrupted -> {},
         // isFinished
-        this::isAtTargetHeight,
+        () -> controller.atGoal(),
         // requirements
         this);
   }
@@ -183,11 +152,22 @@ public class Elevator extends SubsystemBase {
         });
   }
 
-  public Command createJoystickControlCommand(XboxController controller, double factor) {
+  private Boolean isInRange(double height) {
+    if (height < ElevatorState.Min.height) return false;
+    if (height > ElevatorState.Max.height) return false;
+    return true;
+  }
+
+  public Command createJoystickControlCommand(XboxController gamepad) {
     return this.run(
         () -> {
-          targetHeight += MathUtil.applyDeadband(-controller.getLeftY(), 0.05) * factor * RobotConstants.kPeriod;
-          this.setPosition(targetHeight);
+          double targetPosition = controller.getGoal().position;
+
+          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+          targetPosition += joystickInput * ElevatorConstants.kFineVelocityInchesPerSecond * RobotConstants.kPeriod;
+
+          if (isInRange(targetPosition)) controller.setGoal(targetPosition);
+          leaderMotor.set(controller.calculate(encoder.getPosition()));
         });
   }
 }
