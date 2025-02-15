@@ -1,14 +1,15 @@
 package frc.robot.climber;
 
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,13 +19,15 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.RobotConstants;
+import frc.robot.Constants.ClimberConstants.ClimberController;
 
 public class Climber extends SubsystemBase {
   private final SparkFlex motor =
       new SparkFlex(ClimberConstants.kClimberPort, MotorType.kBrushless);
   private final SparkFlexConfig motorConfig = new SparkFlexConfig();
-  private final RelativeEncoder encoder;
-  private final SparkClosedLoopController controller;
+  private final RelativeEncoder encoder = motor.getEncoder();
+
+  private final ProfiledPIDController controller = new ProfiledPIDController(ClimberController.kP, ClimberController.kI, ClimberController.kD, ClimberController.kConstraints);
 
   private final Servo servo = new Servo(ClimberConstants.kRatchetServoPort);
 
@@ -38,29 +41,15 @@ public class Climber extends SubsystemBase {
         .smartCurrentLimit(ClimberConstants.kClimberCurrentLimit);
 
     motorConfig
-        .closedLoop
-        .p(ClimberConstants.kP)
-        .i(ClimberConstants.kI)
-        .d(ClimberConstants.kD)
-        .outputRange(-1, 1);
-
-    motorConfig
         .encoder
         .positionConversionFactor(ClimberConstants.kPositionConversionFactor)
         .velocityConversionFactor(ClimberConstants.kVelocityConversionFactor);
-
-    motorConfig
-        .closedLoop
-        .maxMotion
-        .maxAcceleration(ClimberConstants.kMaxAcceleration)
-        .maxVelocity(ClimberConstants.kMaxVelocityFactor);
 
     motorConfig.softLimit.reverseSoftLimit(0.0).reverseSoftLimitEnabled(true);
 
     motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    encoder = motor.getEncoder();
-    controller = motor.getClosedLoopController();
+    controller.setTolerance(ClimberConstants.kClimberTolerance);
   }
 
   @Override
@@ -75,6 +64,10 @@ public class Climber extends SubsystemBase {
     SmartDashboard.putNumber("Output Voltage Climber", motor.get());
   }
 
+  public void resetPositionController() {
+    controller.reset(encoder.getPosition());
+  }
+
   public void resetEncoder() {
     encoder.setPosition(0);
   }
@@ -87,33 +80,24 @@ public class Climber extends SubsystemBase {
     servo.set(ClimberConstants.kEngagedPosition);
   }
 
-  private void setPosition(double targetPosition) {
-    controller.setReference(targetPosition, ControlType.kMAXMotionPositionControl);
+  private Boolean isInRange(double position) {
+    if (position < 0.0) return false;
+    return true;
   }
 
-  private void setVelocity(double targetVelocity) {
-    controller.setReference(targetVelocity, ControlType.kMAXMotionVelocityControl);
-  }
-
-  // public Command createSetPositionCommand(double position) {
-  //     return new InstantCommand(() -> setPosition(position));
-  // }
-
-  /**
-   * @param controller
-   * @param factor Speed scaling factor
-   * @return Command that moves the climber arm using the controller joystick
-   */
-  public Command createClimbByControllerCommand(XboxController controller, double factor) {
-    return this.run(() -> this.setVelocity(Math.max(0.0, controller.getRightY()) * factor));
+  public Command createClimbByJoystickCommand(XboxController gamepad) {
+    return this.run(
+      () -> {
+        double targetPosition = controller.getGoal().position;
+        double joystickInput = MathUtil.applyDeadband(-gamepad.getRightY(), 0.05);
+        targetPosition += Math.max(0.0, joystickInput) * ClimberConstants.kMaxVelocity * RobotConstants.kPeriod;
+        if (isInRange(targetPosition)) controller.setGoal(targetPosition);
+        motor.set(controller.calculate(encoder.getPosition()));
+      });
   }
 
   private double getPosition() {
     return encoder.getPosition();
-  }
-
-  private Boolean isDeployed() {
-    return (Math.abs(encoder.getPosition() - ClimberConstants.kDeployPosition) < 0.1);
   }
 
   public Command createDefaultClimberCommand() {
@@ -128,17 +112,19 @@ public class Climber extends SubsystemBase {
         // initialize
         () -> {
           unlockRatchet();
-          setPosition(ClimberConstants.kDeployPosition);
+          controller.setGoal(ClimberConstants.kDeployPosition);
         },
         // execute
-        () -> {},
+        () -> {
+          motor.set(controller.calculate(encoder.getPosition()));
+        },
         // end
         interrupted -> {
           lockRatchet();
           motor.set(0.0);
         },
         // isFinished
-        () -> isDeployed(),
+        () -> controller.atGoal(),
         // requirements
         this);
   }

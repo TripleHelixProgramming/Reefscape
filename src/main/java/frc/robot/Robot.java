@@ -23,7 +23,6 @@ import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
@@ -190,8 +189,8 @@ public class Robot extends TimedRobot {
         climber
             .createDeployCommand()
             .andThen(
-                climber.createClimbByControllerCommand(
-                    operator.getHID(), -ClimberConstants.kMaxVelocity)));
+                climber.createClimbByJoystickCommand(
+                    operator.getHID())));
 
     operator
         .back()

@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -247,9 +248,13 @@ public final class Constants {
 
     public static final int kCageSensorPort = 1;
 
-    public static final double kP = 0.1;
-    public static final double kI = 0;
-    public static final double kD = 0;
+    public static final class ClimberController {
+      public static final double kP = 0.1;
+      public static final double kI = 0;
+      public static final double kD = 0;
+      public static final Constraints kConstraints = new Constraints(kMaxVelocity, kMaxAcceleration);
+
+    }
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the winch
@@ -261,12 +266,13 @@ public final class Constants {
     // Convert to inches per second at the winch
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
+    public static final double kTimeToMaxVelocity = 0.2;
+
     public static final double kMaxVelocity = 10.0; // inches/s
+    public static final double kMaxAcceleration = kMaxVelocity / kTimeToMaxVelocity; // 100% accel in 1s
 
-    public static final double kMaxVelocityFactor = kMaxVelocity / kVelocityConversionFactor;
-    public static final double kMaxAcceleration = kMaxVelocityFactor; // 100% accel in 1s
-
-    public static final double kDeployPosition = 12.0; // inches
+    public static final double kDeployPosition = 7.0; // inches
+    public static final double kClimberTolerance = 0.1;
   }
 
   public static final class LedConstants {
