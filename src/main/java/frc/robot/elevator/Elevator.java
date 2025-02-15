@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -47,6 +48,8 @@ public class Elevator extends SubsystemBase {
   private ElevatorPosition targetState = ElevatorPosition.Floor;
   private double targetHeight;
 
+  private ControlType controlMode = ControlType.kMAXMotionPositionControl;
+
   /**
    * private final ProfiledPIDController m_positionController = new ProfiledPIDController(
    * IntakeConstants.kPositionP, IntakeConstants.kPositionI, IntakeConstants.kPositionD,
@@ -70,7 +73,8 @@ public class Elevator extends SubsystemBase {
     leaderConfig.closedLoop.maxMotion
         .maxVelocity(ElevatorConstants.kRapidVelocityInchesPerSecond)
         .maxAcceleration(ElevatorConstants.kRapidAccelerationInchesPerSecondPerSecond)
-        .allowedClosedLoopError(ElevatorConstants.kAllowableHeightError);
+        .allowedClosedLoopError(ElevatorConstants.kAllowableHeightError)
+        .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal);
 
     leaderConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -107,7 +111,7 @@ public class Elevator extends SubsystemBase {
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
     targetHeight = encoder.getPosition();
-    controller.setReference(targetHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
+    controller.setReference(targetHeight, controlMode, ClosedLoopSlot.kSlot0);
   }
 
   @Override
@@ -143,7 +147,7 @@ public class Elevator extends SubsystemBase {
   }
 
   private void setPosition(double targetHeight) {
-    controller.setReference(targetHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
+    controller.setReference(targetHeight, controlMode, ClosedLoopSlot.kSlot0);
   }
 
   private void setVelocity(double targetVelocity) {
