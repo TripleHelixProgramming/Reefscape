@@ -26,8 +26,11 @@ import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.AlgaeIntakeConstants.AlgaeIntakeStates;
+import frc.robot.Constants.CoralIntakeConstants.CoralIntakeStates;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;
 import frc.robot.auto.ExampleAuto;
@@ -91,7 +94,8 @@ public class Robot extends TimedRobot {
 
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
 
-    elevator.setDefaultCommand(elevator.createJoystickControlCommand(operator.getHID()));
+    elevator.setDefaultCommand(
+        elevator.createJoystickControlCommand(operator.getHID()));
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -213,43 +217,71 @@ public class Robot extends TimedRobot {
     operator.y().onTrue(
         new ParallelCommandGroup(
             elevator.createSetPositionCommand(ElevatorState.L4),
-            coralIntake.createSetRotationPositionCommand(90),
-            algaeIntake.createSetRotationPositionCommand(0)));
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L4.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle)));
 
     // Set elevator and grippers to L1
     operator.a().onTrue(
         new ParallelCommandGroup(
             elevator.createSetPositionCommand(ElevatorState.L1),
-            coralIntake.createSetRotationPositionCommand(0),
-            algaeIntake.createSetRotationPositionCommand(180)));
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L1.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle)));
 
     // Set elevator and grippers to L2
     operator.b().onTrue(
         new ParallelCommandGroup(
             elevator.createSetPositionCommand(ElevatorState.L2),
-            coralIntake.createSetRotationPositionCommand(75),
-            algaeIntake.createSetRotationPositionCommand(90)));
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L2.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle)));
 
     // Set elevator and grippers to L3
     operator.x().onTrue(
         new ParallelCommandGroup(
             elevator.createSetPositionCommand(ElevatorState.L3),
-            coralIntake.createSetRotationPositionCommand(75),
-            algaeIntake.createSetRotationPositionCommand(90)));
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L3.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle)));
 
     // Set elevator and grippers to intake position
     operator.start().onTrue(
         new ParallelCommandGroup(
             elevator.createSetPositionCommand(ElevatorState.Intake),
-            coralIntake.createSetRotationPositionCommand(45),
-            algaeIntake.createSetRotationPositionCommand(0)));
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.Intake.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle)));
 
-    // Set elevator and grippers to maximum height
+    // Set elevator and grippers to barge position
     operator.povUp().onTrue(
         new ParallelCommandGroup(
             elevator.createSetPositionCommand(ElevatorState.Max),
-            coralIntake.createSetRotationPositionCommand(0),
-            algaeIntake.createSetRotationPositionCommand(115)));
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Barge.angle)));
+
+    // Set elevator and grippers to L3 algae position
+    operator.povRight().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L3.angle)));
+
+    // Set elevator and grippers to L2 algae position
+    operator.povLeft().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorState.AlgaeL2),
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L2.angle))); 
+
+    // Set elevator and grippers to processor position
+    operator.povDown().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorState.Processor),
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Processor.angle)));
+
+    // Set elevator and grippers to floor intake position
+    operator.back().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorState.Floor),
+            coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+            algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Floor.angle)));
 
     // Intake with coral gripper
     operator.rightBumper()
@@ -269,11 +301,6 @@ public class Robot extends TimedRobot {
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
     climbTrigger.onTrue(climber.createDeployCommand()
         .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
-
-    // Unlock ratchet (momentary)
-    operator.back()
-        .whileTrue(new InstantCommand(climber::unlockRatchet))
-        .whileFalse(new InstantCommand(climber::lockRatchet));
   }
   // spotless:on
 
