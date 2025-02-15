@@ -72,7 +72,7 @@ public class Climber extends SubsystemBase {
 
     SmartDashboard.putNumber("Climber Motor Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Climber isfinished for Command", createDeployCommand().isFinished());
-    SmartDashboard.putNumber("Climber Output Voltage", motor.getAppliedOutput());
+    SmartDashboard.putNumber("Climber Applied Duty Cycle", motor.getAppliedOutput());
   }
 
   public void resetEncoder() {
