@@ -196,94 +196,82 @@ public class Robot extends TimedRobot {
         .onTrue(new InstantCommand(() -> swerve.setHeadingOffset())
         .ignoringDisable(true));
 
+    // Drive to nearest pose
     driver.AIn()
         .whileTrue(new DriveToPoseCommand(swerve, vision, () -> swerve.getNearestPose()));
 
+    // Outtake grippers
     driver.HIn()
-        .onTrue(coralIntake.createSetIntakeVelocityCommand(-5).alongWith(algaeIntake.createSetIntakeVelocityCommand(-5)));
+        .onTrue(coralIntake.createSetIntakeVelocityCommand(-5)
+        .alongWith(algaeIntake.createSetIntakeVelocityCommand(-5)));
 
   }
-  // spotless:on
 
   private void configureOperatorButtonBindings() {
 
-    operator
-        .y()
-        .onTrue(
-            new ParallelCommandGroup(
-                elevator.createSetPositionCommand(ElevatorPosition.L4),
-                coralIntake.createSetRotationPositionCommand(90),
-                algaeIntake.createSetRotationPositionCommand(0)));
+    // Set elevator and grippers to L4
+    operator.y().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorPosition.L4),
+            coralIntake.createSetRotationPositionCommand(90),
+            algaeIntake.createSetRotationPositionCommand(0)));
 
-    operator
-        .a()
-        .onTrue(
-            new ParallelCommandGroup(
-                elevator.createSetPositionCommand(ElevatorPosition.L1),
-                coralIntake.createSetRotationPositionCommand(0),
-                algaeIntake.createSetRotationPositionCommand(180)));
+    // Set elevator and grippers to L1
+    operator.a().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorPosition.L1),
+            coralIntake.createSetRotationPositionCommand(0),
+            algaeIntake.createSetRotationPositionCommand(180)));
 
-    operator
-        .b()
-        .onTrue(
-            new ParallelCommandGroup(
-                elevator.createSetPositionCommand(ElevatorPosition.L2),
-                coralIntake.createSetRotationPositionCommand(75),
-                algaeIntake.createSetRotationPositionCommand(90)));
+    // Set elevator and grippers to L2
+    operator.b().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorPosition.L2),
+            coralIntake.createSetRotationPositionCommand(75),
+            algaeIntake.createSetRotationPositionCommand(90)));
 
-    operator
-        .x()
-        .onTrue(
-            new ParallelCommandGroup(
-                elevator.createSetPositionCommand(ElevatorPosition.L3),
-                coralIntake.createSetRotationPositionCommand(75),
-                algaeIntake.createSetRotationPositionCommand(90)));
+    // Set elevator and grippers to L3
+    operator.x().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorPosition.L3),
+            coralIntake.createSetRotationPositionCommand(75),
+            algaeIntake.createSetRotationPositionCommand(90)));
 
-    operator
-        .start()
-        .onTrue(
-            new ParallelCommandGroup(
-                elevator.createSetPositionCommand(ElevatorPosition.Intake),
-                coralIntake.createSetRotationPositionCommand(45),
-                algaeIntake.createSetRotationPositionCommand(0)));
+    // Set elevator and grippers to intake position
+    operator.start().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorPosition.Intake),
+            coralIntake.createSetRotationPositionCommand(45),
+            algaeIntake.createSetRotationPositionCommand(0)));
 
-    operator
-        .povUp()
-        .onTrue(
-            new ParallelCommandGroup(
-                elevator.createSetPositionCommand(ElevatorPosition.Max),
-                coralIntake.createSetRotationPositionCommand(0),
-                algaeIntake.createSetRotationPositionCommand(115)));
+    // Set elevator and grippers to maximum height
+    operator.povUp().onTrue(
+        new ParallelCommandGroup(
+            elevator.createSetPositionCommand(ElevatorPosition.Max),
+            coralIntake.createSetRotationPositionCommand(0),
+            algaeIntake.createSetRotationPositionCommand(115)));
 
-    // new JoystickButton(operator.getHID(), Button.kLeftStick.value)
-    //     .whileTrue(elevator.createJoystickControlCommand(operator.getHID(), 0.5));
+    // Intake with coral gripper
+    operator.rightBumper()
+        .whileTrue(coralIntake.createSetIntakeVelocityCommand(5)
+        .onlyIf(() -> elevator.getElevatorPosition() == ElevatorPosition.Intake));
+    
+    // Intake with algae gripper
+    operator.rightBumper()
+        .whileTrue(algaeIntake.createSetIntakeVelocityCommand(5)
+        .onlyIf(() -> elevator.getElevatorPosition() != ElevatorPosition.Intake));
 
-    operator
-        .rightBumper()
-        .whileTrue(
-            coralIntake
-                .createSetIntakeVelocityCommand(5)
-                .onlyIf(() -> elevator.getElevatorPosition() == ElevatorPosition.Intake));
-    operator
-        .rightBumper()
-        .whileTrue(
-            algaeIntake
-                .createSetIntakeVelocityCommand(5)
-                .onlyIf(() -> elevator.getElevatorPosition() != ElevatorPosition.Intake));
-
+    // Actuate climber winch
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
-    climbTrigger.onTrue(
-        climber
-            .createDeployCommand()
-            .andThen(
-                climber.createClimbByControllerCommand(
-                    operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
+    climbTrigger.onTrue(climber.createDeployCommand()
+        .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
 
-    operator
-        .back()
+    // Unlock ratchet (momentary)
+    operator.back()
         .whileTrue(new InstantCommand(climber::unlockRatchet))
         .whileFalse(new InstantCommand(climber::lockRatchet));
   }
+  // spotless:on
 
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection().onTrue(leds.createChangeAutoAnimationCommand());
