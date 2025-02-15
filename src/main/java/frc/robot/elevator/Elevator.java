@@ -115,7 +115,8 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Height", encoder.getPosition());
     SmartDashboard.putNumber("Elevator Velocity", encoder.getVelocity());
 
-    SmartDashboard.putString("Elevator Target Position", getTargetPosition().name());
+    SmartDashboard.putString("Elevator Target Position Name", getTargetPosition().name());
+    SmartDashboard.putNumber("Elevator Target Position Height", getTargetPosition().height);
 
     if (SmartDashboard.getBoolean("Elevator Reset Encoder", false)) {
       SmartDashboard.putBoolean("Elevator Reset Encoder", false);
@@ -150,15 +151,15 @@ public class Elevator extends SubsystemBase {
   }
 
   private void setPosition(ElevatorPosition targetPosition) {
-    controller.setReference(targetPosition.height, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    controller.setReference(targetPosition.height, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
   }
 
   private void setVelocity(double targetVelocity) {
     controller.setReference(targetVelocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
   }
 
-  public Boolean isAtTargetHeight() {
-    return (Math.abs(encoder.getPosition() - targetPosition.height) < 0.1);
+  private Boolean isAtTargetHeight() {
+    return (Math.abs(encoder.getPosition() - targetPosition.height) < ElevatorConstants.kAllowableHeightError);
   }
 
   public Command createSetPositionCommand(ElevatorPosition position) {

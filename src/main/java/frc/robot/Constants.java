@@ -376,6 +376,8 @@ public final class Constants {
 
     public static final int lowerLimitSwitchPort = 9;
 
+    public static final double kAllowableHeightError = 0.2;
+
     public final class ElevatorControllerPositionGains {
       public static final double kP = 0.01;
       public static final double kI = 0.0;
