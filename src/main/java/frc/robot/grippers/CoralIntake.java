@@ -87,8 +87,8 @@ public class CoralIntake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Rotation Position", wristEncoder.getPosition());
-    SmartDashboard.putNumber("Intake Velocity", rollerEncoder.getVelocity());
+    SmartDashboard.putNumber("Coral Rotation Position", wristEncoder.getPosition());
+    SmartDashboard.putNumber("Coral Intake Velocity", rollerEncoder.getVelocity());
 
     SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
   }

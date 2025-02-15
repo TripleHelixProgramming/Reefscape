@@ -118,17 +118,17 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putString("Elevator Position Current", getCurrentPosition().name());
     SmartDashboard.putString("Elevator Position Next", getNextPosition().name());
 
-    if (SmartDashboard.getBoolean("Reset Encoder", false)) {
-      SmartDashboard.putBoolean("Reset Encoder", false);
+    if (SmartDashboard.getBoolean("Elevator Reset Encoder", false)) {
+      SmartDashboard.putBoolean("Elevator Reset Encoder", false);
       resetEncoder();
     }
 
-    SmartDashboard.putNumber("Lead Elevator Voltage", leaderMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Follower Elevator Voltage", followerMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Lead Elevator Current", leaderMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Elevator Lead Voltage", leaderMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Elevator Follower Voltage", followerMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Elevator Lead Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Follower Elevator Current", followerMotor.getOutputCurrent());
  
-    SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
+    SmartDashboard.putBoolean("Elevator Lower Limit Switch", lowerLimitSwitch.get());
   }
 
   private ElevatorPosition getCurrentPosition() {

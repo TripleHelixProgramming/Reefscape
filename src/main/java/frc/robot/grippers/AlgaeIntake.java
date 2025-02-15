@@ -96,8 +96,8 @@ public class AlgaeIntake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Rotation Position", wristEncoder.getPosition());
-    SmartDashboard.putNumber("Intake Velocity", rollerEncoder.getVelocity());
+    SmartDashboard.putNumber("Algae Rotation Position", wristEncoder.getPosition());
+    SmartDashboard.putNumber("Algae Intake Velocity", rollerEncoder.getVelocity());
 
     SmartDashboard.putBoolean("Algae Sensor", algaeSensor.get());
   }
