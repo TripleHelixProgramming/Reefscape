@@ -128,7 +128,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Lead Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Follower Elevator Current", followerMotor.getOutputCurrent());
 
-    SmartDashboard.putBoolean("Elevator Lower Limit Switch", lowerLimitSwitch.get());
+    SmartDashboard.putBoolean("Elevator Lower Limit Switch", !lowerLimitSwitch.get());
     SmartDashboard.putBoolean("Elevator isAtHeight", isAtTargetHeight());
   }
 
