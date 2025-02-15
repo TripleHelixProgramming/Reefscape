@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorControllerPositionGains;
 import frc.robot.Constants.ElevatorConstants.ElevatorControllerVelocityGains;
@@ -127,7 +128,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Follower Voltage", followerMotor.getAppliedOutput());
     SmartDashboard.putNumber("Elevator Lead Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putNumber("Follower Elevator Current", followerMotor.getOutputCurrent());
- 
+
     SmartDashboard.putBoolean("Elevator Lower Limit Switch", lowerLimitSwitch.get());
   }
 
@@ -162,8 +163,12 @@ public class Elevator extends SubsystemBase {
     return currentPosition;
   }
 
+  private Boolean isAtHeight(ElevatorPosition targetPosition) {
+    return (Math.abs(encoder.getPosition() - targetPosition.height) < 0.1);
+  }
+
   public Command createSetPositionCommand(ElevatorPosition position) {
-    return new InstantCommand(() -> this.setPosition(position));
+    return new InstantCommand(() -> this.setPosition(position)).until(() -> isAtHeight(position));
   }
 
   public Command createGoToNextPositionCommand() {
