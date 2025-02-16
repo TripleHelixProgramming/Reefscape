@@ -36,7 +36,6 @@ public class Elevator extends SubsystemBase {
   private final SparkMaxConfig followerConfig = new SparkMaxConfig();
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
-
   private final ProfiledPIDController controller =
       new ProfiledPIDController(ElevatorController.kP, 0.0, 0.0, ElevatorController.kConstraints);
 
@@ -106,7 +105,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Follower Current", followerMotor.getOutputCurrent());
 
     SmartDashboard.putBoolean("Elevator Lower Limit Switch", !lowerLimitSwitch.get());
-    SmartDashboard.putBoolean("Elevator isAtHeight", controller.atGoal());
+    SmartDashboard.putBoolean("Elevator At Target Height", controller.atGoal());
   }
 
   public double getProportionOfMaxHeight() {

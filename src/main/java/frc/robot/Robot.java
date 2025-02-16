@@ -92,9 +92,7 @@ public class Robot extends TimedRobot {
 
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
-
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
-
     elevator.setDefaultCommand(elevator.createJoystickControlCommand(operator.getHID()));
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
