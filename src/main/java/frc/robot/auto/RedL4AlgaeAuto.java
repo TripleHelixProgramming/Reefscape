@@ -57,9 +57,9 @@ public class RedL4AlgaeAuto extends AutoMode {
         .active()
         .onTrue(
             Commands.parallel(
-                redCenterToL4G.cmd(), 
-                elevator.createSetPositionCommand(ElevatorState.L4), 
-                coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L4.angle), 
+                redCenterToL4G.cmd(),
+                elevator.createSetPositionCommand(ElevatorState.L4),
+                coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L4.angle),
                 algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle)));
 
     redCenterToL4G
@@ -76,16 +76,16 @@ public class RedL4AlgaeAuto extends AutoMode {
         .onTrue(
             Commands.sequence(
                 new ParallelCommandGroup(
-                  elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
-                  coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-                  algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L3.angle)),
+                    elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
+                    coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+                    algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L3.angle)),
                 algaeIntake.createSetIntakeVelocityCommand(5),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
-                  redAlgaeToProcess.cmd(),
-                  elevator.createSetPositionCommand(ElevatorState.Processor),
-                  algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Processor.angle)
-                )));
+                    redAlgaeToProcess.cmd(),
+                    elevator.createSetPositionCommand(ElevatorState.Processor),
+                    algaeIntake.createSetRotationPositionCommand(
+                        AlgaeIntakeStates.Processor.angle))));
 
     redAlgaeToProcess
         .done()
@@ -94,8 +94,8 @@ public class RedL4AlgaeAuto extends AutoMode {
                 algaeIntake.createSetIntakeVelocityCommand(-5),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
-                  redProcessToSource.cmd(),
-                  elevator.createSetPositionCommand(ElevatorState.Intake))));
+                    redProcessToSource.cmd(),
+                    elevator.createSetPositionCommand(ElevatorState.Intake))));
 
     return redL4AlgAutoRoutine;
   }

@@ -38,11 +38,7 @@ public class Elevator extends SubsystemBase {
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
 
   private final ProfiledPIDController controller =
-      new ProfiledPIDController(
-          ElevatorController.kP,
-          ElevatorController.kI,
-          ElevatorController.kD,
-          ElevatorController.kConstraints);
+      new ProfiledPIDController(ElevatorController.kP, 0.0, 0.0, ElevatorController.kConstraints);
 
   private final EventLoop loop = new EventLoop();
 

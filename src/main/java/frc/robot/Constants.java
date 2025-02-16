@@ -37,11 +37,6 @@ public final class Constants {
 
     public static final int kDefaultNEOCurrentLimit = 80;
     public static final int kDefaultNEO550CurretnLimit = 30;
-
-    public static enum GripperStates {
-      CORAL,
-      ALGAE
-    };
   }
 
   public static final class DriveConstants {
@@ -83,8 +78,7 @@ public final class Constants {
         MetersPerSecond.of(4.0); // max 4.5
     public static final AngularVelocity kMaxRotationalVelocity =
         RadiansPerSecond.of(5.0); // max 5.0
-    public static final LinearVelocity kMinTranslationVelocity = 
-        MetersPerSecond.of(1.0);
+    public static final LinearVelocity kMinTranslationVelocity = MetersPerSecond.of(1.0);
 
     // The locations for the modules must be relative to the center of the robot.
     // Positive x values represent moving toward the front of the robot
@@ -244,12 +238,7 @@ public final class Constants {
     public static final int kWristMotorPort = 22;
 
     public static final double kVelocityP = 0.1;
-    public static final double kVelocityI = 0.0;
-    public static final double kVelocityD = 0.0;
-
     public static final double kPositionP = 0.1;
-    public static final double kPositionI = 0.0;
-    public static final double kPositionD = 0.0;
 
     public static final double kCoralGearRatio = 5.0;
     public static final double kCoralShaftDiamter = 2.0; // inches
@@ -286,12 +275,7 @@ public final class Constants {
     public static final int kWristMotorPort = 14;
 
     public static final double kVelocityP = 0.1;
-    public static final double kVelocityI = 0.0;
-    public static final double kVelocityD = 0.0;
-
     public static final double kPositionP = 0.1;
-    public static final double kPositionI = 0.0;
-    public static final double kPositionD = 0.0;
 
     public static final double kAlgaeGearRatio = 5.0;
     public static final double kAlgaeShaftDiamter = 2.0; // inches
@@ -335,14 +319,10 @@ public final class Constants {
 
     public static final class TranslationControllerGains {
       public static final double kP = 4.0;
-      public static final double kI = 0.0;
-      public static final double kD = 0.0;
     }
 
     public static final class RotationControllerGains {
       public static final double kP = 7.0;
-      public static final double kI = 0.0;
-      public static final double kD = 0.0;
     }
 
     // Constraint for the motion profilied robot angle controller
@@ -424,8 +404,6 @@ public final class Constants {
 
     public final class ElevatorController {
       public static final double kP = 0.1;
-      public static final double kI = 0.0;
-      public static final double kD = 0.0;
       public static final Constraints kConstraints =
           new Constraints(
               kRapidVelocityInchesPerSecond, kRapidAccelerationInchesPerSecondPerSecond);

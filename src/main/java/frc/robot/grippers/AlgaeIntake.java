@@ -50,8 +50,8 @@ public class AlgaeIntake extends SubsystemBase {
 
     rollerConfig.closedLoop
         .p(AlgaeIntakeConstants.kVelocityP)
-        .i(AlgaeIntakeConstants.kVelocityI)
-        .d(AlgaeIntakeConstants.kVelocityD)
+        .i(0.0)
+        .d(0.0)
         .outputRange(-1, 1);
 
     rollerConfig.encoder
@@ -74,8 +74,8 @@ public class AlgaeIntake extends SubsystemBase {
     
     wristConfig.closedLoop
         .p(AlgaeIntakeConstants.kPositionP)
-        .i(AlgaeIntakeConstants.kPositionI)
-        .d(AlgaeIntakeConstants.kPositionD)
+        .i(0.0)
+        .d(0.0)
         .outputRange(-1, 1)
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     // spotless:on

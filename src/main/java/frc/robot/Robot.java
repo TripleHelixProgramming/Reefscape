@@ -24,14 +24,13 @@ import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
+import frc.robot.Constants.AlgaeIntakeConstants.AlgaeIntakeStates;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.CoralIntakeConstants.CoralIntakeStates;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
-import frc.robot.Constants.RobotConstants.GripperStates;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.AlgaeIntakeConstants.AlgaeIntakeStates;
-import frc.robot.Constants.CoralIntakeConstants.CoralIntakeStates;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;
 import frc.robot.auto.ExampleAuto;
@@ -55,7 +54,8 @@ public class Robot extends TimedRobot {
       new AutoSelector(
           AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
   private final Elevator elevator = new Elevator();
-  private final Drivetrain swerve = new Drivetrain(allianceSelector::fieldRotated, elevator::getProportionOfMaxHeight);
+  private final Drivetrain swerve =
+      new Drivetrain(allianceSelector::fieldRotated, elevator::getProportionOfMaxHeight);
   private final Climber climber = new Climber();
   private final LEDs leds = new LEDs();
   private final Vision vision = new Vision();
@@ -66,8 +66,6 @@ public class Robot extends TimedRobot {
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
   private final EventLoop loop = new EventLoop();
-
-  private GripperStates gripperState = GripperStates.CORAL;
 
   private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
@@ -97,8 +95,7 @@ public class Robot extends TimedRobot {
 
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
 
-    elevator.setDefaultCommand(
-        elevator.createJoystickControlCommand(operator.getHID()));
+    elevator.setDefaultCommand(elevator.createJoystickControlCommand(operator.getHID()));
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -299,63 +296,63 @@ public class Robot extends TimedRobot {
             });
   }
 
-  private ParallelCommandGroup coralL4PositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.L4),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L4.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
+  private ParallelCommandGroup coralL4PositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.L4),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L4.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
 
-  private ParallelCommandGroup coralL3PositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.L3),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L3.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
+  private ParallelCommandGroup coralL3PositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.L3),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L3.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
 
-  private ParallelCommandGroup coralL2PositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.L2),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L2.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
+  private ParallelCommandGroup coralL2PositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.L2),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L2.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
 
-  private ParallelCommandGroup coralL1PositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.L1),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L1.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
+  private ParallelCommandGroup coralL1PositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.L1),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L1.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
 
-  private ParallelCommandGroup coralIntakePositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.Intake),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.Intake.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
+  private ParallelCommandGroup coralIntakePositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.Intake),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.Intake.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
 
-  private ParallelCommandGroup algaeBargePositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.Max),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Barge.angle));
+  private ParallelCommandGroup algaeBargePositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.Max),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Barge.angle));
 
-  private ParallelCommandGroup algaeL3PositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L3.angle));
+  private ParallelCommandGroup algaeL3PositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L3.angle));
 
-  private ParallelCommandGroup algaeL2PositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.AlgaeL2),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L2.angle));
+  private ParallelCommandGroup algaeL2PositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.AlgaeL2),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L2.angle));
 
-  private ParallelCommandGroup algaeProcessorPositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.Processor),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Processor.angle));
+  private ParallelCommandGroup algaeProcessorPositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.Processor),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Processor.angle));
 
-  private ParallelCommandGroup algaeFloorIntakePositionCommand = 
-    new ParallelCommandGroup(
-      elevator.createSetPositionCommand(ElevatorState.Floor),
-      coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-      algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Floor.angle));
+  private ParallelCommandGroup algaeFloorIntakePositionCommand =
+      new ParallelCommandGroup(
+          elevator.createSetPositionCommand(ElevatorState.Floor),
+          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
+          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Floor.angle));
 }

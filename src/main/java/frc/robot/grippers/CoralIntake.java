@@ -47,8 +47,8 @@ public class CoralIntake extends SubsystemBase {
 
     rollerConfig.closedLoop
         .p(CoralIntakeConstants.kVelocityP)
-        .i(CoralIntakeConstants.kVelocityI)
-        .d(CoralIntakeConstants.kVelocityD)
+        .i(0.0)
+        .d(0.0)
         .outputRange(-1, 1);
 
     rollerConfig.encoder
@@ -63,8 +63,8 @@ public class CoralIntake extends SubsystemBase {
     
     wristConfig.closedLoop
         .p(CoralIntakeConstants.kPositionP)
-        .i(CoralIntakeConstants.kPositionI)
-        .d(CoralIntakeConstants.kPositionD)
+        .i(0.0)
+        .d(0.0)
         .outputRange(-1, 1)
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 
