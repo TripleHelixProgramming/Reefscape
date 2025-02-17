@@ -1,5 +1,7 @@
 package frc.robot.grippers;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -110,6 +112,10 @@ public class CoralIntake extends SubsystemBase {
   }
 
   public Trigger hasCoral = new Trigger(() -> coralSensor.get());
+
+  public BooleanSupplier hasCoralPiece() {
+    return () -> (coralSensor.get() == true);
+  }
 
   public Command createStopIntakeCommand() {
     return this.runOnce(() -> setIntakeVelocity(0));

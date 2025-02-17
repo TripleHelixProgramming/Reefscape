@@ -33,6 +33,7 @@ import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;
+import frc.robot.auto.BlueNoProcess3PieceAuto;
 import frc.robot.auto.ExampleAuto;
 import frc.robot.auto.RedL4AlgaeAuto;
 import frc.robot.climber.Climber;
@@ -260,7 +261,8 @@ public class Robot extends TimedRobot {
     autoSelector.addAuto(
         new AutoOption(
             Alliance.Blue, 1, new BlueL4AlgaeAuto(swerve, elevator, coralIntake, algaeIntake)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2, new ExampleAuto(swerve)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevator, coralIntake, algaeIntake)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 3, new ExampleAuto(swerve)));
   }
 
   /**
