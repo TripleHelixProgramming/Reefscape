@@ -98,7 +98,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     leds.setDefaultCommand(
         leds.createDisabledCommand(
-            autoSelector::getSwitchPosition,
+            autoSelector::getBinarySwitchPosition,
             allianceSelector::getAllianceColor,
             allianceSelector::agreementInAllianceInputs));
   }
