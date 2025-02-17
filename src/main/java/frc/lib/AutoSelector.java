@@ -53,13 +53,23 @@ public class AutoSelector {
   /**
    * @return The position of the autonomous selection switch
    */
-  public int getSwitchPosition() {
+  public int getRotarySwitchPosition() {
     for (int i = 0; i < switchPositions.length; i++) {
       if (!switchPositions[i].get()) {
         return i + 1;
       }
     }
     return 0; // failure of the physical switch
+  }
+
+  public int getBinarySwitchPosition() {
+    int sum = 0;
+    for (int i = 0; i < switchPositions.length; i++) {
+      if (!switchPositions[i].get()) {
+        sum += 2^i;
+      }
+    }
+    return sum;
   }
 
   private Alliance getAllianceColor() {
@@ -69,7 +79,7 @@ public class AutoSelector {
   private Optional<AutoOption> findMatchingOption() {
     return autoOptions.stream()
         .filter(o -> o.getColor() == getAllianceColor())
-        .filter(o -> o.getOption() == getSwitchPosition())
+        .filter(o -> o.getOption() == getBinarySwitchPosition())
         .findFirst();
   }
 
@@ -101,7 +111,7 @@ public class AutoSelector {
 
   public void disabledPeriodic() {
     eventLoop.poll();
-    SmartDashboard.putNumber("AutoSelectorSwitchPosition", getSwitchPosition());
+    SmartDashboard.putNumber("AutoSelectorSwitchPosition", getBinarySwitchPosition());
 
     currentAutoOption.ifPresentOrElse(
         ao -> {
