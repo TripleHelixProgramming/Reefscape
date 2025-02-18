@@ -11,9 +11,8 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.Lifter;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
-
+import frc.robot.elevator.Lifter;
 import java.util.Optional;
 
 public class BlueL4AlgaeAuto extends AutoMode {

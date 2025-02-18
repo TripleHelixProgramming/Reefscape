@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
+import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 import frc.robot.elevator.Lifter;
 import java.util.Optional;
 

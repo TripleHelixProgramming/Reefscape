@@ -21,10 +21,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterController;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
-import frc.robot.Constants.RobotConstants;
 
 public class Lifter extends SubsystemBase {
 
@@ -81,8 +81,7 @@ public class Lifter extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    controller.setTolerance(
-        LifterConstants.kAllowableHeightError.in(Inches));
+    controller.setTolerance(LifterConstants.kAllowableHeightError.in(Inches));
     // controller.setIZone();
     // controller.setIntegratorRange();
     resetController();
@@ -187,8 +186,7 @@ public class Lifter extends SubsystemBase {
               LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
           targetPosition = targetPosition.plus(adder);
 
-          if (isInRange(targetPosition))
-            controller.setGoal(targetPosition.in(Inches));
+          if (isInRange(targetPosition)) controller.setGoal(targetPosition.in(Inches));
           control();
         });
   }

@@ -15,9 +15,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
-import frc.robot.Constants.RobotConstants;
 
 public class AlgaeWrist extends SubsystemBase {
 
@@ -53,8 +53,7 @@ public class AlgaeWrist extends SubsystemBase {
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    controller.setTolerance(
-        AlgaeWristConstants.kAllowableAngleError.in(Degrees));
+    controller.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Degrees));
     // controller.setIZone();
     // controller.setIntegratorRange();
   }

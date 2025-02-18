@@ -19,8 +19,8 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 
 public class ElevatorConstants {
-    
-    public static final class LifterConstants {
+
+  public static final class LifterConstants {
     public static final int kLeaderMotorPort = 24;
     public static final int kFollowerMotorPort = 25;
     public static final int lowerLimitSwitchPort = 9;
@@ -39,7 +39,8 @@ public class ElevatorConstants {
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
     public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(50.0);
 
-    public static final LinearAccelerationUnit inchesPerSecondPerSecond = InchesPerSecond.per(Second);
+    public static final LinearAccelerationUnit inchesPerSecondPerSecond =
+        InchesPerSecond.per(Second);
     public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
     public static final LinearAcceleration kRapidAcceleration =
         kRapidVelocity.div(kTimeToMaxVelocity);
@@ -76,7 +77,7 @@ public class ElevatorConstants {
     }
   }
 
-    public static final class CoralRollerConstants {
+  public static final class CoralRollerConstants {
     public static final int kMotorPort = 23;
     public static final int kCoralSensorPort = 3;
 
@@ -156,7 +157,8 @@ public class ElevatorConstants {
     public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
     public static final AngularAcceleration kMaxAcceleration = kMaxVelocity.div(kTimeToMaxVelocity);
     public static final Constraints kConstraints =
-        new Constraints(kMaxVelocity.in(DegreesPerSecond), kMaxAcceleration.in(DegreesPerSecondPerSecond));
+        new Constraints(
+            kMaxVelocity.in(DegreesPerSecond), kMaxAcceleration.in(DegreesPerSecondPerSecond));
     public static final Angle kAllowableAngleError = Degrees.of(3.0);
 
     public static enum AlgaeWristState {
