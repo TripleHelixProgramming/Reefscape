@@ -12,9 +12,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.DistanceUnit;
+import edu.wpi.first.units.LinearAccelerationUnit;
+import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -33,7 +38,7 @@ public final class Constants {
 
   public static final class RobotConstants {
     public static final double kNominalVoltage = 12.0;
-    public static final double kPeriod = TimedRobot.kDefaultPeriod;
+    public static final Time kPeriod = Seconds.of(TimedRobot.kDefaultPeriod);
 
     public static final int kDefaultNEOCurrentLimit = 80;
     public static final int kDefaultNEO550CurretnLimit = 30;
@@ -400,6 +405,10 @@ public final class Constants {
   }
 
   public static final class LifterConstants {
+    public static final DistanceUnit kDistanceUnit = Inches;
+    public static final LinearVelocityUnit kVelocityUnit = kDistanceUnit.per(Second);
+    public static final LinearAccelerationUnit kAccelerationUnit = kVelocityUnit.per(Second);
+
     public static final int kLeaderMotorPort = 24;
     public static final int kFollowerMotorPort = 25;
 
@@ -414,26 +423,22 @@ public final class Constants {
     // Convert to inches per second at the final stage
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kFineVelocityInchesPerSecond = 15.0;
-    public static final double kRapidVelocityInchesPerSecond = 50.0;
+    public static final LinearVelocity kFineVelocity = kVelocityUnit.of(15.0);
+    public static final LinearVelocity kRapidVelocity = kVelocityUnit.of(50.0);
 
-    public static final double kTimeToMaxVelocity = 0.02;
-    // public static final double kMaxVelocityRPM = kRapidVelocityInchesPerSecond /
-    // kVelocityConversionFactor;
-    // public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM /
-    // kTimeToMaxVelocity;
-    public static final double kRapidAccelerationInchesPerSecondPerSecond =
-        kRapidVelocityInchesPerSecond / kTimeToMaxVelocity;
+    public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
+    public static final LinearAcceleration kRapidAcceleration =
+        kRapidVelocity.div(kTimeToMaxVelocity);
 
     public static final int lowerLimitSwitchPort = 9;
 
-    public static final double kAllowableHeightError = 0.2;
+    public static final Distance kAllowableHeightError = kDistanceUnit.of(0.2);
 
     public final class LifterController {
       public static final double kP = 0.1;
       public static final Constraints kConstraints =
           new Constraints(
-              kRapidVelocityInchesPerSecond, kRapidAccelerationInchesPerSecondPerSecond);
+              kRapidVelocity.in(kVelocityUnit), kRapidAcceleration.in(kAccelerationUnit));
     }
 
     public static enum LifterState {
@@ -451,10 +456,10 @@ public final class Constants {
       AlgaeL3(46.5),
       Max(30.00);
 
-      public double height;
+      public Distance height;
 
-      private LifterState(double height) {
-        this.height = height;
+      private LifterState(double inches) {
+        this.height = kDistanceUnit.of(inches);
       }
     }
   }

@@ -1,5 +1,7 @@
 package frc.robot.drivetrain;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import choreo.trajectory.SwerveSample;
 import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 import edu.wpi.first.math.Matrix;
@@ -16,6 +18,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,14 +29,13 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.VisionConstants;
 import java.util.Arrays;
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 /** Constructs a swerve drive style drivetrain. */
 public class Drivetrain extends SubsystemBase {
 
-  private BooleanSupplier m_fieldRotatedSupplier;
-
-  private DoubleSupplier elevatorHeightSupplier;
+  private BooleanSupplier fieldRotatedSupplier;
+  private Supplier<Dimensionless> elevatorHeightSupplier;
 
   static LinearVelocity kMaxSpeed = DriveConstants.kMaxTranslationalVelocity;
   static LinearVelocity kMinSpeed = DriveConstants.kMinTranslationVelocity;
@@ -57,10 +59,8 @@ public class Drivetrain extends SubsystemBase {
   private StructPublisher<Pose2d> m_visionPosePublisher =
       NetworkTableInstance.getDefault().getStructTopic("Vision", Pose2d.struct).publish();
 
-  public Drivetrain(BooleanSupplier fieldRotatedSupplier, DoubleSupplier elevatorHeight) {
-
-    this.m_fieldRotatedSupplier = fieldRotatedSupplier;
-
+  public Drivetrain(BooleanSupplier fieldRotated, Supplier<Dimensionless> elevatorHeight) {
+    this.fieldRotatedSupplier = fieldRotated;
     this.elevatorHeightSupplier = elevatorHeight;
 
     canandgyro.setYaw(0);
@@ -125,9 +125,8 @@ public class Drivetrain extends SubsystemBase {
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds, SwerveDriveKinematics kinematics) {
     var swerveModuleStates =
         kinematics.toSwerveModuleStates(
-            ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod));
-    LinearVelocity speedPenalty =
-        (kMaxSpeed.minus(kMinSpeed)).times(elevatorHeightSupplier.getAsDouble());
+            ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod.in(Seconds)));
+    LinearVelocity speedPenalty = (kMaxSpeed.minus(kMinSpeed)).times(elevatorHeightSupplier.get());
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed.minus(speedPenalty));
     for (SwerveModule module : SwerveModule.values()) {
       module.setDesiredState(swerveModuleStates[module.ordinal()]);
@@ -169,7 +168,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void setHeadingOffset() {
     headingOffset =
-        m_fieldRotatedSupplier.getAsBoolean()
+        fieldRotatedSupplier.getAsBoolean()
             ? getHeading().rotateBy(new Rotation2d(Math.PI))
             : getHeading();
   }
@@ -216,7 +215,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public BooleanSupplier fieldRotatedSupplier() {
-    return this.m_fieldRotatedSupplier;
+    return this.fieldRotatedSupplier;
   }
 
   /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)}. */

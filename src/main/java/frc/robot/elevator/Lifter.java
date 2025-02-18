@@ -1,5 +1,7 @@
 package frc.robot.elevator;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -9,6 +11,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -63,9 +67,9 @@ public class Lifter extends SubsystemBase {
         .velocityConversionFactor(LifterConstants.kVelocityConversionFactor);
 
     leaderConfig.softLimit
-        .reverseSoftLimit(LifterState.Floor.height)
+        .reverseSoftLimit(LifterState.Floor.height.in(Inches))
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(LifterState.Max.height)
+        .forwardSoftLimit(LifterState.Max.height.in(Inches))
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
@@ -77,7 +81,7 @@ public class Lifter extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    controller.setTolerance(LifterConstants.kAllowableHeightError);
+    controller.setTolerance(LifterConstants.kAllowableHeightError.in(Inches));
     // controller.setIZone();
     // controller.setIntegratorRange();
     resetController();
@@ -108,8 +112,12 @@ public class Lifter extends SubsystemBase {
     SmartDashboard.putBoolean("Lifter At Target Height", controller.atGoal());
   }
 
-  public double getProportionOfMaxHeight() {
-    return encoder.getPosition() / LifterState.Max.height;
+  public Distance getHeight() {
+    return Inches.of(encoder.getPosition());
+  }
+
+  public Dimensionless getProportionOfMaxHeight() {
+    return getHeight().div(LifterState.Max.height);
   }
 
   public void resetController() {
@@ -126,7 +134,7 @@ public class Lifter extends SubsystemBase {
   }
 
   private void resetEncoder() {
-    encoder.setPosition(LifterState.Reset.height);
+    encoder.setPosition(LifterState.Reset.height.in(Inches));
   }
 
   public Command createSetHeightCommand(LifterState state) {
@@ -134,7 +142,7 @@ public class Lifter extends SubsystemBase {
         // initialize
         () -> {
           targetState = state;
-          controller.setGoal(targetState.height);
+          controller.setGoal(targetState.height.in(Inches));
         },
         // execute
         () -> control(),
@@ -162,22 +170,23 @@ public class Lifter extends SubsystemBase {
         this);
   }
 
-  private Boolean isInRange(double height) {
-    if (height < LifterState.Min.height) return false;
-    if (height > LifterState.Max.height) return false;
+  private Boolean isInRange(Distance height) {
+    if (height.lt(LifterState.Min.height)) return false;
+    if (height.gt(LifterState.Max.height)) return false;
     return true;
   }
 
   public Command createJoystickControlCommand(XboxController gamepad) {
     return this.run(
         () -> {
-          double targetPosition = controller.getGoal().position;
+          Distance targetPosition = Inches.of(controller.getGoal().position);
 
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          targetPosition +=
-              joystickInput * LifterConstants.kFineVelocityInchesPerSecond * RobotConstants.kPeriod;
+          Distance adder =
+              LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
+          targetPosition = targetPosition.plus(adder);
 
-          if (isInRange(targetPosition)) controller.setGoal(targetPosition);
+          if (isInRange(targetPosition)) controller.setGoal(targetPosition.in(Inches));
           control();
         });
   }
