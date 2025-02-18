@@ -11,25 +11,25 @@ import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.Elevator;
 import frc.robot.grippers.AlgaeIntake;
-import frc.robot.grippers.CoralIntake;
+import frc.robot.grippers.CoralRoller;
 import java.util.Optional;
 
 public class RedL4AlgaeAuto extends AutoMode {
 
   Elevator elevator;
-  CoralIntake coralIntake;
+  CoralRoller coralRoller;
   AlgaeIntake algaeIntake;
   AutoCGs autoCG;
 
   public RedL4AlgaeAuto(
       Drivetrain drivetrain,
       Elevator elevatorsubsystem,
-      CoralIntake coralIntakeSubsystem,
+      CoralRoller coralRollerSubsystem,
       AlgaeIntake algaeIntakeSubsystem,
       AutoCGs autoCommandGroups) {
     super(drivetrain);
     elevator = elevatorsubsystem;
-    coralIntake = coralIntakeSubsystem;
+    coralRoller = coralRollerSubsystem;
     algaeIntake = algaeIntakeSubsystem;
     autoCG = autoCommandGroups;
   }
@@ -63,7 +63,7 @@ public class RedL4AlgaeAuto extends AutoMode {
         .onTrue(
             new SequentialCommandGroup(
                 new WaitCommand(0.1),
-                coralIntake.createSetIntakeVelocityCommand(-5.0),
+                coralRoller.createSetIntakeVelocityCommand(-5.0),
                 new WaitCommand(0.2),
                 redL4GToAlgae.cmd()));
 
