@@ -55,11 +55,11 @@ public class CoralRoller extends SubsystemBase {
     SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
   }
 
-  private void resetIntakeEncoder() {
+  private void resetEncoder() {
     encoder.setPosition(0.0);
   }
 
-  private void setIntakeVelocity(double velocity) {
+  private void setVelocity(double velocity) {
     controller.setReference(velocity, ControlType.kVelocity);
   }
 
@@ -70,14 +70,14 @@ public class CoralRoller extends SubsystemBase {
   }
 
   public Command createStopCommand() {
-    return this.runOnce(() -> setIntakeVelocity(0));
+    return this.startEnd(() -> motor.set(0.0), () -> {});
   }
 
-  public Command createSetIntakeCommand() {
-    return this.run(() -> setIntakeVelocity(CoralRollerConstants.kIntakeSpeed));
+  public Command createIntakeCommand() {
+    return this.startEnd(() -> setVelocity(CoralRollerConstants.kIntakeSpeed), () -> {});
   }
 
-  public Command createSetOuttakeCommand() {
-    return this.run(() -> setIntakeVelocity(CoralRollerConstants.kOuttakeSpeed));
+  public Command createOuttakeCommand() {
+    return this.startEnd(() -> setVelocity(CoralRollerConstants.kOuttakeSpeed), () -> {});
   }
 }

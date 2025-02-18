@@ -65,25 +65,25 @@ public class AlgaeRoller extends SubsystemBase {
     SmartDashboard.putBoolean("Algae Sensor", algaeSensor.get());
   }
 
-  private void resetIntakeEncoder() {
+  private void resetEncoder() {
     encoder.setPosition(0.0);
   }
 
-  private void setIntakeVelocity(double velocity) {
+  private void setVelocity(double velocity) {
     controller.setReference(velocity, ControlType.kVelocity);
   }
 
   public Trigger hasAlage = new Trigger(() -> algaeSensor.get());
 
   public Command createStopCommand() {
-    return this.runOnce(() -> setIntakeVelocity(0));
+    return this.startEnd(() -> leaderMotor.set(0.0), () -> {});
   }
 
-  public Command createSetIntakeCommand() {
-    return this.run(() -> setIntakeVelocity(AlgaeRollerConstants.kIntakeSpeed));
+  public Command createIntakeCommand() {
+    return this.startEnd(() -> setVelocity(AlgaeRollerConstants.kIntakeSpeed), () -> {});
   }
 
-  public Command createSetOuttakeCommand() {
-    return this.run(() -> setIntakeVelocity(AlgaeRollerConstants.kOuttakeSpeed));
+  public Command createOuttakeCommand() {
+    return this.startEnd(() -> setVelocity(AlgaeRollerConstants.kOuttakeSpeed), () -> {});
   }
 }

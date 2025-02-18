@@ -215,8 +215,8 @@ public class Robot extends TimedRobot {
 
     // Outtake grippers
     driver.HIn()
-        .onTrue(coralRoller.createSetOuttakeCommand()
-        .alongWith(algaeRoller.createSetOuttakeCommand()));
+        .onTrue(coralRoller.createOuttakeCommand()
+        .alongWith(algaeRoller.createOuttakeCommand()));
 
   }
 
@@ -241,12 +241,12 @@ public class Robot extends TimedRobot {
 
     // Intake with coral gripper
     operator.rightBumper()
-        .whileTrue(coralRoller.createSetIntakeCommand()
+        .whileTrue(coralRoller.createIntakeCommand()
         .onlyIf(() -> elevator.getTargetState() == ElevatorState.Intake));
     
     // Intake with algae gripper
     operator.rightBumper()
-        .whileTrue(algaeRoller.createSetIntakeCommand()
+        .whileTrue(algaeRoller.createIntakeCommand()
         .onlyIf(() -> elevator.getTargetState() != ElevatorState.Intake));
 
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);

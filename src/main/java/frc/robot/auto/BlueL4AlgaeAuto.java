@@ -59,7 +59,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .onTrue(
             new SequentialCommandGroup(
                 new WaitCommand(0.1),
-                coralRoller.createSetOuttakeCommand(),
+                coralRoller.createOuttakeCommand(),
                 new WaitCommand(0.2),
                 blueL4GToAlgae.cmd()));
 
@@ -76,7 +76,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             new SequentialCommandGroup(
-                algaeRoller.createSetOuttakeCommand(),
+                algaeRoller.createOuttakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     blueProcessToSource.cmd(),
