@@ -4,8 +4,6 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
@@ -44,47 +42,47 @@ public class RedProcess3PieceAuto extends AutoMode {
   @Override
   public AutoRoutine getAutoRoutine() {
 
-    redProcess3PieceRoutine
-        .active()
-        .onTrue(Commands.parallel(redCenterToL4F.cmd(), elevator.coralL4PositionCG()));
+    // spotless:off
+    redProcess3PieceRoutine.active().onTrue(
+        Commands.parallel(
+            redCenterToL4F.cmd(),
+            elevator.coralL4PositionCG()));
 
-    redCenterToL4F
-        .done()
-        .onTrue(
-            Commands.sequence(
-                new WaitCommand(0.1),
-                coralRoller.createOuttakeCommand(),
-                new WaitCommand(0.2),
-                coralRoller.createStopCommand(),
-                new ParallelCommandGroup(redL4FToSource.cmd(), elevator.coralIntakeCG())));
+    redCenterToL4F.done().onTrue(
+        Commands.sequence(
+            Commands.waitSeconds(0.1),
+            coralRoller.createOuttakeCommand().withTimeout(0.2),
+            Commands.parallel(
+                redL4FToSource.cmd(),
+                elevator.coralIntakeCG())));
 
-    redL4FToSource
-        .done()
-        .onTrue(
-            Commands.sequence(
-                new WaitCommand(0.2),
-                Commands.parallel(redSourceToL4D.cmd(), elevator.coralL4PositionCG())));
+    redL4FToSource.done().onTrue(
+        Commands.sequence(
+            Commands.waitSeconds(0.2),
+            Commands.parallel(
+                redSourceToL4D.cmd(),
+                elevator.coralL4PositionCG())));
 
-    redSourceToL4D
-        .done()
-        .onTrue(
-            Commands.sequence(
-                new WaitCommand(0.1),
-                coralRoller.createOuttakeCommand(),
-                new WaitCommand(0.2),
-                coralRoller.createStopCommand(),
-                Commands.parallel(elevator.coralIntakeCG(), redL4DToSource.cmd())));
+    redSourceToL4D.done().onTrue(
+        Commands.sequence(
+            Commands.waitSeconds(0.1),
+            coralRoller.createOuttakeCommand().withTimeout(0.2),
+            Commands.parallel(
+                elevator.coralIntakeCG(),
+                redL4DToSource.cmd())));
 
-    redL4DToSource
-        .done()
-        .onTrue(
-            Commands.sequence(
-                new WaitCommand(0.2),
-                Commands.parallel(elevator.coralL4PositionCG(), redSourceToL4C.cmd())));
+    redL4DToSource.done().onTrue(
+        Commands.sequence(
+            Commands.waitSeconds(0.2),
+            Commands.parallel(
+                elevator.coralL4PositionCG(),
+                redSourceToL4C.cmd())));
 
-    redSourceToL4C
-        .done()
-        .onTrue(Commands.sequence(new WaitCommand(0.1), coralRoller.createOuttakeCommand()));
+    redSourceToL4C.done().onTrue(
+        Commands.sequence(
+            Commands.waitSeconds(0.1),
+            coralRoller.createOuttakeCommand()));
+    // spotless:on
 
     return redProcess3PieceRoutine;
   }

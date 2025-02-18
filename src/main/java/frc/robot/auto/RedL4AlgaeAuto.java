@@ -4,9 +4,6 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
@@ -50,36 +47,32 @@ public class RedL4AlgaeAuto extends AutoMode {
   @Override
   public AutoRoutine getAutoRoutine() {
 
-    redL4AlgAutoRoutine
-        .active()
-        .onTrue(Commands.parallel(redCenterToL4G.cmd(), elevator.coralL4PositionCG()));
+    // spotless:off
+    redL4AlgAutoRoutine.active().onTrue(
+        Commands.parallel(
+            redCenterToL4G.cmd(),
+            elevator.coralL4PositionCG()));
 
-    redCenterToL4G
-        .done()
-        .onTrue(
-            new SequentialCommandGroup(
-                new WaitCommand(0.1),
-                coralRoller.createOuttakeCommand(),
-                new WaitCommand(0.2),
-                redL4GToAlgae.cmd()));
+    redCenterToL4G.done().onTrue(
+        Commands.sequence(
+            Commands.waitSeconds(0.1),
+            coralRoller.createOuttakeCommand().withTimeout(0.2),
+            redL4GToAlgae.cmd()));
 
-    redL4GToAlgae
-        .done()
-        .onTrue(
-            Commands.sequence(
-                elevator.algaeL3IntakeCG(),
-                new WaitCommand(0.2),
-                new ParallelCommandGroup(
-                    redAlgaeToProcess.cmd(), elevator.algaeProcessorPositionCG())));
+    redL4GToAlgae.done().onTrue(
+        Commands.sequence(
+            elevator.algaeL3IntakeCG().withTimeout(0.2),
+            Commands.parallel(
+                redAlgaeToProcess.cmd(),
+                elevator.algaeProcessorPositionCG())));
 
-    redAlgaeToProcess
-        .done()
-        .onTrue(
-            new SequentialCommandGroup(
-                algaeRoller.createOuttakeCommand(),
-                new WaitCommand(0.2),
-                new ParallelCommandGroup(
-                    redProcessToSource.cmd(), lifter.createSetHeightCommand(LifterState.Intake))));
+    redAlgaeToProcess.done().onTrue(
+        Commands.sequence(
+            algaeRoller.createOuttakeCommand().withTimeout(0.2),
+            Commands.parallel(
+                redProcessToSource.cmd(),
+                lifter.createSetHeightCommand(LifterState.Intake))));
+    // spotless:on
 
     return redL4AlgAutoRoutine;
   }
