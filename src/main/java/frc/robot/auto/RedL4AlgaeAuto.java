@@ -86,7 +86,7 @@ public class RedL4AlgaeAuto extends AutoMode {
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     redProcessToSource.cmd(),
-                    elevator.createSetPositionCommand(ElevatorState.Intake))));
+                    elevator.createSetHeightCommand(ElevatorState.Intake))));
 
     return redL4AlgAutoRoutine;
   }

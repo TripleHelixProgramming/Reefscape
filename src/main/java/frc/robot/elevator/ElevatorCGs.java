@@ -28,35 +28,35 @@ public class ElevatorCGs {
 
   public ParallelCommandGroup coralL4PositionCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.L4),
+        elevator.createSetHeightCommand(ElevatorState.L4),
         coralWrist.createSetAngleCommand(CoralWristState.L4),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralL3PositionCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.L3),
+        elevator.createSetHeightCommand(ElevatorState.L3),
         coralWrist.createSetAngleCommand(CoralWristState.L3),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralL2PositionCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.L2),
+        elevator.createSetHeightCommand(ElevatorState.L2),
         coralWrist.createSetAngleCommand(CoralWristState.L2),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralL1PositionCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.L1),
+        elevator.createSetHeightCommand(ElevatorState.L1),
         coralWrist.createSetAngleCommand(CoralWristState.L1),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralIntakeCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.Intake),
+        elevator.createSetHeightCommand(ElevatorState.Intake),
         coralWrist.createSetAngleCommand(CoralWristState.Intake),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode),
         coralRoller.createSetIntakeCommand().until(coralRoller.hasCoral));
@@ -64,14 +64,14 @@ public class ElevatorCGs {
 
   public ParallelCommandGroup algaeBargePositionCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.Max),
+        elevator.createSetHeightCommand(ElevatorState.Max),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
   }
 
   public ParallelCommandGroup algaeL3IntakeCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
+        elevator.createSetHeightCommand(ElevatorState.AlgaeL3),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.L3),
         algaeRoller.createSetIntakeCommand().until(algaeRoller.hasAlage));
@@ -79,7 +79,7 @@ public class ElevatorCGs {
 
   public ParallelCommandGroup algaeL2IntakeCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.AlgaeL2),
+        elevator.createSetHeightCommand(ElevatorState.AlgaeL2),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.L2),
         algaeRoller.createSetIntakeCommand().until(algaeRoller.hasAlage));
@@ -87,14 +87,14 @@ public class ElevatorCGs {
 
   public ParallelCommandGroup algaeProcessorPositionCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.Processor),
+        elevator.createSetHeightCommand(ElevatorState.Processor),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Processor));
   }
 
   public ParallelCommandGroup algaeFloorIntakeCommand() {
     return new ParallelCommandGroup(
-        elevator.createSetPositionCommand(ElevatorState.Floor),
+        elevator.createSetHeightCommand(ElevatorState.Floor),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Floor),
         algaeRoller.createSetIntakeCommand().until(algaeRoller.hasAlage));

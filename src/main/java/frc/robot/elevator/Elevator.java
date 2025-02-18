@@ -125,7 +125,7 @@ public class Elevator extends SubsystemBase {
     encoder.setPosition(ElevatorState.Reset.height);
   }
 
-  public Command createSetPositionCommand(ElevatorState state) {
+  public Command createSetHeightCommand(ElevatorState state) {
     return new FunctionalCommand(
         // initialize
         () -> {

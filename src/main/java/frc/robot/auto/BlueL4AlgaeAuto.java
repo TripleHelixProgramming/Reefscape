@@ -86,7 +86,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     blueProcessToSource.cmd(),
-                    elevator.createSetPositionCommand(ElevatorState.Intake))));
+                    elevator.createSetHeightCommand(ElevatorState.Intake))));
 
     return blueL4AlgAutoRoutine;
   }
