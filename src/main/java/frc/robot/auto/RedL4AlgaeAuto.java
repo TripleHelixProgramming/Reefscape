@@ -20,20 +20,20 @@ public class RedL4AlgaeAuto extends AutoMode {
 
   Elevator elevator;
   CoralRoller coralRoller;
-  AlgaeRoller algaeIntake;
-  ElevatorCGs autoCG;
+  AlgaeRoller algaeRoller;
+  ElevatorCGs elevatorCG;
 
   public RedL4AlgaeAuto(
       Drivetrain drivetrain,
       Elevator elevatorsubsystem,
       CoralRoller coralRollerSubsystem,
-      AlgaeRoller algaeIntakeSubsystem,
+      AlgaeRoller algaeRollerSubsystem,
       ElevatorCGs autoCommandGroups) {
     super(drivetrain);
     elevator = elevatorsubsystem;
     coralRoller = coralRollerSubsystem;
-    algaeIntake = algaeIntakeSubsystem;
-    autoCG = autoCommandGroups;
+    algaeRoller = algaeRollerSubsystem;
+    elevatorCG = autoCommandGroups;
   }
 
   AutoRoutine redL4AlgAutoRoutine = super.getAutoFactory().newRoutine("redL4AlgaeRoutine");
@@ -58,7 +58,7 @@ public class RedL4AlgaeAuto extends AutoMode {
 
     redL4AlgAutoRoutine
         .active()
-        .onTrue(Commands.parallel(redCenterToL4G.cmd(), autoCG.coralL4PositionCommand()));
+        .onTrue(Commands.parallel(redCenterToL4G.cmd(), elevatorCG.coralL4PositionCommand()));
 
     redCenterToL4G
         .done()
@@ -73,16 +73,16 @@ public class RedL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                autoCG.algaeL3IntakeCommand(),
+                elevatorCG.algaeL3IntakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
-                    redAlgaeToProcess.cmd(), autoCG.algaeProcessorPositionCommand())));
+                    redAlgaeToProcess.cmd(), elevatorCG.algaeProcessorPositionCommand())));
 
     redAlgaeToProcess
         .done()
         .onTrue(
             new SequentialCommandGroup(
-                algaeIntake.createSetOuttakeCommand(),
+                algaeRoller.createSetOuttakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     redProcessToSource.cmd(),

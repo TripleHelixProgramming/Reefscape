@@ -21,19 +21,19 @@ public class BlueL4AlgaeAuto extends AutoMode {
   Elevator elevator;
   CoralRoller coralRoller;
   AlgaeRoller algaeRoller;
-  ElevatorCGs autoCG;
+  ElevatorCGs elevatorCG;
 
   public BlueL4AlgaeAuto(
       Drivetrain drivetrain,
       Elevator elevatorsubsystem,
       CoralRoller coralRollerSubsystem,
-      AlgaeRoller algaeIntakeSubsystem,
+      AlgaeRoller algaeRollerSubsystem,
       ElevatorCGs autoCommandGroups) {
     super(drivetrain);
     elevator = elevatorsubsystem;
     coralRoller = coralRollerSubsystem;
-    algaeRoller = algaeIntakeSubsystem;
-    autoCG = autoCommandGroups;
+    algaeRoller = algaeRollerSubsystem;
+    elevatorCG = autoCommandGroups;
   }
 
   AutoRoutine blueL4AlgAutoRoutine = super.getAutoFactory().newRoutine("BlueL4AlgaeRoutine");
@@ -58,7 +58,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
 
     blueL4AlgAutoRoutine
         .active()
-        .onTrue(Commands.parallel(blueCenterToL4G.cmd(), autoCG.coralL4PositionCommand()));
+        .onTrue(Commands.parallel(blueCenterToL4G.cmd(), elevatorCG.coralL4PositionCommand()));
 
     blueCenterToL4G
         .done()
@@ -73,10 +73,10 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                autoCG.algaeL3IntakeCommand(),
+                elevatorCG.algaeL3IntakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
-                    blueAlgaeToProcess.cmd(), autoCG.algaeProcessorPositionCommand())));
+                    blueAlgaeToProcess.cmd(), elevatorCG.algaeProcessorPositionCommand())));
 
     blueAlgaeToProcess
         .done()
