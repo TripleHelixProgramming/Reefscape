@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.AlgaeIntakeConstants.AlgaeIntakeStates;
-import frc.robot.Constants.CoralIntakeConstants.CoralIntakeStates;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.Elevator;
@@ -21,16 +19,19 @@ public class BlueL4AlgaeAuto extends AutoMode {
   Elevator elevator;
   CoralIntake coralIntake;
   AlgaeIntake algaeIntake;
+  AutoCGs autoCG;
 
   public BlueL4AlgaeAuto(
       Drivetrain drivetrain,
       Elevator elevatorsubsystem,
       CoralIntake coralIntakeSubsystem,
-      AlgaeIntake algaeIntakeSubsystem) {
+      AlgaeIntake algaeIntakeSubsystem,
+      AutoCGs autoCommandGroups) {
     super(drivetrain);
     elevator = elevatorsubsystem;
     coralIntake = coralIntakeSubsystem;
     algaeIntake = algaeIntakeSubsystem;
+    autoCG = autoCommandGroups;
   }
 
   AutoRoutine blueL4AlgAutoRoutine = super.getAutoFactory().newRoutine("BlueL4AlgaeRoutine");
@@ -55,12 +56,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
 
     blueL4AlgAutoRoutine
         .active()
-        .onTrue(
-            Commands.parallel(
-                blueCenterToL4G.cmd(),
-                elevator.createSetPositionCommand(ElevatorState.L4),
-                coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L4.angle),
-                algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle)));
+        .onTrue(Commands.parallel(blueCenterToL4G.cmd(), autoCG.coralL4PositionCommand()));
 
     blueCenterToL4G
         .done()
@@ -75,17 +71,11 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                new ParallelCommandGroup(
-                    elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
-                    coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-                    algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L3.angle)),
+                autoCG.algaeL3PositionCommand(),
                 algaeIntake.createSetIntakeVelocityCommand(5),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
-                    blueAlgaeToProcess.cmd(),
-                    elevator.createSetPositionCommand(ElevatorState.Processor),
-                    algaeIntake.createSetRotationPositionCommand(
-                        AlgaeIntakeStates.Processor.angle))));
+                    blueAlgaeToProcess.cmd(), autoCG.algaeProcessorPositionCommand())));
 
     blueAlgaeToProcess
         .done()

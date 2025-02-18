@@ -6,9 +6,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.AlgaeIntakeConstants.AlgaeIntakeStates;
-import frc.robot.Constants.CoralIntakeConstants.CoralIntakeStates;
-import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.Elevator;
 import frc.robot.grippers.AlgaeIntake;
@@ -20,16 +17,19 @@ public class RedProcess3PieceAuto extends AutoMode {
   Elevator elevator;
   CoralIntake coralIntake;
   AlgaeIntake algaeIntake;
+  AutoCGs autoCG;
 
   public RedProcess3PieceAuto(
       Drivetrain drivetrain,
       Elevator elevatorsubsystem,
       CoralIntake coralIntakeSubsystem,
-      AlgaeIntake algaeIntakeSubsystem) {
+      AlgaeIntake algaeIntakeSubsystem,
+      AutoCGs autoCommandGroups) {
     super(drivetrain);
     elevator = elevatorsubsystem;
     coralIntake = coralIntakeSubsystem;
     algaeIntake = algaeIntakeSubsystem;
+    autoCG = autoCommandGroups;
   }
 
   AutoRoutine redProcess3PieceRoutine =
@@ -40,18 +40,6 @@ public class RedProcess3PieceAuto extends AutoMode {
   AutoTrajectory redSourceToL4D = redProcess3PieceRoutine.trajectory("redSourceToL4D");
   AutoTrajectory redL4DToSource = redProcess3PieceRoutine.trajectory("redL4DToSource");
   AutoTrajectory redSourceToL4C = redProcess3PieceRoutine.trajectory("redSourceToL4C");
-
-  private ParallelCommandGroup coralL4PositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.L4),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L4.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
-
-  private ParallelCommandGroup coralIntakePositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.Intake),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.Intake.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
 
   @Override
   public String getName() {
@@ -68,7 +56,7 @@ public class RedProcess3PieceAuto extends AutoMode {
 
     redProcess3PieceRoutine
         .active()
-        .onTrue(Commands.parallel(redCenterToL4F.cmd(), coralL4PositionCommand));
+        .onTrue(Commands.parallel(redCenterToL4F.cmd(), autoCG.coralL4PositionCommand()));
 
     redCenterToL4F
         .done()
@@ -78,7 +66,8 @@ public class RedProcess3PieceAuto extends AutoMode {
                 coralIntake.createSetIntakeVelocityCommand(-5.0),
                 new WaitCommand(0.2),
                 coralIntake.createSetIntakeVelocityCommand(0),
-                new ParallelCommandGroup(redL4FToSource.cmd(), coralIntakePositionCommand)));
+                new ParallelCommandGroup(
+                    redL4FToSource.cmd(), autoCG.coralIntakePositionCommand())));
 
     redL4FToSource
         .done()
@@ -87,7 +76,7 @@ public class RedProcess3PieceAuto extends AutoMode {
                 coralIntake.createSetIntakeVelocityCommand(5).until(coralIntake.hasCoralPiece()),
                 Commands.sequence(
                     new WaitCommand(0.2),
-                    Commands.parallel(redSourceToL4D.cmd(), coralL4PositionCommand))));
+                    Commands.parallel(redSourceToL4D.cmd(), autoCG.coralL4PositionCommand()))));
 
     redSourceToL4D
         .done()
@@ -97,7 +86,7 @@ public class RedProcess3PieceAuto extends AutoMode {
                 coralIntake.createSetIntakeVelocityCommand(-5),
                 new WaitCommand(0.2),
                 coralIntake.createSetIntakeVelocityCommand(0),
-                Commands.parallel(coralIntakePositionCommand, redL4DToSource.cmd())));
+                Commands.parallel(autoCG.coralIntakePositionCommand(), redL4DToSource.cmd())));
 
     redL4DToSource
         .done()
@@ -106,7 +95,7 @@ public class RedProcess3PieceAuto extends AutoMode {
                 coralIntake.createSetIntakeVelocityCommand(5).until(coralIntake.hasCoralPiece()),
                 Commands.sequence(
                     new WaitCommand(0.2),
-                    Commands.parallel(coralL4PositionCommand, redSourceToL4C.cmd()))));
+                    Commands.parallel(autoCG.coralL4PositionCommand(), redSourceToL4C.cmd()))));
 
     redSourceToL4C
         .done()
