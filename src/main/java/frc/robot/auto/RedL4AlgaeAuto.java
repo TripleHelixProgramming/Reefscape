@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.ElevatorConstants.ElevatorState;
+import frc.robot.Constants.LifterConstants.LifterState;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
@@ -79,8 +79,7 @@ public class RedL4AlgaeAuto extends AutoMode {
                 algaeRoller.createOuttakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
-                    redProcessToSource.cmd(),
-                    lifter.createSetHeightCommand(ElevatorState.Intake))));
+                    redProcessToSource.cmd(), lifter.createSetHeightCommand(LifterState.Intake))));
 
     return redL4AlgAutoRoutine;
   }

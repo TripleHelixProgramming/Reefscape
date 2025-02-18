@@ -1,10 +1,9 @@
 package frc.robot.elevator;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.Constants.CoralWristConstants.CoralWristState;
-import frc.robot.Constants.ElevatorConstants.ElevatorState;
+import frc.robot.Constants.LifterConstants.LifterState;
 
 public class Elevator {
 
@@ -28,49 +27,53 @@ public class Elevator {
     return algaeRoller;
   }
 
-  public void setDefaultCommands(XboxController operator) {
-    lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator));
+  public void setRollerDefaultCommands() {
     algaeRoller.setDefaultCommand(algaeRoller.createStopCommand());
     coralRoller.setDefaultCommand(coralRoller.createStopCommand());
   }
 
+  public void setWristDefaultCommands() {
+    algaeWrist.setDefaultCommand(algaeWrist.createRemainAtCurrentAngleCommand());
+    coralWrist.setDefaultCommand(coralWrist.createRemainAtCurrentAngleCommand());
+  }
+
   public void resetPositionControllers() {
-    lifter.resetPositionController();
-    coralWrist.resetPositionController();
-    algaeWrist.resetPositionController();
+    lifter.resetController();
+    coralWrist.resetController();
+    algaeWrist.resetController();
   }
 
   public ParallelCommandGroup coralL4PositionCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.L4),
+        lifter.createSetHeightCommand(LifterState.L4),
         coralWrist.createSetAngleCommand(CoralWristState.L4),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralL3PositionCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.L3),
+        lifter.createSetHeightCommand(LifterState.L3),
         coralWrist.createSetAngleCommand(CoralWristState.L3),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralL2PositionCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.L2),
+        lifter.createSetHeightCommand(LifterState.L2),
         coralWrist.createSetAngleCommand(CoralWristState.L2),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralL1PositionCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.L1),
+        lifter.createSetHeightCommand(LifterState.L1),
         coralWrist.createSetAngleCommand(CoralWristState.L1),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralIntakeCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.Intake),
+        lifter.createSetHeightCommand(LifterState.Intake),
         coralWrist.createSetAngleCommand(CoralWristState.Intake),
         algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode),
         coralRoller.createIntakeCommand().until(coralRoller.hasCoral));
@@ -78,14 +81,14 @@ public class Elevator {
 
   public ParallelCommandGroup algaeBargePositionCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.Max),
+        lifter.createSetHeightCommand(LifterState.Max),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
   }
 
   public ParallelCommandGroup algaeL3IntakeCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.AlgaeL3),
+        lifter.createSetHeightCommand(LifterState.AlgaeL3),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.L3),
         algaeRoller.createIntakeCommand().until(algaeRoller.hasAlage));
@@ -93,7 +96,7 @@ public class Elevator {
 
   public ParallelCommandGroup algaeL2IntakeCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.AlgaeL2),
+        lifter.createSetHeightCommand(LifterState.AlgaeL2),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.L2),
         algaeRoller.createIntakeCommand().until(algaeRoller.hasAlage));
@@ -101,14 +104,14 @@ public class Elevator {
 
   public ParallelCommandGroup algaeProcessorPositionCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.Processor),
+        lifter.createSetHeightCommand(LifterState.Processor),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Processor));
   }
 
   public ParallelCommandGroup algaeFloorIntakeCommand() {
     return new ParallelCommandGroup(
-        lifter.createSetHeightCommand(ElevatorState.Floor),
+        lifter.createSetHeightCommand(LifterState.Floor),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Floor),
         algaeRoller.createIntakeCommand().until(algaeRoller.hasAlage));

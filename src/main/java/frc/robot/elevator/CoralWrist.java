@@ -54,7 +54,6 @@ public class CoralWrist extends SubsystemBase {
     controller.setTolerance(CoralWristConstants.kAllowableAngleError);
     // controller.setIZone();
     // controller.setIntegratorRange();
-    resetPositionController();
   }
 
   @Override
@@ -68,9 +67,12 @@ public class CoralWrist extends SubsystemBase {
     SmartDashboard.putNumber("Coral Wrist Current", motor.getOutputCurrent());
   }
 
-  public void resetPositionController() {
-    controller.reset(encoder.getPosition());
-    controller.setGoal(encoder.getPosition());
+  public void resetController() {
+    controller.reset(encoder.getPosition(), encoder.getVelocity());
+  }
+
+  public void control() {
+    motor.set(controller.calculate(encoder.getPosition()));
   }
 
   public CoralWristState getTargetState() {
@@ -85,13 +87,27 @@ public class CoralWrist extends SubsystemBase {
           controller.setGoal(targetState.angle);
         },
         // execute
-        () -> {
-          motor.set(controller.calculate(encoder.getPosition()));
-        },
+        () -> control(),
         // end
         interrupted -> {},
         // isFinished
         () -> controller.atGoal(),
+        // requirements
+        this);
+  }
+
+  public Command createRemainAtCurrentAngleCommand() {
+    return new FunctionalCommand(
+        // initialize
+        () -> {
+          if (targetState == CoralWristState.Unknown) controller.setGoal(encoder.getPosition());
+        },
+        // execute
+        () -> control(),
+        // end
+        interrupted -> {},
+        // isFinished
+        () -> false,
         // requirements
         this);
   }

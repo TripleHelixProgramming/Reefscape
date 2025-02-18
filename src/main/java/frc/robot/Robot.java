@@ -26,7 +26,7 @@ import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorState;
+import frc.robot.Constants.LifterConstants.LifterState;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;
@@ -92,7 +92,8 @@ public class Robot extends TimedRobot {
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
-    elevator.setDefaultCommands(operator.getHID());
+    elevator.setRollerDefaultCommands();
+    elevator.setWristDefaultCommands();
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -147,6 +148,7 @@ public class Robot extends TimedRobot {
     autoSelector.scheduleAuto();
     leds.setDefaultCommand(leds.createEnabledCommand());
     climber.lockRatchet();
+    lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
   }
 
   @Override
@@ -160,6 +162,7 @@ public class Robot extends TimedRobot {
     climber.resetEncoder();
     climber.lockRatchet();
     elevator.resetPositionControllers();
+    lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
   }
 
   @Override
@@ -230,12 +233,12 @@ public class Robot extends TimedRobot {
     // Intake with coral gripper
     operator.rightBumper()
         .whileTrue(elevator.getCoralRoller().createIntakeCommand()
-        .onlyIf(() -> lifter.getTargetState() == ElevatorState.Intake));
+        .onlyIf(() -> lifter.getTargetState() == LifterState.Intake));
     
     // Intake with algae gripper
     operator.rightBumper()
         .whileTrue(elevator.getAlgaeRoller().createIntakeCommand()
-        .onlyIf(() -> lifter.getTargetState() != ElevatorState.Intake));
+        .onlyIf(() -> lifter.getTargetState() != LifterState.Intake));
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);

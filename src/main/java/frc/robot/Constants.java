@@ -399,7 +399,7 @@ public final class Constants {
     public static final int kLEDsBetweenBlocks = 1;
   }
 
-  public static final class ElevatorConstants {
+  public static final class LifterConstants {
     public static final int kLeaderMotorPort = 24;
     public static final int kFollowerMotorPort = 25;
 
@@ -429,14 +429,14 @@ public final class Constants {
 
     public static final double kAllowableHeightError = 0.2;
 
-    public final class ElevatorController {
+    public final class LifterController {
       public static final double kP = 0.1;
       public static final Constraints kConstraints =
           new Constraints(
               kRapidVelocityInchesPerSecond, kRapidAccelerationInchesPerSecondPerSecond);
     }
 
-    public static enum ElevatorState {
+    public static enum LifterState {
       Unknown(0.0),
       Min(0.0),
       Floor(0.0),
@@ -453,7 +453,7 @@ public final class Constants {
 
       public double height;
 
-      private ElevatorState(double height) {
+      private LifterState(double height) {
         this.height = height;
       }
     }

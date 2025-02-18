@@ -17,19 +17,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorController;
-import frc.robot.Constants.ElevatorConstants.ElevatorState;
+import frc.robot.Constants.LifterConstants;
+import frc.robot.Constants.LifterConstants.LifterController;
+import frc.robot.Constants.LifterConstants.LifterState;
 import frc.robot.Constants.RobotConstants;
 
 public class Lifter extends SubsystemBase {
 
   private final SparkMax leaderMotor =
-      new SparkMax(ElevatorConstants.kLeaderMotorPort, MotorType.kBrushless);
+      new SparkMax(LifterConstants.kLeaderMotorPort, MotorType.kBrushless);
   private final SparkMax followerMotor =
-      new SparkMax(ElevatorConstants.kFollowerMotorPort, MotorType.kBrushless);
+      new SparkMax(LifterConstants.kFollowerMotorPort, MotorType.kBrushless);
   private final DigitalInput lowerLimitSwitch =
-      new DigitalInput(ElevatorConstants.lowerLimitSwitchPort);
+      new DigitalInput(LifterConstants.lowerLimitSwitchPort);
 
   private final SparkMaxConfig globalConfig = new SparkMaxConfig();
   private final SparkMaxConfig leaderConfig = new SparkMaxConfig();
@@ -37,11 +37,11 @@ public class Lifter extends SubsystemBase {
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
   private final ProfiledPIDController controller =
-      new ProfiledPIDController(ElevatorController.kP, 0.0, 0.0, ElevatorController.kConstraints);
+      new ProfiledPIDController(LifterController.kP, 0.0, 0.0, LifterController.kConstraints);
 
   private final EventLoop loop = new EventLoop();
 
-  private ElevatorState targetState = ElevatorState.Unknown;
+  private LifterState targetState = LifterState.Unknown;
 
   public Lifter() {
     // spotless:off
@@ -59,13 +59,13 @@ public class Lifter extends SubsystemBase {
         .follow(leaderMotor, true);
 
     leaderConfig.encoder
-        .positionConversionFactor(ElevatorConstants.kPositionConversionFactor)
-        .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
+        .positionConversionFactor(LifterConstants.kPositionConversionFactor)
+        .velocityConversionFactor(LifterConstants.kVelocityConversionFactor);
 
     leaderConfig.softLimit
-        .reverseSoftLimit(ElevatorState.Floor.height)
+        .reverseSoftLimit(LifterState.Floor.height)
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(ElevatorState.Max.height)
+        .forwardSoftLimit(LifterState.Max.height)
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
@@ -77,55 +77,59 @@ public class Lifter extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    controller.setTolerance(ElevatorConstants.kAllowableHeightError);
+    controller.setTolerance(LifterConstants.kAllowableHeightError);
     // controller.setIZone();
     // controller.setIntegratorRange();
-    resetPositionController();
+    resetController();
   }
 
   @Override
   public void periodic() {
     loop.poll();
 
-    SmartDashboard.putNumber("Elevator Height", encoder.getPosition());
-    SmartDashboard.putNumber("Elevator Velocity", encoder.getVelocity());
+    SmartDashboard.putNumber("Lifter Height", encoder.getPosition());
+    SmartDashboard.putNumber("Lifter Velocity", encoder.getVelocity());
 
-    SmartDashboard.putString("Elevator Target State", getTargetState().name());
-    SmartDashboard.putNumber("Elevator Target Height", controller.getGoal().position);
+    SmartDashboard.putString("Lifter Target State", getTargetState().name());
+    SmartDashboard.putNumber("Lifter Target Height", controller.getGoal().position);
 
-    if (SmartDashboard.getBoolean("Elevator Reset Encoder", false)) {
-      SmartDashboard.putBoolean("Elevator Reset Encoder", false);
+    if (SmartDashboard.getBoolean("Lifter Reset Encoder", false)) {
+      SmartDashboard.putBoolean("Lifter Reset Encoder", false);
       resetEncoder();
     }
 
-    SmartDashboard.putNumber("Elevator Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Lifter Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
     SmartDashboard.putNumber(
-        "Elevator Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Elevator Lead Current", leaderMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Elevator Follower Current", followerMotor.getOutputCurrent());
+        "Lifter Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Lifter Lead Current", leaderMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Lifter Follower Current", followerMotor.getOutputCurrent());
 
-    SmartDashboard.putBoolean("Elevator Lower Limit Switch", !lowerLimitSwitch.get());
-    SmartDashboard.putBoolean("Elevator At Target Height", controller.atGoal());
+    SmartDashboard.putBoolean("Lifter Lower Limit Switch", !lowerLimitSwitch.get());
+    SmartDashboard.putBoolean("Lifter At Target Height", controller.atGoal());
   }
 
   public double getProportionOfMaxHeight() {
-    return encoder.getPosition() / ElevatorState.Max.height;
+    return encoder.getPosition() / LifterState.Max.height;
   }
 
-  public void resetPositionController() {
+  public void resetController() {
     controller.reset(encoder.getPosition());
     controller.setGoal(encoder.getPosition());
   }
 
-  public ElevatorState getTargetState() {
+  public void control() {
+    leaderMotor.set(controller.calculate(encoder.getPosition()));
+  }
+
+  public LifterState getTargetState() {
     return this.targetState;
   }
 
   private void resetEncoder() {
-    encoder.setPosition(ElevatorState.Reset.height);
+    encoder.setPosition(LifterState.Reset.height);
   }
 
-  public Command createSetHeightCommand(ElevatorState state) {
+  public Command createSetHeightCommand(LifterState state) {
     return new FunctionalCommand(
         // initialize
         () -> {
@@ -133,9 +137,7 @@ public class Lifter extends SubsystemBase {
           controller.setGoal(targetState.height);
         },
         // execute
-        () -> {
-          leaderMotor.set(controller.calculate(encoder.getPosition()));
-        },
+        () -> control(),
         // end
         interrupted -> {},
         // isFinished
@@ -144,9 +146,25 @@ public class Lifter extends SubsystemBase {
         this);
   }
 
+  public Command createRemainAtCurrentHeightCommand() {
+    return new FunctionalCommand(
+        // initialize
+        () -> {
+          if (targetState == LifterState.Unknown) controller.setGoal(encoder.getPosition());
+        },
+        // execute
+        () -> control(),
+        // end
+        interrupted -> {},
+        // isFinished
+        () -> false,
+        // requirements
+        this);
+  }
+
   private Boolean isInRange(double height) {
-    if (height < ElevatorState.Min.height) return false;
-    if (height > ElevatorState.Max.height) return false;
+    if (height < LifterState.Min.height) return false;
+    if (height > LifterState.Max.height) return false;
     return true;
   }
 
@@ -157,12 +175,10 @@ public class Lifter extends SubsystemBase {
 
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
           targetPosition +=
-              joystickInput
-                  * ElevatorConstants.kFineVelocityInchesPerSecond
-                  * RobotConstants.kPeriod;
+              joystickInput * LifterConstants.kFineVelocityInchesPerSecond * RobotConstants.kPeriod;
 
           if (isInRange(targetPosition)) controller.setGoal(targetPosition);
-          leaderMotor.set(controller.calculate(encoder.getPosition()));
+          control();
         });
   }
 }

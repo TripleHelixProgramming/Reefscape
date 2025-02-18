@@ -54,7 +54,6 @@ public class AlgaeWrist extends SubsystemBase {
     controller.setTolerance(AlgaeWristConstants.kAllowableAngleError);
     // controller.setIZone();
     // controller.setIntegratorRange();
-    resetPositionController();
   }
 
   @Override
@@ -68,9 +67,12 @@ public class AlgaeWrist extends SubsystemBase {
     SmartDashboard.putNumber("Algae Wrist Current", motor.getOutputCurrent());
   }
 
-  public void resetPositionController() {
-    controller.reset(encoder.getPosition());
-    controller.setGoal(encoder.getPosition());
+  public void resetController() {
+    controller.reset(encoder.getPosition(), encoder.getVelocity());
+  }
+
+  public void control() {
+    motor.set(controller.calculate(encoder.getPosition()));
   }
 
   public AlgaeWristState getTargetState() {
@@ -85,13 +87,27 @@ public class AlgaeWrist extends SubsystemBase {
           controller.setGoal(targetState.angle);
         },
         // execute
-        () -> {
-          motor.set(controller.calculate(encoder.getPosition()));
-        },
+        () -> control(),
         // end
         interrupted -> {},
         // isFinished
         () -> controller.atGoal(),
+        // requirements
+        this);
+  }
+
+  public Command createRemainAtCurrentAngleCommand() {
+    return new FunctionalCommand(
+        // initialize
+        () -> {
+          if (targetState == AlgaeWristState.Unknown) controller.setGoal(encoder.getPosition());
+        },
+        // execute
+        () -> control(),
+        // end
+        interrupted -> {},
+        // isFinished
+        () -> false,
         // requirements
         this);
   }
