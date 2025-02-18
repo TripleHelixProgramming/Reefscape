@@ -12,22 +12,22 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.ElevatorCGs;
+import frc.robot.elevator.Lifter;
 import java.util.Optional;
 
 public class RedL4AlgaeAuto extends AutoMode {
 
-  Elevator elevator;
+  Lifter lifter;
   CoralRoller coralRoller;
   AlgaeRoller algaeRoller;
-  ElevatorCGs elevatorCG;
+  Elevator elevator;
 
-  public RedL4AlgaeAuto(Drivetrain drivetrain, ElevatorCGs autoCommandGroups) {
+  public RedL4AlgaeAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
     super(drivetrain);
-    elevatorCG = autoCommandGroups;
-    elevator = elevatorCG.getElevator();
-    coralRoller = elevatorCG.getCoralRoller();
-    algaeRoller = elevatorCG.getAlgaeRoller();
+    elevator = elevatorSystem;
+    lifter = elevator.getLifter();
+    coralRoller = elevator.getCoralRoller();
+    algaeRoller = elevator.getAlgaeRoller();
   }
 
   AutoRoutine redL4AlgAutoRoutine = super.getAutoFactory().newRoutine("redL4AlgaeRoutine");
@@ -52,7 +52,7 @@ public class RedL4AlgaeAuto extends AutoMode {
 
     redL4AlgAutoRoutine
         .active()
-        .onTrue(Commands.parallel(redCenterToL4G.cmd(), elevatorCG.coralL4PositionCommand()));
+        .onTrue(Commands.parallel(redCenterToL4G.cmd(), elevator.coralL4PositionCommand()));
 
     redCenterToL4G
         .done()
@@ -67,10 +67,10 @@ public class RedL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                elevatorCG.algaeL3IntakeCommand(),
+                elevator.algaeL3IntakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
-                    redAlgaeToProcess.cmd(), elevatorCG.algaeProcessorPositionCommand())));
+                    redAlgaeToProcess.cmd(), elevator.algaeProcessorPositionCommand())));
 
     redAlgaeToProcess
         .done()
@@ -80,7 +80,7 @@ public class RedL4AlgaeAuto extends AutoMode {
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     redProcessToSource.cmd(),
-                    elevator.createSetHeightCommand(ElevatorState.Intake))));
+                    lifter.createSetHeightCommand(ElevatorState.Intake))));
 
     return redL4AlgAutoRoutine;
   }

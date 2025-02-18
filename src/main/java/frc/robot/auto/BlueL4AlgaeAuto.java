@@ -12,22 +12,22 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.ElevatorCGs;
+import frc.robot.elevator.Lifter;
 import java.util.Optional;
 
 public class BlueL4AlgaeAuto extends AutoMode {
 
-  Elevator elevator;
+  Lifter lifter;
   CoralRoller coralRoller;
   AlgaeRoller algaeRoller;
-  ElevatorCGs elevatorCG;
+  Elevator elevator;
 
-  public BlueL4AlgaeAuto(Drivetrain drivetrain, ElevatorCGs autoCommandGroups) {
+  public BlueL4AlgaeAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
     super(drivetrain);
-    elevatorCG = autoCommandGroups;
-    elevator = elevatorCG.getElevator();
-    coralRoller = elevatorCG.getCoralRoller();
-    algaeRoller = elevatorCG.getAlgaeRoller();
+    elevator = elevatorSystem;
+    lifter = elevator.getLifter();
+    coralRoller = elevator.getCoralRoller();
+    algaeRoller = elevator.getAlgaeRoller();
   }
 
   AutoRoutine blueL4AlgAutoRoutine = super.getAutoFactory().newRoutine("BlueL4AlgaeRoutine");
@@ -52,7 +52,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
 
     blueL4AlgAutoRoutine
         .active()
-        .onTrue(Commands.parallel(blueCenterToL4G.cmd(), elevatorCG.coralL4PositionCommand()));
+        .onTrue(Commands.parallel(blueCenterToL4G.cmd(), elevator.coralL4PositionCommand()));
 
     blueCenterToL4G
         .done()
@@ -67,10 +67,10 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                elevatorCG.algaeL3IntakeCommand(),
+                elevator.algaeL3IntakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
-                    blueAlgaeToProcess.cmd(), elevatorCG.algaeProcessorPositionCommand())));
+                    blueAlgaeToProcess.cmd(), elevator.algaeProcessorPositionCommand())));
 
     blueAlgaeToProcess
         .done()
@@ -80,7 +80,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     blueProcessToSource.cmd(),
-                    elevator.createSetHeightCommand(ElevatorState.Intake))));
+                    lifter.createSetHeightCommand(ElevatorState.Intake))));
 
     return blueL4AlgAutoRoutine;
   }

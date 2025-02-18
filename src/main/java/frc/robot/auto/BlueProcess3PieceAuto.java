@@ -8,18 +8,18 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.CoralRoller;
-import frc.robot.elevator.ElevatorCGs;
+import frc.robot.elevator.Elevator;
 import java.util.Optional;
 
 public class BlueProcess3PieceAuto extends AutoMode {
 
   CoralRoller coralRoller;
-  ElevatorCGs elevatorCG;
+  Elevator elevator;
 
-  public BlueProcess3PieceAuto(Drivetrain drivetrain, ElevatorCGs autoCommandGroups) {
+  public BlueProcess3PieceAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
     super(drivetrain);
-    elevatorCG = autoCommandGroups;
-    coralRoller = elevatorCG.getCoralRoller();
+    elevator = elevatorSystem;
+    coralRoller = elevator.getCoralRoller();
   }
 
   AutoRoutine blueProcess3PieceRoutine =
@@ -46,7 +46,7 @@ public class BlueProcess3PieceAuto extends AutoMode {
 
     blueProcess3PieceRoutine
         .active()
-        .onTrue(Commands.parallel(blueCenterToL4F.cmd(), elevatorCG.coralL4PositionCommand()));
+        .onTrue(Commands.parallel(blueCenterToL4F.cmd(), elevator.coralL4PositionCommand()));
 
     blueCenterToL4F
         .done()
@@ -56,14 +56,14 @@ public class BlueProcess3PieceAuto extends AutoMode {
                 coralRoller.createOuttakeCommand(),
                 new WaitCommand(0.2),
                 coralRoller.createStopCommand(),
-                new ParallelCommandGroup(blueL4FToSource.cmd(), elevatorCG.coralIntakeCommand())));
+                new ParallelCommandGroup(blueL4FToSource.cmd(), elevator.coralIntakeCommand())));
 
     blueL4FToSource
         .done()
         .onTrue(
             Commands.sequence(
                 new WaitCommand(0.2),
-                Commands.parallel(blueSourceToL4D.cmd(), elevatorCG.coralL4PositionCommand())));
+                Commands.parallel(blueSourceToL4D.cmd(), elevator.coralL4PositionCommand())));
 
     blueSourceToL4D
         .done()
@@ -73,14 +73,14 @@ public class BlueProcess3PieceAuto extends AutoMode {
                 coralRoller.createOuttakeCommand(),
                 new WaitCommand(0.2),
                 coralRoller.createStopCommand(),
-                Commands.parallel(elevatorCG.coralIntakeCommand(), blueL4DToSource.cmd())));
+                Commands.parallel(elevator.coralIntakeCommand(), blueL4DToSource.cmd())));
 
     blueL4DToSource
         .done()
         .onTrue(
             Commands.sequence(
                 new WaitCommand(0.2),
-                Commands.parallel(elevatorCG.coralL4PositionCommand(), blueSourceToL4C.cmd())));
+                Commands.parallel(elevator.coralL4PositionCommand(), blueSourceToL4C.cmd())));
 
     blueSourceToL4C
         .done()

@@ -1,168 +1,116 @@
 package frc.robot.elevator;
 
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.event.BooleanEvent;
-import edu.wpi.first.wpilibj.event.EventLoop;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorController;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.Constants.AlgaeWristConstants.AlgaeWristState;
+import frc.robot.Constants.CoralWristConstants.CoralWristState;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
-import frc.robot.Constants.RobotConstants;
 
-public class Elevator extends SubsystemBase {
+public class Elevator {
 
-  private final SparkMax leaderMotor =
-      new SparkMax(ElevatorConstants.kLeaderMotorPort, MotorType.kBrushless);
-  private final SparkMax followerMotor =
-      new SparkMax(ElevatorConstants.kFollowerMotorPort, MotorType.kBrushless);
-  private final DigitalInput lowerLimitSwitch =
-      new DigitalInput(ElevatorConstants.lowerLimitSwitchPort);
+  Lifter lifter = new Lifter();
+  CoralWrist coralWrist = new CoralWrist();
+  CoralRoller coralRoller = new CoralRoller();
+  AlgaeWrist algaeWrist = new AlgaeWrist();
+  AlgaeRoller algaeRoller = new AlgaeRoller();
 
-  private final SparkMaxConfig globalConfig = new SparkMaxConfig();
-  private final SparkMaxConfig leaderConfig = new SparkMaxConfig();
-  private final SparkMaxConfig followerConfig = new SparkMaxConfig();
+  public Elevator() {}
 
-  private final RelativeEncoder encoder = leaderMotor.getEncoder();
-  private final ProfiledPIDController controller =
-      new ProfiledPIDController(ElevatorController.kP, 0.0, 0.0, ElevatorController.kConstraints);
-
-  private final EventLoop loop = new EventLoop();
-
-  private ElevatorState targetState = ElevatorState.Unknown;
-
-  public Elevator() {
-    // spotless:off
-    globalConfig
-        .voltageCompensation(RobotConstants.kNominalVoltage)
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
-        .inverted(false);
-
-    leaderConfig
-        .apply(globalConfig);
-
-    followerConfig
-        .apply(globalConfig)
-        .follow(leaderMotor, true);
-
-    leaderConfig.encoder
-        .positionConversionFactor(ElevatorConstants.kPositionConversionFactor)
-        .velocityConversionFactor(ElevatorConstants.kVelocityConversionFactor);
-
-    leaderConfig.softLimit
-        .reverseSoftLimit(ElevatorState.Floor.height)
-        .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(ElevatorState.Max.height)
-        .forwardSoftLimitEnabled(true);
-    // spotless:on
-
-    leaderMotor.configure(
-        leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    followerMotor.configure(
-        followerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-    BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
-    atLowerLimit.rising().ifHigh(() -> resetEncoder());
-
-    controller.setTolerance(ElevatorConstants.kAllowableHeightError);
-    // controller.setIZone();
-    // controller.setIntegratorRange();
-    resetPositionController();
+  public Lifter getLifter() {
+    return lifter;
   }
 
-  @Override
-  public void periodic() {
-    loop.poll();
-
-    SmartDashboard.putNumber("Elevator Height", encoder.getPosition());
-    SmartDashboard.putNumber("Elevator Velocity", encoder.getVelocity());
-
-    SmartDashboard.putString("Elevator Target State", getTargetState().name());
-    SmartDashboard.putNumber("Elevator Target Height", controller.getGoal().position);
-
-    if (SmartDashboard.getBoolean("Elevator Reset Encoder", false)) {
-      SmartDashboard.putBoolean("Elevator Reset Encoder", false);
-      resetEncoder();
-    }
-
-    SmartDashboard.putNumber("Elevator Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
-    SmartDashboard.putNumber(
-        "Elevator Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Elevator Lead Current", leaderMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Elevator Follower Current", followerMotor.getOutputCurrent());
-
-    SmartDashboard.putBoolean("Elevator Lower Limit Switch", !lowerLimitSwitch.get());
-    SmartDashboard.putBoolean("Elevator At Target Height", controller.atGoal());
+  public CoralRoller getCoralRoller() {
+    return coralRoller;
   }
 
-  public double getProportionOfMaxHeight() {
-    return encoder.getPosition() / ElevatorState.Max.height;
+  public AlgaeRoller getAlgaeRoller() {
+    return algaeRoller;
   }
 
-  public void resetPositionController() {
-    controller.reset(encoder.getPosition());
-    controller.setGoal(encoder.getPosition());
+  public void setDefaultCommands(XboxController operator) {
+    lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator));
+    algaeRoller.setDefaultCommand(algaeRoller.createStopCommand());
+    coralRoller.setDefaultCommand(coralRoller.createStopCommand());
   }
 
-  public ElevatorState getTargetState() {
-    return this.targetState;
+  public void resetPositionControllers() {
+    lifter.resetPositionController();
+    coralWrist.resetPositionController();
+    algaeWrist.resetPositionController();
   }
 
-  private void resetEncoder() {
-    encoder.setPosition(ElevatorState.Reset.height);
+  public ParallelCommandGroup coralL4PositionCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.L4),
+        coralWrist.createSetAngleCommand(CoralWristState.L4),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
-  public Command createSetHeightCommand(ElevatorState state) {
-    return new FunctionalCommand(
-        // initialize
-        () -> {
-          targetState = state;
-          controller.setGoal(targetState.height);
-        },
-        // execute
-        () -> {
-          leaderMotor.set(controller.calculate(encoder.getPosition()));
-        },
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> controller.atGoal(),
-        // requirements
-        this);
+  public ParallelCommandGroup coralL3PositionCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.L3),
+        coralWrist.createSetAngleCommand(CoralWristState.L3),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
-  private Boolean isInRange(double height) {
-    if (height < ElevatorState.Min.height) return false;
-    if (height > ElevatorState.Max.height) return false;
-    return true;
+  public ParallelCommandGroup coralL2PositionCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.L2),
+        coralWrist.createSetAngleCommand(CoralWristState.L2),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
-  public Command createJoystickControlCommand(XboxController gamepad) {
-    return this.run(
-        () -> {
-          double targetPosition = controller.getGoal().position;
+  public ParallelCommandGroup coralL1PositionCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.L1),
+        coralWrist.createSetAngleCommand(CoralWristState.L1),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
+  }
 
-          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          targetPosition +=
-              joystickInput
-                  * ElevatorConstants.kFineVelocityInchesPerSecond
-                  * RobotConstants.kPeriod;
+  public ParallelCommandGroup coralIntakeCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.Intake),
+        coralWrist.createSetAngleCommand(CoralWristState.Intake),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode),
+        coralRoller.createIntakeCommand().until(coralRoller.hasCoral));
+  }
 
-          if (isInRange(targetPosition)) controller.setGoal(targetPosition);
-          leaderMotor.set(controller.calculate(encoder.getPosition()));
-        });
+  public ParallelCommandGroup algaeBargePositionCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.Max),
+        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+  }
+
+  public ParallelCommandGroup algaeL3IntakeCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.AlgaeL3),
+        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.L3),
+        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlage));
+  }
+
+  public ParallelCommandGroup algaeL2IntakeCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.AlgaeL2),
+        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.L2),
+        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlage));
+  }
+
+  public ParallelCommandGroup algaeProcessorPositionCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.Processor),
+        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.Processor));
+  }
+
+  public ParallelCommandGroup algaeFloorIntakeCommand() {
+    return new ParallelCommandGroup(
+        lifter.createSetHeightCommand(ElevatorState.Floor),
+        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.Floor),
+        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlage));
   }
 }
