@@ -1,5 +1,7 @@
 package frc.robot.elevator;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -43,15 +45,15 @@ public class CoralWrist extends SubsystemBase {
         .inverted(false);
 
     config.softLimit
-        .reverseSoftLimit(CoralWristState.Min.angle)
+        .reverseSoftLimit(CoralWristState.Min.angle.in(Degrees))
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(CoralWristState.Max.angle)
+        .forwardSoftLimit(CoralWristState.Max.angle.in(Degrees))
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    controller.setTolerance(CoralWristConstants.kAllowableAngleError);
+    controller.setTolerance(CoralWristConstants.kAllowableAngleError.in(Degrees));
     // controller.setIZone();
     // controller.setIntegratorRange();
   }
@@ -84,7 +86,7 @@ public class CoralWrist extends SubsystemBase {
         // initialize
         () -> {
           targetState = state;
-          controller.setGoal(targetState.angle);
+          controller.setGoal(targetState.angle.in(Degrees));
         },
         // execute
         () -> control(),

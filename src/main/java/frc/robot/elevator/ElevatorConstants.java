@@ -103,10 +103,14 @@ public class ElevatorConstants {
     public static final double kPositionOffset = 0.0 / kPositionConversionFactor;
 
     public static final double kP = 0.1;
-    private static final double kMaxVelocity = 30.0;
-    private static final double kMaxAcceleration = kMaxVelocity;
-    public static final Constraints kConstraints = new Constraints(kMaxVelocity, kMaxAcceleration);
-    public static final double kAllowableAngleError = 3.0;
+    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(30.0);
+    public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
+    private static final AngularAcceleration kMaxAcceleration =
+        kMaxVelocity.div(kTimeToMaxVelocity);
+    public static final Constraints kConstraints =
+        new Constraints(
+            kMaxVelocity.in(DegreesPerSecond), kMaxAcceleration.in(DegreesPerSecondPerSecond));
+    public static final Angle kAllowableAngleError = Degrees.of(3.0);
 
     public static enum CoralWristState {
       Unknown(125),
@@ -119,10 +123,10 @@ public class ElevatorConstants {
       Intake(125),
       AlgaeMode(125);
 
-      public double angle;
+      public Angle angle;
 
-      private CoralWristState(double angle) {
-        this.angle = angle;
+      private CoralWristState(double degrees) {
+        this.angle = Degrees.of(degrees);
       }
     }
   }
