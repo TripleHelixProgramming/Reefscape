@@ -1,16 +1,14 @@
 package frc.robot.elevator;
 
-import static edu.wpi.first.units.Units.InchesPerSecond;
-
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,7 +23,6 @@ public class CoralRoller extends SubsystemBase {
       new SparkMax(CoralRollerConstants.kMotorPort, MotorType.kBrushless);
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final RelativeEncoder encoder = motor.getEncoder();
-  private final SparkClosedLoopController controller = motor.getClosedLoopController();
   private final DigitalInput coralSensor = new DigitalInput(CoralRollerConstants.kCoralSensorPort);
 
   public CoralRoller() {
@@ -35,12 +32,6 @@ public class CoralRoller extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
-
-    config.closedLoop
-        .p(CoralRollerConstants.kP)
-        .i(0.0)
-        .d(0.0)
-        .outputRange(-1, 1);
 
     config.encoder
         .velocityConversionFactor(CoralRollerConstants.kVelocityConversionFactor)
@@ -60,8 +51,8 @@ public class CoralRoller extends SubsystemBase {
     SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
   }
 
-  private void setVelocity(double velocity) {
-    controller.setReference(velocity, ControlType.kVelocity);
+  private void setVoltage(Voltage voltage) {
+    motor.setVoltage(voltage);
   }
 
   public Trigger hasCoral = new Trigger(() -> coralSensor.get());
@@ -71,12 +62,10 @@ public class CoralRoller extends SubsystemBase {
   }
 
   public Command createIntakeCommand() {
-    return this.startEnd(
-        () -> setVelocity(CoralRollerConstants.kIntakeSpeed.in(InchesPerSecond)), () -> {});
+    return this.run(() -> setVoltage(CoralRollerConstants.kIntakeVoltage));
   }
 
   public Command createOuttakeCommand() {
-    return this.startEnd(
-        () -> setVelocity(CoralRollerConstants.kOuttakeSpeed.in(InchesPerSecond)), () -> {});
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeVoltage));
   }
 }

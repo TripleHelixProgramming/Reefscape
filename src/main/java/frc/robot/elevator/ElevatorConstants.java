@@ -89,8 +89,8 @@ public class ElevatorConstants {
     // Convert to inches per second at the wheel
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final LinearVelocity kIntakeSpeed = InchesPerSecond.of(12.0);
-    public static final LinearVelocity kOuttakeSpeed = kIntakeSpeed.unaryMinus();
+    public static final Voltage kIntakeVoltage = Volts.of(5.0);
+    public static final Voltage kOuttakeVoltage = kIntakeVoltage.unaryMinus();
   }
 
   public static final class CoralWristConstants {
