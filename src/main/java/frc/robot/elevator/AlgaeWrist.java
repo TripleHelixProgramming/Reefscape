@@ -24,11 +24,13 @@ public class AlgaeWrist extends SubsystemBase {
   private final SparkMax motor = new SparkMax(AlgaeWristConstants.kMotorPort, MotorType.kBrushless);
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
+
+  // TODO: Add ArmFeedforward
+  // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
   private final ProfiledPIDController controller =
       new ProfiledPIDController(AlgaeWristConstants.kP, 0.0, 0.0, AlgaeWristConstants.kConstraints);
 
   private final EventLoop loop = new EventLoop();
-
   private AlgaeWristState targetState = AlgaeWristState.Unknown;
 
   public AlgaeWrist() {

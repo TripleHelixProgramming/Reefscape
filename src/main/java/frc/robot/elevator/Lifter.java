@@ -40,11 +40,13 @@ public class Lifter extends SubsystemBase {
   private final SparkMaxConfig followerConfig = new SparkMaxConfig();
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
+
+  // TODO: Add ElevatorFeedforward
+  // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ElevatorFeedforward.html
   private final ProfiledPIDController controller =
       new ProfiledPIDController(LifterController.kP, 0.0, 0.0, LifterController.kConstraints);
 
   private final EventLoop loop = new EventLoop();
-
   private LifterState targetState = LifterState.Unknown;
 
   public Lifter() {

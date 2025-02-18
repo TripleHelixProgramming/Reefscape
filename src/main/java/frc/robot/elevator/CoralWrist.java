@@ -24,11 +24,13 @@ public class CoralWrist extends SubsystemBase {
   private final SparkMax motor = new SparkMax(CoralWristConstants.kMotorPort, MotorType.kBrushless);
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
+
+  // TODO: Add ArmFeedforward
+  // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
   private final ProfiledPIDController controller =
       new ProfiledPIDController(CoralWristConstants.kP, 0.0, 0.0, CoralWristConstants.kConstraints);
 
   private final EventLoop loop = new EventLoop();
-
   private CoralWristState targetState = CoralWristState.Unknown;
 
   public CoralWrist() {
