@@ -72,6 +72,7 @@ public class CoralIntake extends SubsystemBase {
 
     wristConfig.absoluteEncoder
         .positionConversionFactor(CoralIntakeConstants.kCoralWristPositionConversionFactor)
+        .zeroOffset(CoralIntakeConstants.kCoralWristPositionOffset)
         .inverted(false);
     // spotless:on
 

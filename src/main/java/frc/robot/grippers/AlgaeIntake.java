@@ -70,7 +70,8 @@ public class AlgaeIntake extends SubsystemBase {
     
     wristConfig.absoluteEncoder
         .positionConversionFactor(AlgaeIntakeConstants.kAlgaeWristPositionConversionFactor)
-        .inverted(false);
+        .zeroOffset(AlgaeIntakeConstants.kAlgaeWristPositionOffset)
+        .inverted(true);
     
     wristConfig.closedLoop
         .p(AlgaeIntakeConstants.kPositionP)
