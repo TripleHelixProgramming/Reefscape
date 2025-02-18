@@ -114,11 +114,6 @@ public class Robot extends TimedRobot {
             autoSelector::getBinarySwitchPosition,
             allianceSelector::getAllianceColor,
             allianceSelector::agreementInAllianceInputs));
-    leds.setDefaultCommand(
-        leds.createDisabledCommand(
-            autoSelector::getBinarySwitchPosition,
-            allianceSelector::getAllianceColor,
-            allianceSelector::agreementInAllianceInputs));
   }
 
   @Override
