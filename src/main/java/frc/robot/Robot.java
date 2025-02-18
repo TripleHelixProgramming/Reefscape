@@ -217,8 +217,8 @@ public class Robot extends TimedRobot {
     Trigger algaeMode = operator.leftBumper();
 
     // Test coral wrist motion
-    // operator.back().whileTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
-    // operator.start().whileTrue(coralWrist.createSetAngleCommand(CoralWristState.L4));
+    operator.back().whileTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+    operator.start().whileTrue(coralWrist.createSetAngleCommand(CoralWristState.L4));
 
     // Test algae wrist motion
     // operator.back().whileTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor));

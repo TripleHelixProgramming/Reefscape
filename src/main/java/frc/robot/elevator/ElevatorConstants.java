@@ -76,8 +76,6 @@ public class ElevatorConstants {
     public static final int kMotorPort = 23;
     public static final int kCoralSensorPort = 3;
 
-    public static final double kP = 0.1;
-
     public static final double kGearRatio = 5.0;
     public static final double kRollerDiameter = 2.0; // inches
     
