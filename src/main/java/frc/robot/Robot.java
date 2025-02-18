@@ -265,19 +265,10 @@ public class Robot extends TimedRobot {
   }
 
   private void configureAutoOptions() {
+    autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4AlgaeAuto(swerve, elevatorCG)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4AlgaeAuto(swerve, elevatorCG)));
     autoSelector.addAuto(
-        new AutoOption(
-            Alliance.Red,
-            1,
-            new RedL4AlgaeAuto(swerve, elevator, coralRoller, algaeRoller, elevatorCG)));
-    autoSelector.addAuto(
-        new AutoOption(
-            Alliance.Blue,
-            1,
-            new BlueL4AlgaeAuto(swerve, elevator, coralRoller, algaeRoller, elevatorCG)));
-    autoSelector.addAuto(
-        new AutoOption(
-            Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, coralRoller, elevatorCG)));
+        new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevatorCG)));
     autoSelector.addAuto(new AutoOption(Alliance.Blue, 3, new ExampleAuto(swerve)));
   }
 

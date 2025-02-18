@@ -22,17 +22,12 @@ public class RedL4AlgaeAuto extends AutoMode {
   AlgaeRoller algaeRoller;
   ElevatorCGs elevatorCG;
 
-  public RedL4AlgaeAuto(
-      Drivetrain drivetrain,
-      Elevator elevatorsubsystem,
-      CoralRoller coralRollerSubsystem,
-      AlgaeRoller algaeRollerSubsystem,
-      ElevatorCGs autoCommandGroups) {
+  public RedL4AlgaeAuto(Drivetrain drivetrain, ElevatorCGs autoCommandGroups) {
     super(drivetrain);
-    elevator = elevatorsubsystem;
-    coralRoller = coralRollerSubsystem;
-    algaeRoller = algaeRollerSubsystem;
     elevatorCG = autoCommandGroups;
+    elevator = elevatorCG.getElevator();
+    coralRoller = elevatorCG.getCoralRoller();
+    algaeRoller = elevatorCG.getAlgaeRoller();
   }
 
   AutoRoutine redL4AlgAutoRoutine = super.getAutoFactory().newRoutine("redL4AlgaeRoutine");

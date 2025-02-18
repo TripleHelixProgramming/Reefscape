@@ -26,6 +26,18 @@ public class ElevatorCGs {
     algaeRoller = algaeRollerSubsystem;
   }
 
+  public Elevator getElevator() {
+    return elevator;
+  }
+
+  public CoralRoller getCoralRoller() {
+    return coralRoller;
+  }
+
+  public AlgaeRoller getAlgaeRoller() {
+    return algaeRoller;
+  }
+
   public ParallelCommandGroup coralL4PositionCommand() {
     return new ParallelCommandGroup(
         elevator.createSetHeightCommand(ElevatorState.L4),

@@ -16,11 +16,10 @@ public class BlueNoProcess3PieceAuto extends AutoMode {
   CoralRoller coralRoller;
   ElevatorCGs elevatorCG;
 
-  public BlueNoProcess3PieceAuto(
-      Drivetrain drivetrain, CoralRoller coralRollerSubsystem, ElevatorCGs autoCommandGroups) {
+  public BlueNoProcess3PieceAuto(Drivetrain drivetrain, ElevatorCGs autoCommandGroups) {
     super(drivetrain);
-    coralRoller = coralRollerSubsystem;
     elevatorCG = autoCommandGroups;
+    coralRoller = elevatorCG.getCoralRoller();
   }
 
   AutoRoutine blueNoProcess3PieceRoutine =
