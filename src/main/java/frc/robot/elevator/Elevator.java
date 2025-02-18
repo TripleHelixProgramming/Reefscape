@@ -1,9 +1,9 @@
 package frc.robot.elevator;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import frc.robot.Constants.AlgaeWristConstants.AlgaeWristState;
-import frc.robot.Constants.CoralWristConstants.CoralWristState;
-import frc.robot.Constants.LifterConstants.LifterState;
+import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
+import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
+import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 
 public class Elevator {
 

@@ -26,7 +26,7 @@ import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.LifterConstants.LifterState;
+import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;

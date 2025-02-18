@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CoralWristConstants;
-import frc.robot.Constants.CoralWristConstants.CoralWristState;
+import frc.robot.elevator.ElevatorConstants.CoralWristConstants;
+import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.Constants.RobotConstants;
 
 public class CoralWrist extends SubsystemBase {

@@ -21,9 +21,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.LifterConstants;
-import frc.robot.Constants.LifterConstants.LifterController;
-import frc.robot.Constants.LifterConstants.LifterState;
+import frc.robot.elevator.ElevatorConstants.LifterConstants;
+import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterController;
+import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 import frc.robot.Constants.RobotConstants;
 
 public class Lifter extends SubsystemBase {

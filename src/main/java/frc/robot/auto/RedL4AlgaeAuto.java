@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.LifterConstants.LifterState;
+import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
