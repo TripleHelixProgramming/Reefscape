@@ -35,35 +35,35 @@ public class AutoCGs {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.L4),
         coralWrist.createSetAngleCommand(CoralWristState.L4),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.CoralMode.angle));
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralL3PositionCommand() {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.L3),
         coralWrist.createSetAngleCommand(CoralWristState.L3),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.CoralMode.angle));
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralL2PositionCommand() {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.L2),
         coralWrist.createSetAngleCommand(CoralWristState.L2),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.CoralMode.angle));
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralL1PositionCommand() {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.L1),
         coralWrist.createSetAngleCommand(CoralWristState.L1),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.CoralMode.angle));
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public ParallelCommandGroup coralIntakeCommand() {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.Intake),
         coralWrist.createSetAngleCommand(CoralWristState.Intake),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.CoralMode.angle),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode),
         coralRoller.createSetIntakeCommand().until(coralRoller.hasCoral));
   }
 
@@ -71,14 +71,14 @@ public class AutoCGs {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.Max),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.Barge.angle));
+        algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
   }
 
   public ParallelCommandGroup algaeL3IntakeCommand() {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.L3.angle),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.L3),
         algaeRoller.createSetIntakeCommand().until(algaeRoller.hasAlage));
   }
 
@@ -86,7 +86,7 @@ public class AutoCGs {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.AlgaeL2),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.L2.angle),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.L2),
         algaeRoller.createSetIntakeCommand().until(algaeRoller.hasAlage));
   }
 
@@ -94,14 +94,14 @@ public class AutoCGs {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.Processor),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.Processor.angle));
+        algaeWrist.createSetAngleCommand(AlgaeWristState.Processor));
   }
 
   public ParallelCommandGroup algaeFloorIntakeCommand() {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.Floor),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristState.Floor.angle),
+        algaeWrist.createSetAngleCommand(AlgaeWristState.Floor),
         algaeRoller.createSetIntakeCommand().until(algaeRoller.hasAlage));
   }
 }

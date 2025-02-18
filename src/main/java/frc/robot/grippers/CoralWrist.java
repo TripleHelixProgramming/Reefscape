@@ -7,7 +7,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,15 +14,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CoralWristConstants;
-import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.CoralWristConstants.CoralWristState;
+import frc.robot.Constants.RobotConstants;
 
 public class CoralWrist extends SubsystemBase {
 
   private final SparkMax motor = new SparkMax(CoralWristConstants.kMotorPort, MotorType.kBrushless);
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
-  private final ProfiledPIDController controller = new ProfiledPIDController(CoralWristConstants.kP, 0.0, 0.0, CoralWristConstants.kConstraints);
+  private final ProfiledPIDController controller =
+      new ProfiledPIDController(CoralWristConstants.kP, 0.0, 0.0, CoralWristConstants.kConstraints);
 
   private final EventLoop loop = new EventLoop();
 
@@ -50,7 +50,7 @@ public class CoralWrist extends SubsystemBase {
     // spotless:on
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    
+
     controller.setTolerance(CoralWristConstants.kAllowableAngleError);
     // controller.setIZone();
     // controller.setIntegratorRange();

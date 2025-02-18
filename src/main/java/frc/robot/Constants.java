@@ -265,7 +265,7 @@ public final class Constants {
     public static final double kAllowableAngleError = 3.0;
 
     public static enum CoralWristState {
-      Unknown(90),
+      Unknown(125),
       Min(25),
       Max(125),
       L1(90),
@@ -302,16 +302,23 @@ public final class Constants {
   public static final class AlgaeWristConstants {
     public static final int kMotorPort = 14;
 
-    public static final double kP = 0.1;
-
     public static final double kTotalGearRatio = 5 * (36 / 18); // 5:1 for motor, 36:18 for belt
     // By default, the REV Through Bore encoder in absolute mode measures rotations
     // Convert to degrees
     public static final double kPositionConversionFactor = 360.0;
     public static final double kPositionOffset = 322.0 / kPositionConversionFactor;
 
+    public static final double kP = 0.1;
+    private static final double kMaxVelocity = 30.0;
+    private static final double kMaxAcceleration = kMaxVelocity;
+    public static final Constraints kConstraints = new Constraints(kMaxVelocity, kMaxAcceleration);
+    public static final double kAllowableAngleError = 3.0;
+
     public static enum AlgaeWristState {
+      Unknown(180),
       Floor(80),
+      Min(80),
+      Max(180),
       Processor(90),
       L2(80),
       L3(80),
