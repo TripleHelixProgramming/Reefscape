@@ -10,10 +10,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.AlgaeRoller;
-import frc.robot.elevator.ElevatorCGs;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
-
+import frc.robot.elevator.ElevatorCGs;
 import java.util.Optional;
 
 public class RedL4AlgaeAuto extends AutoMode {

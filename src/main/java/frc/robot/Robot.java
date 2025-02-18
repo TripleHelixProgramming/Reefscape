@@ -39,10 +39,10 @@ import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.AlgaeWrist;
-import frc.robot.elevator.ElevatorCGs;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
+import frc.robot.elevator.ElevatorCGs;
 import frc.robot.vision.Vision;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
   private final CoralWrist coralWrist = new CoralWrist();
   private final AlgaeRoller algaeRoller = new AlgaeRoller();
   private final AlgaeWrist algaeWrist = new AlgaeWrist();
-  private final ElevatorCGs autoCG =
+  private final ElevatorCGs elevatorCG =
       new ElevatorCGs(elevator, coralWrist, coralRoller, algaeWrist, algaeRoller);
 
   private CommandZorroController driver;
@@ -225,19 +225,19 @@ public class Robot extends TimedRobot {
     Trigger algaeMode = operator.leftBumper();
 
     // Configure to either score coral on L1 or score algae in processor
-    operator.a().whileTrue(new ConditionalCommand(autoCG.algaeProcessorPositionCommand(), autoCG.coralL1PositionCommand(), algaeMode));
+    operator.a().whileTrue(new ConditionalCommand(elevatorCG.algaeProcessorPositionCommand(), elevatorCG.coralL1PositionCommand(), algaeMode));
 
     // Configure to either score coral on L2 or intake algae from L2
-    operator.b().whileTrue(new ConditionalCommand(autoCG.algaeL2IntakeCommand(), autoCG.coralL2PositionCommand(), algaeMode));
+    operator.b().whileTrue(new ConditionalCommand(elevatorCG.algaeL2IntakeCommand(), elevatorCG.coralL2PositionCommand(), algaeMode));
 
     // Configure to either score coral on L3 or intake algae from L3
-    operator.x().whileTrue(new ConditionalCommand(autoCG.algaeL3IntakeCommand(), autoCG.coralL3PositionCommand(), algaeMode));
+    operator.x().whileTrue(new ConditionalCommand(elevatorCG.algaeL3IntakeCommand(), elevatorCG.coralL3PositionCommand(), algaeMode));
 
     // Configure to either score coral on L4 or score algae in barge
-    operator.y().whileTrue(new ConditionalCommand(autoCG.algaeBargePositionCommand(), autoCG.coralL4PositionCommand(), algaeMode));
+    operator.y().whileTrue(new ConditionalCommand(elevatorCG.algaeBargePositionCommand(), elevatorCG.coralL4PositionCommand(), algaeMode));
 
     // Configure to either intake coral from source or intake algae from floor
-    operator.start().whileTrue(new ConditionalCommand(autoCG.algaeFloorIntakeCommand(), autoCG.coralIntakeCommand(), algaeMode));
+    operator.start().whileTrue(new ConditionalCommand(elevatorCG.algaeFloorIntakeCommand(), elevatorCG.coralIntakeCommand(), algaeMode));
 
     // Intake with coral gripper
     operator.rightBumper()
@@ -269,17 +269,15 @@ public class Robot extends TimedRobot {
         new AutoOption(
             Alliance.Red,
             1,
-            new RedL4AlgaeAuto(swerve, elevator, coralRoller, algaeRoller, autoCG)));
+            new RedL4AlgaeAuto(swerve, elevator, coralRoller, algaeRoller, elevatorCG)));
     autoSelector.addAuto(
         new AutoOption(
             Alliance.Blue,
             1,
-            new BlueL4AlgaeAuto(swerve, elevator, coralRoller, algaeRoller, autoCG)));
+            new BlueL4AlgaeAuto(swerve, elevator, coralRoller, algaeRoller, elevatorCG)));
     autoSelector.addAuto(
         new AutoOption(
-            Alliance.Blue,
-            2,
-            new BlueNoProcess3PieceAuto(swerve, elevator, coralRoller, algaeRoller, autoCG)));
+            Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, coralRoller, elevatorCG)));
     autoSelector.addAuto(new AutoOption(Alliance.Blue, 3, new ExampleAuto(swerve)));
   }
 
