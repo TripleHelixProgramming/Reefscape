@@ -36,6 +36,8 @@ import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
+import frc.robot.elevator.AlgaeRoller;
+import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
@@ -53,6 +55,8 @@ public class Robot extends TimedRobot {
   // private final Lifter elevator = new Lifter();
   private final Elevator elevator = new Elevator();
   private final Lifter lifter = elevator.getLifter();
+  private final CoralRoller coralRoller = elevator.getCoralRoller();
+  private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
   private final Drivetrain swerve =
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
   private final Climber climber = new Climber();
@@ -202,8 +206,8 @@ public class Robot extends TimedRobot {
 
     // Outtake grippers
     driver.HIn()
-        .onTrue(elevator.getCoralRoller().createOuttakeCommand()
-        .alongWith(elevator.getAlgaeRoller().createOuttakeCommand()));
+        .onTrue(coralRoller.createOuttakeCommand()
+        .alongWith(algaeRoller.createOuttakeCommand()));
 
   }
 
@@ -233,11 +237,11 @@ public class Robot extends TimedRobot {
 
     // Intake with coral gripper
     operator.rightBumper().and(lifter.atIntakingHeight)
-        .whileTrue(elevator.getCoralRoller().createIntakeCommand());
+        .whileTrue(coralRoller.createIntakeCommand());
     
     // Intake with algae gripper
     operator.rightBumper().and(lifter.atIntakingHeight.negate())
-        .whileTrue(elevator.getAlgaeRoller().createIntakeCommand());
+        .whileTrue(algaeRoller.createIntakeCommand());
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
