@@ -14,18 +14,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.CoralIntakeConstants;
+import frc.robot.Constants.CoralRollerConstants;
 import frc.robot.Constants.RobotConstants;
 import java.util.function.BooleanSupplier;
 
 public class CoralRoller extends SubsystemBase {
 
   private final SparkMax rollerMotor =
-      new SparkMax(CoralIntakeConstants.kRollerMotorPort, MotorType.kBrushless);
+      new SparkMax(CoralRollerConstants.kMotorPort, MotorType.kBrushless);
   private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
   private final RelativeEncoder rollerEncoder = rollerMotor.getEncoder();
   private final SparkClosedLoopController rollerController = rollerMotor.getClosedLoopController();
-  private final DigitalInput coralSensor = new DigitalInput(CoralIntakeConstants.kCoralSensorPort);
+  private final DigitalInput coralSensor = new DigitalInput(CoralRollerConstants.kCoralSensorPort);
 
   public CoralRoller() {
     // spotless:off
@@ -36,14 +36,14 @@ public class CoralRoller extends SubsystemBase {
         .inverted(false);
 
     rollerConfig.closedLoop
-        .p(CoralIntakeConstants.kVelocityP)
+        .p(CoralRollerConstants.kVelocityP)
         .i(0.0)
         .d(0.0)
         .outputRange(-1, 1);
 
     rollerConfig.encoder
-        .velocityConversionFactor(CoralIntakeConstants.kVelocityConversionFactor)
-        .positionConversionFactor(CoralIntakeConstants.kPositionConversionFactor);
+        .velocityConversionFactor(CoralRollerConstants.kVelocityConversionFactor)
+        .positionConversionFactor(CoralRollerConstants.kPositionConversionFactor);
     // spotless:on
 
     rollerMotor.configure(
@@ -74,7 +74,11 @@ public class CoralRoller extends SubsystemBase {
     return this.runOnce(() -> setIntakeVelocity(0));
   }
 
-  public Command createSetIntakeVelocityCommand(double velocity) {
-    return this.run(() -> setIntakeVelocity(velocity));
+  public Command createSetIntakeCommand() {
+    return this.run(() -> setIntakeVelocity(CoralRollerConstants.kIntakeSpeed));
+  }
+
+  public Command createSetOuttakeCommand() {
+    return this.run(() -> setIntakeVelocity(CoralRollerConstants.kOuttakeSpeed));
   }
 }

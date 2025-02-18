@@ -233,31 +233,37 @@ public final class Constants {
     }
   }
 
-  public static final class CoralIntakeConstants {
-    public static final int kRollerMotorPort = 23;
-    public static final int kWristMotorPort = 22;
-
-    public static final double kVelocityP = 0.1;
-    public static final double kPositionP = 0.1;
-
-    public static final double kCoralGearRatio = 5.0;
-    public static final double kCoralShaftDiamter = 2.0; // inches
-    public static final double kPositionConversionFactor =
-        (kCoralShaftDiamter * Math.PI) / kCoralGearRatio;
-    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
-
+  public static final class CoralRollerConstants {
+    public static final int kMotorPort = 23;
     public static final int kCoralSensorPort = 3;
 
-    public static final double kCoralWristBeltReduction = 42.0 / 24.0;
-    public static final double kCoralWristTotalGearRatio = 5.0 * kCoralWristBeltReduction;
+    public static final double kVelocityP = 0.1;
+
+    public static final double kGearRatio = 5.0;
+    public static final double kRollerDiameter = 2.0; // inches
+    public static final double kPositionConversionFactor =
+        (kRollerDiameter * Math.PI) / kGearRatio;
+    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+
+    public static final double kIntakeSpeed = 5.0;
+    public static final double kOuttakeSpeed = -kIntakeSpeed;
+  }
+
+  public static final class CoralWristConstants {
+    public static final int kMotorPort = 22;
+
+    public static final double kPositionP = 0.1;
+
+    public static final double kBeltReduction = 42.0 / 24.0;
+    public static final double kTotalGearRatio = 5.0 * kBeltReduction;
     // By default, the REV Through Bore encoder in absolute mode measures rotations
     // Convert to degrees
-    public static final double kCoralWristPositionConversionFactor =
-        360.0 / kCoralWristBeltReduction;
-    public static final double kCoralWristPositionOffset =
-        0.0 / kCoralWristPositionConversionFactor;
-
-    public static enum CoralIntakeStates {
+    public static final double kPositionConversionFactor =
+        360.0 / kBeltReduction;
+    public static final double kPositionOffset =
+        0.0 / kPositionConversionFactor;
+    
+    public static enum CoralWristStates {
       L1(90),
       L2(55),
       L3(55),
@@ -267,37 +273,42 @@ public final class Constants {
 
       public double angle;
 
-      private CoralIntakeStates(double angle) {
+      private CoralWristStates(double angle) {
         this.angle = angle;
       }
     }
   }
 
-  public static final class AlgaeIntakeConstants {
-    public static final int kRollerLeaderMotorPort = 15;
-    public static final int kRollerFollowerMotorPort = 16;
-    public static final int kWristMotorPort = 14;
+  public static final class AlgaeRollerConstants {
+    public static final int kLeaderMotorPort = 15;
+    public static final int kFollowerMotorPort = 16;
+    public static final int kSensorPort = 4;
 
     public static final double kVelocityP = 0.1;
-    public static final double kPositionP = 0.1;
 
-    public static final double kAlgaeGearRatio = 5.0;
-    public static final double kAlgaeShaftDiamter = 2.0; // inches
-    public static final double kPositionConversionFactor =
-        (kAlgaeShaftDiamter * Math.PI) / kAlgaeGearRatio;
+    public static final double kGearRatio = 5.0;
+    public static final double kRollerDiameter = 2.0; // inches
+    public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final int kAlgaeSensorPort = 4;
+    public static final double kIntakeSpeed = 5.0;
+    public static final double kOuttakeSpeed = -kIntakeSpeed;
+  }
 
-    public static final double kAlgaeWristTotalGearRatio =
+  public static final class AlgaeWristConstants {
+    public static final int kMotorPort = 14;
+
+    public static final double kPositionP = 0.1;
+
+    public static final double kTotalGearRatio =
         5 * (36 / 18); // 5:1 for motor, 36:18 for belt
     // By default, the REV Through Bore encoder in absolute mode measures rotations
     // Convert to degrees
-    public static final double kAlgaeWristPositionConversionFactor = 360.0;
-    public static final double kAlgaeWristPositionOffset =
-        322.0 / kAlgaeWristPositionConversionFactor;
+    public static final double kPositionConversionFactor = 360.0;
+    public static final double kPositionOffset =
+        322.0 / kPositionConversionFactor;
 
-    public static enum AlgaeIntakeStates {
+    public static enum AlgaeWristStates {
       Floor(80),
       Processor(90),
       L2(80),
@@ -307,7 +318,7 @@ public final class Constants {
 
       public double angle;
 
-      private AlgaeIntakeStates(double angle) {
+      private AlgaeWristStates(double angle) {
         this.angle = angle;
       }
     }

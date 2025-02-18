@@ -13,13 +13,13 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.AlgaeIntakeConstants;
+import frc.robot.Constants.AlgaeWristConstants;
 import frc.robot.Constants.RobotConstants;
 
 public class AlgaeWrist extends SubsystemBase {
 
   private final SparkMax wristMotor =
-      new SparkMax(AlgaeIntakeConstants.kWristMotorPort, MotorType.kBrushless);
+      new SparkMax(AlgaeWristConstants.kMotorPort, MotorType.kBrushless);
   private final SparkMaxConfig wristConfig = new SparkMaxConfig();
   private final SparkAbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
   private final SparkClosedLoopController wristController = wristMotor.getClosedLoopController();
@@ -33,12 +33,12 @@ public class AlgaeWrist extends SubsystemBase {
         .inverted(false);
     
     wristConfig.absoluteEncoder
-        .positionConversionFactor(AlgaeIntakeConstants.kAlgaeWristPositionConversionFactor)
-        .zeroOffset(AlgaeIntakeConstants.kAlgaeWristPositionOffset)
+        .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor)
+        .zeroOffset(AlgaeWristConstants.kPositionOffset)
         .inverted(true);
     
     wristConfig.closedLoop
-        .p(AlgaeIntakeConstants.kPositionP)
+        .p(AlgaeWristConstants.kPositionP)
         .i(0.0)
         .d(0.0)
         .outputRange(-1, 1)

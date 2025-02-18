@@ -13,13 +13,13 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CoralIntakeConstants;
+import frc.robot.Constants.CoralWristConstants;
 import frc.robot.Constants.RobotConstants;
 
 public class CoralWrist extends SubsystemBase {
 
   private final SparkMax wristMotor =
-      new SparkMax(CoralIntakeConstants.kWristMotorPort, MotorType.kBrushless);
+      new SparkMax(CoralWristConstants.kMotorPort, MotorType.kBrushless);
   private final SparkMaxConfig wristConfig = new SparkMaxConfig();
   private final SparkAbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
   private final SparkClosedLoopController wristController = wristMotor.getClosedLoopController();
@@ -33,15 +33,15 @@ public class CoralWrist extends SubsystemBase {
         .inverted(false);
     
     wristConfig.closedLoop
-        .p(CoralIntakeConstants.kPositionP)
+        .p(CoralWristConstants.kPositionP)
         .i(0.0)
         .d(0.0)
         .outputRange(-1, 1)
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 
     wristConfig.absoluteEncoder
-        .positionConversionFactor(CoralIntakeConstants.kCoralWristPositionConversionFactor)
-        .zeroOffset(CoralIntakeConstants.kCoralWristPositionOffset)
+        .positionConversionFactor(CoralWristConstants.kPositionConversionFactor)
+        .zeroOffset(CoralWristConstants.kPositionOffset)
         .inverted(false);
     // spotless:on
 

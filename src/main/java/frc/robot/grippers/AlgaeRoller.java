@@ -14,22 +14,24 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.AlgaeIntakeConstants;
+import frc.robot.Constants.AlgaeRollerConstants;
+import frc.robot.Constants.CoralRollerConstants;
 import frc.robot.Constants.RobotConstants;
 
 public class AlgaeRoller extends SubsystemBase {
 
   private final SparkMax rollerLeaderMotor =
-      new SparkMax(AlgaeIntakeConstants.kRollerLeaderMotorPort, MotorType.kBrushless);
+      new SparkMax(AlgaeRollerConstants.kLeaderMotorPort, MotorType.kBrushless);
   private final SparkMax rollerFollowerMotor =
-      new SparkMax(AlgaeIntakeConstants.kRollerFollowerMotorPort, MotorType.kBrushless);
+      new SparkMax(AlgaeRollerConstants.kFollowerMotorPort, MotorType.kBrushless);
 
   private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
   private final SparkMaxConfig rollerFollowerConfig = new SparkMaxConfig();
 
   private final RelativeEncoder rollerEncoder = rollerLeaderMotor.getEncoder();
-  private final SparkClosedLoopController rollerController = rollerLeaderMotor.getClosedLoopController();
-  private final DigitalInput algaeSensor = new DigitalInput(AlgaeIntakeConstants.kAlgaeSensorPort);
+  private final SparkClosedLoopController rollerController =
+      rollerLeaderMotor.getClosedLoopController();
+  private final DigitalInput algaeSensor = new DigitalInput(AlgaeRollerConstants.kSensorPort);
 
   public AlgaeRoller() {
     // spotless:off
@@ -40,14 +42,14 @@ public class AlgaeRoller extends SubsystemBase {
         .inverted(false);
 
     rollerConfig.closedLoop
-        .p(AlgaeIntakeConstants.kVelocityP)
+        .p(AlgaeRollerConstants.kVelocityP)
         .i(0.0)
         .d(0.0)
         .outputRange(-1, 1);
 
     rollerConfig.encoder
-        .velocityConversionFactor(AlgaeIntakeConstants.kVelocityConversionFactor)
-        .positionConversionFactor(AlgaeIntakeConstants.kPositionConversionFactor);
+        .velocityConversionFactor(AlgaeRollerConstants.kVelocityConversionFactor)
+        .positionConversionFactor(AlgaeRollerConstants.kPositionConversionFactor);
 
     rollerFollowerConfig
         .apply(rollerConfig)
@@ -80,7 +82,11 @@ public class AlgaeRoller extends SubsystemBase {
     return this.runOnce(() -> setIntakeVelocity(0));
   }
 
-  public Command createSetIntakeVelocityCommand(double velocity) {
-    return this.run(() -> setIntakeVelocity(velocity));
+  public Command createSetIntakeCommand() {
+    return this.run(() -> setIntakeVelocity(AlgaeRollerConstants.kIntakeSpeed));
+  }
+
+  public Command createSetOuttakeCommand() {
+    return this.run(() -> setIntakeVelocity(AlgaeRollerConstants.kOuttakeSpeed));
   }
 }

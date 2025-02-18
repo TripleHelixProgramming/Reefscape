@@ -63,7 +63,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .onTrue(
             new SequentialCommandGroup(
                 new WaitCommand(0.1),
-                coralRoller.createSetIntakeVelocityCommand(-5.0),
+                coralRoller.createSetOuttakeCommand(),
                 new WaitCommand(0.2),
                 blueL4GToAlgae.cmd()));
 
@@ -72,7 +72,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .onTrue(
             Commands.sequence(
                 autoCG.algaeL3PositionCommand(),
-                algaeIntake.createSetIntakeVelocityCommand(5),
+                algaeIntake.createSetIntakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     blueAlgaeToProcess.cmd(), autoCG.algaeProcessorPositionCommand())));
@@ -81,7 +81,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             new SequentialCommandGroup(
-                algaeIntake.createSetIntakeVelocityCommand(-5),
+                algaeIntake.createSetOuttakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     blueProcessToSource.cmd(),

@@ -63,9 +63,9 @@ public class RedNoProcess3PieceAuto extends AutoMode {
         .onTrue(
             Commands.sequence(
                 new WaitCommand(0.1),
-                coralRoller.createSetIntakeVelocityCommand(-5.0),
+                coralRoller.createSetOuttakeCommand(),
                 new WaitCommand(0.2),
-                coralRoller.createSetIntakeVelocityCommand(0),
+                coralRoller.createStopCommand(),
                 new ParallelCommandGroup(
                     redL4IToSource.cmd(), autoCG.coralIntakePositionCommand())));
 
@@ -73,7 +73,7 @@ public class RedNoProcess3PieceAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.parallel(
-                coralRoller.createSetIntakeVelocityCommand(5).until(coralRoller.hasCoralPiece()),
+                coralRoller.createSetIntakeCommand().until(coralRoller.hasCoralPiece()),
                 Commands.sequence(
                     new WaitCommand(0.2),
                     Commands.parallel(redSourceToL4L.cmd(), autoCG.coralL4PositionCommand()))));
@@ -83,16 +83,16 @@ public class RedNoProcess3PieceAuto extends AutoMode {
         .onTrue(
             Commands.sequence(
                 new WaitCommand(0.1),
-                coralRoller.createSetIntakeVelocityCommand(-5),
+                coralRoller.createSetOuttakeCommand(),
                 new WaitCommand(0.2),
-                coralRoller.createSetIntakeVelocityCommand(0),
+                coralRoller.createStopCommand(),
                 Commands.parallel(autoCG.coralIntakePositionCommand(), redL4LToSource.cmd())));
 
     redL4LToSource
         .done()
         .onTrue(
             Commands.parallel(
-                coralRoller.createSetIntakeVelocityCommand(5).until(coralRoller.hasCoralPiece()),
+                coralRoller.createSetIntakeCommand().until(coralRoller.hasCoralPiece()),
                 Commands.sequence(
                     new WaitCommand(0.2),
                     Commands.parallel(autoCG.coralL4PositionCommand(), redSourceToL4K.cmd()))));
@@ -101,7 +101,7 @@ public class RedNoProcess3PieceAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                new WaitCommand(0.1), coralRoller.createSetIntakeVelocityCommand(-5)));
+                new WaitCommand(0.1), coralRoller.createSetOuttakeCommand()));
 
     return redNoProcess3PieceRoutine;
   }
