@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
   private final CoralWrist coralWrist = new CoralWrist();
   private final AlgaeRoller algaeRoller = new AlgaeRoller();
   private final AlgaeWrist algaeWrist = new AlgaeWrist();
-  private final AutoCGs autoCG = new AutoCGs(elevator, coralWrist, algaeWrist);
+  private final AutoCGs autoCG = new AutoCGs(elevator, coralWrist, coralRoller, algaeWrist);
 
   private CommandZorroController driver;
   private CommandXboxController operator;
@@ -234,7 +234,7 @@ public class Robot extends TimedRobot {
     operator.x().whileTrue(new ConditionalCommand(autoCG.algaeL3PositionCommand(), autoCG.coralL3PositionCommand(), algaeMode));
 
     // set elevator to either FloorIntake or SourceIntake position
-    operator.start().whileTrue(new ConditionalCommand(autoCG.algaeFloorIntakePositionCommand(), autoCG.coralIntakePositionCommand(), algaeMode));
+    operator.start().whileTrue(new ConditionalCommand(autoCG.algaeFloorIntakePositionCommand(), autoCG.coralIntakeCommand(), algaeMode));
 
     // Intake with coral gripper
     operator.rightBumper()

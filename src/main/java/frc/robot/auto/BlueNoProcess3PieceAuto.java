@@ -66,17 +66,14 @@ public class BlueNoProcess3PieceAuto extends AutoMode {
                 coralRoller.createSetOuttakeCommand(),
                 new WaitCommand(0.2),
                 coralRoller.createStopCommand(),
-                new ParallelCommandGroup(
-                    blueL4IToSource.cmd(), autoCG.coralIntakePositionCommand())));
+                new ParallelCommandGroup(blueL4IToSource.cmd(), autoCG.coralIntakeCommand())));
 
     blueL4IToSource
         .done()
         .onTrue(
-            Commands.parallel(
-                coralRoller.createSetIntakeCommand().until(coralRoller.hasCoralPiece()),
-                Commands.sequence(
-                    new WaitCommand(0.2),
-                    Commands.parallel(blueSourceToL4L.cmd(), autoCG.coralL4PositionCommand()))));
+            Commands.sequence(
+                new WaitCommand(0.2),
+                Commands.parallel(blueSourceToL4L.cmd(), autoCG.coralL4PositionCommand())));
 
     blueSourceToL4L
         .done()
@@ -86,22 +83,18 @@ public class BlueNoProcess3PieceAuto extends AutoMode {
                 coralRoller.createSetOuttakeCommand(),
                 new WaitCommand(0.2),
                 coralRoller.createStopCommand(),
-                Commands.parallel(autoCG.coralIntakePositionCommand(), blueL4LToSource.cmd())));
+                Commands.parallel(autoCG.coralIntakeCommand(), blueL4LToSource.cmd())));
 
     blueL4LToSource
         .done()
         .onTrue(
-            Commands.parallel(
-                coralRoller.createSetIntakeCommand().until(coralRoller.hasCoralPiece()),
-                Commands.sequence(
-                    new WaitCommand(0.2),
-                    Commands.parallel(autoCG.coralL4PositionCommand(), blueSourceToL4K.cmd()))));
+            Commands.sequence(
+                new WaitCommand(0.2),
+                Commands.parallel(autoCG.coralL4PositionCommand(), blueSourceToL4K.cmd())));
 
     blueSourceToL4K
         .done()
-        .onTrue(
-            Commands.sequence(
-                new WaitCommand(0.1), coralRoller.createSetOuttakeCommand()));
+        .onTrue(Commands.sequence(new WaitCommand(0.1), coralRoller.createSetOuttakeCommand()));
 
     return blueNoProcess3PieceRoutine;
   }

@@ -241,8 +241,7 @@ public final class Constants {
 
     public static final double kGearRatio = 5.0;
     public static final double kRollerDiameter = 2.0; // inches
-    public static final double kPositionConversionFactor =
-        (kRollerDiameter * Math.PI) / kGearRatio;
+    public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final double kIntakeSpeed = 5.0;
@@ -258,11 +257,9 @@ public final class Constants {
     public static final double kTotalGearRatio = 5.0 * kBeltReduction;
     // By default, the REV Through Bore encoder in absolute mode measures rotations
     // Convert to degrees
-    public static final double kPositionConversionFactor =
-        360.0 / kBeltReduction;
-    public static final double kPositionOffset =
-        0.0 / kPositionConversionFactor;
-    
+    public static final double kPositionConversionFactor = 360.0 / kBeltReduction;
+    public static final double kPositionOffset = 0.0 / kPositionConversionFactor;
+
     public static enum CoralWristStates {
       L1(90),
       L2(55),
@@ -300,13 +297,11 @@ public final class Constants {
 
     public static final double kPositionP = 0.1;
 
-    public static final double kTotalGearRatio =
-        5 * (36 / 18); // 5:1 for motor, 36:18 for belt
+    public static final double kTotalGearRatio = 5 * (36 / 18); // 5:1 for motor, 36:18 for belt
     // By default, the REV Through Bore encoder in absolute mode measures rotations
     // Convert to degrees
     public static final double kPositionConversionFactor = 360.0;
-    public static final double kPositionOffset =
-        322.0 / kPositionConversionFactor;
+    public static final double kPositionOffset = 322.0 / kPositionConversionFactor;
 
     public static enum AlgaeWristStates {
       Floor(80),

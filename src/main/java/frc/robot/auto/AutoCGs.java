@@ -6,18 +6,24 @@ import frc.robot.Constants.CoralWristConstants.CoralWristStates;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.elevator.Elevator;
 import frc.robot.grippers.AlgaeWrist;
+import frc.robot.grippers.CoralRoller;
 import frc.robot.grippers.CoralWrist;
 
 public class AutoCGs {
 
   Elevator elevator;
   CoralWrist coralWrist;
+  CoralRoller coralRoller;
   AlgaeWrist algaeWrist;
 
   public AutoCGs(
-      Elevator elevatorsubsystem, CoralWrist coralWristSubsystem, AlgaeWrist algaeWristSubsystem) {
+      Elevator elevatorsubsystem,
+      CoralWrist coralWristSubsystem,
+      CoralRoller coralRollerSubsystem,
+      AlgaeWrist algaeWristSubsystem) {
     elevator = elevatorsubsystem;
     coralWrist = coralWristSubsystem;
+    coralRoller = coralRollerSubsystem;
     algaeWrist = algaeWristSubsystem;
   }
 
@@ -49,11 +55,12 @@ public class AutoCGs {
         algaeWrist.createSetRotationPositionCommand(AlgaeWristStates.CoralMode.angle));
   }
 
-  public ParallelCommandGroup coralIntakePositionCommand() {
+  public ParallelCommandGroup coralIntakeCommand() {
     return new ParallelCommandGroup(
         elevator.createSetPositionCommand(ElevatorState.Intake),
         coralWrist.createSetRotationPositionCommand(CoralWristStates.Intake.angle),
-        algaeWrist.createSetRotationPositionCommand(AlgaeWristStates.CoralMode.angle));
+        algaeWrist.createSetRotationPositionCommand(AlgaeWristStates.CoralMode.angle),
+        coralRoller.createSetIntakeCommand().until(coralRoller.hasCoralPiece()));
   }
 
   public ParallelCommandGroup algaeBargePositionCommand() {
