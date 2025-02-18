@@ -266,8 +266,8 @@ public final class Constants {
 
     public static enum CoralWristState {
       Unknown(125),
-      Min(25),
-      Max(125),
+      Min(15),
+      Max(135),
       L1(90),
       L2(55),
       L3(55),
@@ -317,8 +317,8 @@ public final class Constants {
     public static enum AlgaeWristState {
       Unknown(180),
       Floor(80),
-      Min(80),
-      Max(180),
+      Min(70),
+      Max(190),
       Processor(90),
       L2(80),
       L3(80),
@@ -415,7 +415,7 @@ public final class Constants {
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final double kFineVelocityInchesPerSecond = 15.0;
-    public static final double kRapidVelocityInchesPerSecond = 100.0;
+    public static final double kRapidVelocityInchesPerSecond = 50.0;
 
     public static final double kTimeToMaxVelocity = 0.02;
     // public static final double kMaxVelocityRPM = kRapidVelocityInchesPerSecond /
