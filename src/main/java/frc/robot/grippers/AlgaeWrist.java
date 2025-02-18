@@ -18,26 +18,25 @@ import frc.robot.Constants.RobotConstants;
 
 public class AlgaeWrist extends SubsystemBase {
 
-  private final SparkMax wristMotor =
-      new SparkMax(AlgaeWristConstants.kMotorPort, MotorType.kBrushless);
-  private final SparkMaxConfig wristConfig = new SparkMaxConfig();
-  private final SparkAbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
-  private final SparkClosedLoopController wristController = wristMotor.getClosedLoopController();
+  private final SparkMax motor = new SparkMax(AlgaeWristConstants.kMotorPort, MotorType.kBrushless);
+  private final SparkMaxConfig config = new SparkMaxConfig();
+  private final SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
+  private final SparkClosedLoopController controller = motor.getClosedLoopController();
 
   public AlgaeWrist() {
     // spotless:off
-    wristConfig
+    config
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
         .inverted(false);
     
-    wristConfig.absoluteEncoder
+    config.absoluteEncoder
         .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor)
         .zeroOffset(AlgaeWristConstants.kPositionOffset)
         .inverted(true);
     
-    wristConfig.closedLoop
+    config.closedLoop
         .p(AlgaeWristConstants.kPositionP)
         .i(0.0)
         .d(0.0)
@@ -45,17 +44,16 @@ public class AlgaeWrist extends SubsystemBase {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     // spotless:on
 
-    wristMotor.configure(
-        wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Algae Rotation Position", wristEncoder.getPosition());
+    SmartDashboard.putNumber("Algae Rotation Position", encoder.getPosition());
   }
 
   private void setRotationPosition(double position) {
-    wristController.setReference(position, ControlType.kPosition);
+    controller.setReference(position, ControlType.kPosition);
   }
 
   public Command createSetRotationPositionCommand(double position) {

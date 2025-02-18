@@ -65,7 +65,8 @@ public class Robot extends TimedRobot {
   private final CoralWrist coralWrist = new CoralWrist();
   private final AlgaeRoller algaeRoller = new AlgaeRoller();
   private final AlgaeWrist algaeWrist = new AlgaeWrist();
-  private final AutoCGs autoCG = new AutoCGs(elevator, coralWrist, coralRoller, algaeWrist, algaeRoller);
+  private final AutoCGs autoCG =
+      new AutoCGs(elevator, coralWrist, coralRoller, algaeWrist, algaeRoller);
 
   private CommandZorroController driver;
   private CommandXboxController operator;

@@ -19,60 +19,58 @@ import frc.robot.Constants.RobotConstants;
 
 public class AlgaeRoller extends SubsystemBase {
 
-  private final SparkMax rollerLeaderMotor =
+  private final SparkMax leaderMotor =
       new SparkMax(AlgaeRollerConstants.kLeaderMotorPort, MotorType.kBrushless);
-  private final SparkMax rollerFollowerMotor =
+  private final SparkMax followerMotor =
       new SparkMax(AlgaeRollerConstants.kFollowerMotorPort, MotorType.kBrushless);
 
-  private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
-  private final SparkMaxConfig rollerFollowerConfig = new SparkMaxConfig();
+  private final SparkMaxConfig config = new SparkMaxConfig();
+  private final SparkMaxConfig followerConfig = new SparkMaxConfig();
 
-  private final RelativeEncoder rollerEncoder = rollerLeaderMotor.getEncoder();
-  private final SparkClosedLoopController rollerController =
-      rollerLeaderMotor.getClosedLoopController();
+  private final RelativeEncoder encoder = leaderMotor.getEncoder();
+  private final SparkClosedLoopController controller = leaderMotor.getClosedLoopController();
   private final DigitalInput algaeSensor = new DigitalInput(AlgaeRollerConstants.kSensorPort);
 
   public AlgaeRoller() {
     // spotless:off
-    rollerConfig
+    config
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
-    rollerConfig.closedLoop
+    config.closedLoop
         .p(AlgaeRollerConstants.kVelocityP)
         .i(0.0)
         .d(0.0)
         .outputRange(-1, 1);
 
-    rollerConfig.encoder
+    config.encoder
         .velocityConversionFactor(AlgaeRollerConstants.kVelocityConversionFactor)
         .positionConversionFactor(AlgaeRollerConstants.kPositionConversionFactor);
 
-    rollerFollowerConfig
-        .apply(rollerConfig)
-        .follow(rollerLeaderMotor);
+    followerConfig
+        .apply(config)
+        .follow(leaderMotor);
     // spotless:on
 
-    rollerLeaderMotor.configure(
-        rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    rollerFollowerMotor.configure(
-        rollerFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    leaderMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    followerMotor.configure(
+        followerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Algae Intake Velocity", rollerEncoder.getVelocity());
+    SmartDashboard.putNumber("Algae Intake Velocity", encoder.getVelocity());
     SmartDashboard.putBoolean("Algae Sensor", algaeSensor.get());
   }
 
   private void resetIntakeEncoder() {
-    rollerEncoder.setPosition(0.0);
+    encoder.setPosition(0.0);
   }
 
   private void setIntakeVelocity(double velocity) {
-    rollerController.setReference(velocity, ControlType.kVelocity);
+    controller.setReference(velocity, ControlType.kVelocity);
   }
 
   public Trigger hasAlage = new Trigger(() -> algaeSensor.get());

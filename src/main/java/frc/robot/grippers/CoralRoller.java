@@ -20,48 +20,47 @@ import java.util.function.BooleanSupplier;
 
 public class CoralRoller extends SubsystemBase {
 
-  private final SparkMax rollerMotor =
+  private final SparkMax motor =
       new SparkMax(CoralRollerConstants.kMotorPort, MotorType.kBrushless);
-  private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
-  private final RelativeEncoder rollerEncoder = rollerMotor.getEncoder();
-  private final SparkClosedLoopController rollerController = rollerMotor.getClosedLoopController();
+  private final SparkMaxConfig config = new SparkMaxConfig();
+  private final RelativeEncoder encoder = motor.getEncoder();
+  private final SparkClosedLoopController controller = motor.getClosedLoopController();
   private final DigitalInput coralSensor = new DigitalInput(CoralRollerConstants.kCoralSensorPort);
 
   public CoralRoller() {
     // spotless:off
-    rollerConfig
+    config
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
-    rollerConfig.closedLoop
+    config.closedLoop
         .p(CoralRollerConstants.kVelocityP)
         .i(0.0)
         .d(0.0)
         .outputRange(-1, 1);
 
-    rollerConfig.encoder
+    config.encoder
         .velocityConversionFactor(CoralRollerConstants.kVelocityConversionFactor)
         .positionConversionFactor(CoralRollerConstants.kPositionConversionFactor);
     // spotless:on
 
-    rollerMotor.configure(
-        rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Coral Intake Velocity", rollerEncoder.getVelocity());
+    SmartDashboard.putNumber("Coral Intake Velocity", encoder.getVelocity());
     SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
   }
 
   private void resetIntakeEncoder() {
-    rollerEncoder.setPosition(0.0);
+    encoder.setPosition(0.0);
   }
 
   private void setIntakeVelocity(double velocity) {
-    rollerController.setReference(velocity, ControlType.kVelocity);
+    controller.setReference(velocity, ControlType.kVelocity);
   }
 
   public Trigger hasCoral = new Trigger(() -> coralSensor.get());
