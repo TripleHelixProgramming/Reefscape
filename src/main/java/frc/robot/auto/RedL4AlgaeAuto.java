@@ -71,8 +71,7 @@ public class RedL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                autoCG.algaeL3PositionCommand(),
-                algaeIntake.createSetIntakeCommand(),
+                autoCG.algaeL3IntakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     redAlgaeToProcess.cmd(), autoCG.algaeProcessorPositionCommand())));

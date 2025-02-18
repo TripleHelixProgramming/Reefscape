@@ -18,7 +18,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
 
   Elevator elevator;
   CoralRoller coralRoller;
-  AlgaeRoller algaeIntake;
+  AlgaeRoller algaeRoller;
   AutoCGs autoCG;
 
   public BlueL4AlgaeAuto(
@@ -30,7 +30,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
     super(drivetrain);
     elevator = elevatorsubsystem;
     coralRoller = coralRollerSubsystem;
-    algaeIntake = algaeIntakeSubsystem;
+    algaeRoller = algaeIntakeSubsystem;
     autoCG = autoCommandGroups;
   }
 
@@ -71,8 +71,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                autoCG.algaeL3PositionCommand(),
-                algaeIntake.createSetIntakeCommand(),
+                autoCG.algaeL3IntakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     blueAlgaeToProcess.cmd(), autoCG.algaeProcessorPositionCommand())));
@@ -81,7 +80,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             new SequentialCommandGroup(
-                algaeIntake.createSetOuttakeCommand(),
+                algaeRoller.createSetOuttakeCommand(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
                     blueProcessToSource.cmd(),

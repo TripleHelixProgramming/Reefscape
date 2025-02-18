@@ -75,7 +75,7 @@ public class AlgaeRoller extends SubsystemBase {
     rollerController.setReference(velocity, ControlType.kVelocity);
   }
 
-  public Trigger hasCoral = new Trigger(() -> algaeSensor.get());
+  public Trigger hasAlage = new Trigger(() -> algaeSensor.get());
 
   public Command createStopCommand() {
     return this.runOnce(() -> setIntakeVelocity(0));

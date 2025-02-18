@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
   private final CoralWrist coralWrist = new CoralWrist();
   private final AlgaeRoller algaeRoller = new AlgaeRoller();
   private final AlgaeWrist algaeWrist = new AlgaeWrist();
-  private final AutoCGs autoCG = new AutoCGs(elevator, coralWrist, coralRoller, algaeWrist);
+  private final AutoCGs autoCG = new AutoCGs(elevator, coralWrist, coralRoller, algaeWrist, algaeRoller);
 
   private CommandZorroController driver;
   private CommandXboxController operator;
@@ -221,20 +221,20 @@ public class Robot extends TimedRobot {
 
     Trigger algaeMode = operator.leftBumper();
 
-    // set elevator to either L4 or barge position
-    operator.y().whileTrue(new ConditionalCommand(autoCG.algaeBargePositionCommand(), autoCG.coralL4PositionCommand(), algaeMode));
-
-    // set elevator to either L3 or algaeL3 position
+    // Configure to either score coral on L1 or score algae in processor
     operator.a().whileTrue(new ConditionalCommand(autoCG.algaeProcessorPositionCommand(), autoCG.coralL1PositionCommand(), algaeMode));
 
-    // set elevator to either L2 or algaeL2 position
-    operator.b().whileTrue(new ConditionalCommand(autoCG.algaeL2PositionCommand(), autoCG.coralL2PositionCommand(), algaeMode));
+    // Configure to either score coral on L2 or intake algae from L2
+    operator.b().whileTrue(new ConditionalCommand(autoCG.algaeL2IntakeCommand(), autoCG.coralL2PositionCommand(), algaeMode));
 
-    // set elevator to either L1 or processor position
-    operator.x().whileTrue(new ConditionalCommand(autoCG.algaeL3PositionCommand(), autoCG.coralL3PositionCommand(), algaeMode));
+    // Configure to either score coral on L3 or intake algae from L3
+    operator.x().whileTrue(new ConditionalCommand(autoCG.algaeL3IntakeCommand(), autoCG.coralL3PositionCommand(), algaeMode));
 
-    // set elevator to either FloorIntake or SourceIntake position
-    operator.start().whileTrue(new ConditionalCommand(autoCG.algaeFloorIntakePositionCommand(), autoCG.coralIntakeCommand(), algaeMode));
+    // Configure to either score coral on L4 or score algae in barge
+    operator.y().whileTrue(new ConditionalCommand(autoCG.algaeBargePositionCommand(), autoCG.coralL4PositionCommand(), algaeMode));
+
+    // Configure to either intake coral from source or intake algae from floor
+    operator.start().whileTrue(new ConditionalCommand(autoCG.algaeFloorIntakeCommand(), autoCG.coralIntakeCommand(), algaeMode));
 
     // Intake with coral gripper
     operator.rightBumper()
