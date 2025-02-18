@@ -28,6 +28,14 @@ public class Elevator {
     return algaeRoller;
   }
 
+  public CoralWrist getCoralWrist() {
+    return coralWrist;
+  }
+
+  public AlgaeWrist getAlgaeWrist() {
+    return algaeWrist;
+  }
+
   public void resetPositionControllers() {
     lifter.resetController();
     coralWrist.resetController();

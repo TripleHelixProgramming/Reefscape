@@ -1,6 +1,6 @@
 package frc.robot.elevator;
 
-import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.InchesPerSecond;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -72,11 +72,11 @@ public class CoralRoller extends SubsystemBase {
 
   public Command createIntakeCommand() {
     return this.startEnd(
-        () -> setVelocity(CoralRollerConstants.kIntakeSpeed.in(FeetPerSecond)), () -> {});
+        () -> setVelocity(CoralRollerConstants.kIntakeSpeed.in(InchesPerSecond)), () -> {});
   }
 
   public Command createOuttakeCommand() {
     return this.startEnd(
-        () -> setVelocity(CoralRollerConstants.kOuttakeSpeed.in(FeetPerSecond)), () -> {});
+        () -> setVelocity(CoralRollerConstants.kOuttakeSpeed.in(InchesPerSecond)), () -> {});
   }
 }

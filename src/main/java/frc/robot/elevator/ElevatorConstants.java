@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 
 public class ElevatorConstants {
 
@@ -79,10 +80,16 @@ public class ElevatorConstants {
 
     public static final double kGearRatio = 5.0;
     public static final double kRollerDiameter = 2.0; // inches
+    
+    // By default, the encoder in position mode measures rotations at the motor
+    // Convert to inches at the wheel
     public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
+
+    // By default, the encoder in velocity mode measures RPM at the drive motor
+    // Convert to inches per second at the wheel
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final LinearVelocity kIntakeSpeed = FeetPerSecond.of(5.0);
+    public static final LinearVelocity kIntakeSpeed = InchesPerSecond.of(12.0);
     public static final LinearVelocity kOuttakeSpeed = kIntakeSpeed.unaryMinus();
   }
 
@@ -130,15 +137,19 @@ public class ElevatorConstants {
     public static final int kFollowerMotorPort = 16;
     public static final int kSensorPort = 4;
 
-    public static final double kP = 0.1;
-
     public static final double kGearRatio = 5.0;
-    public static final double kRollerDiameter = 2.0; // inches
+    public static final double kRollerDiameter = 4.0; // inches
+
+    // By default, the encoder in position mode measures rotations at the motor
+    // Convert to inches at the wheel
     public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
+
+    // By default, the encoder in velocity mode measures RPM at the drive motor
+    // Convert to inches per `second at the wheel
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final LinearVelocity kIntakeSpeed = FeetPerSecond.of(5.0);
-    public static final LinearVelocity kOuttakeSpeed = kIntakeSpeed.unaryMinus();
+    public static final Voltage kIntakeVoltage = Volts.of(5.0);
+    public static final Voltage kOuttakeVoltage = kIntakeVoltage.unaryMinus();
   }
 
   public static final class AlgaeWristConstants {
@@ -150,7 +161,7 @@ public class ElevatorConstants {
     public static final double kPositionConversionFactor = 360.0;
     public static final double kPositionOffset = 322.0 / kPositionConversionFactor;
 
-    public static final double kP = 0.1;
+    public static final double kP = 1.0;
     private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(30.0);
     public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
     public static final AngularAcceleration kMaxAcceleration = kMaxVelocity.div(kTimeToMaxVelocity);

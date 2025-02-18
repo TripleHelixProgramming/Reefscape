@@ -1,16 +1,14 @@
 package frc.robot.elevator;
 
-import static edu.wpi.first.units.Units.FeetPerSecond;
-
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,7 +28,6 @@ public class AlgaeRoller extends SubsystemBase {
   private final SparkMaxConfig followerConfig = new SparkMaxConfig();
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
-  private final SparkClosedLoopController controller = leaderMotor.getClosedLoopController();
   private final DigitalInput algaeSensor = new DigitalInput(AlgaeRollerConstants.kSensorPort);
 
   public AlgaeRoller() {
@@ -41,19 +38,13 @@ public class AlgaeRoller extends SubsystemBase {
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
-    config.closedLoop
-        .p(AlgaeRollerConstants.kP)
-        .i(0.0)
-        .d(0.0)
-        .outputRange(-1, 1);
-
     config.encoder
         .velocityConversionFactor(AlgaeRollerConstants.kVelocityConversionFactor)
         .positionConversionFactor(AlgaeRollerConstants.kPositionConversionFactor);
 
     followerConfig
         .apply(config)
-        .follow(leaderMotor);
+        .follow(leaderMotor, true);
     // spotless:on
 
     leaderMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -71,8 +62,8 @@ public class AlgaeRoller extends SubsystemBase {
     SmartDashboard.putBoolean("Algae Sensor", algaeSensor.get());
   }
 
-  private void setVelocity(double velocity) {
-    controller.setReference(velocity, ControlType.kVelocity);
+  private void setVoltage(Voltage voltage) {
+    leaderMotor.setVoltage(voltage);
   }
 
   public Trigger hasAlage = new Trigger(() -> algaeSensor.get());
@@ -82,12 +73,10 @@ public class AlgaeRoller extends SubsystemBase {
   }
 
   public Command createIntakeCommand() {
-    return this.startEnd(
-        () -> setVelocity(AlgaeRollerConstants.kIntakeSpeed.in(FeetPerSecond)), () -> {});
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kIntakeVoltage));
   }
 
   public Command createOuttakeCommand() {
-    return this.startEnd(
-        () -> setVelocity(AlgaeRollerConstants.kOuttakeSpeed.in(FeetPerSecond)), () -> {});
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeVoltage));
   }
 }

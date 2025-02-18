@@ -37,9 +37,13 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
+import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
+import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
+import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
+import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.vision.Vision;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,6 +60,9 @@ public class Robot extends TimedRobot {
   private final Lifter lifter = elevator.getLifter();
   private final CoralRoller coralRoller = elevator.getCoralRoller();
   private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
+  private final CoralWrist coralWrist = elevator.getCoralWrist();
+  private final AlgaeWrist algaeWrist = elevator.getAlgaeWrist();
+
   private final Drivetrain swerve =
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
   private final Climber climber = new Climber();
@@ -209,6 +216,22 @@ public class Robot extends TimedRobot {
 
     Trigger algaeMode = operator.leftBumper();
 
+    // Test coral wrist motion
+    // operator.back().whileTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+    // operator.start().whileTrue(coralWrist.createSetAngleCommand(CoralWristState.L4));
+
+    // Test algae wrist motion
+    // operator.back().whileTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor));
+    // operator.start().whileTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
+
+    // Test algae roller motion
+    operator.back().whileTrue(algaeRoller.createIntakeCommand());
+    operator.start().whileTrue(algaeRoller.createOuttakeCommand());
+
+    // Test coral roller motion
+    // operator.back().whileTrue(coralRoller.createIntakeCommand());
+    // operator.start().whileTrue(coralRoller.createOuttakeCommand());
+
     // Configure to either score coral on L1 or score algae in processor
     operator.a().whileTrue(new ConditionalCommand(
         elevator.algaeProcessorPositionCG(), elevator.coralL1PositionCG(), algaeMode));
@@ -226,8 +249,8 @@ public class Robot extends TimedRobot {
         elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
 
     // Configure to either intake coral from source or intake algae from floor
-    operator.start().whileTrue(new ConditionalCommand(
-        elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
+    // operator.start().whileTrue(new ConditionalCommand(
+    //     elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     // Intake with coral gripper
     operator.rightBumper().and(lifter.atIntakingHeight)

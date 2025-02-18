@@ -39,7 +39,7 @@ public class CoralWrist extends SubsystemBase {
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
-        .inverted(false);
+        .inverted(true);
     
     config.absoluteEncoder
         .positionConversionFactor(CoralWristConstants.kPositionConversionFactor)
