@@ -63,7 +63,7 @@ public class Robot extends TimedRobot {
   private final Vision vision = new Vision();
   private final CoralRoller coralRoller = new CoralRoller();
   private final CoralWrist coralWrist = new CoralWrist();
-  private final AlgaeRoller algaeIntake = new AlgaeRoller();
+  private final AlgaeRoller algaeRoller = new AlgaeRoller();
   private final AlgaeWrist algaeWrist = new AlgaeWrist();
   private final AutoCGs autoCG = new AutoCGs(elevator, coralWrist, algaeWrist);
 
@@ -100,6 +100,8 @@ public class Robot extends TimedRobot {
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
     climber.setDefaultCommand(climber.createDefaultClimberCommand());
     elevator.setDefaultCommand(elevator.createJoystickControlCommand(operator.getHID()));
+    algaeRoller.setDefaultCommand(algaeRoller.createStopCommand());
+    coralRoller.setDefaultCommand(coralRoller.createStopCommand());
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -211,7 +213,7 @@ public class Robot extends TimedRobot {
     // Outtake grippers
     driver.HIn()
         .onTrue(coralRoller.createSetIntakeVelocityCommand(-5)
-        .alongWith(algaeIntake.createSetIntakeVelocityCommand(-5)));
+        .alongWith(algaeRoller.createSetIntakeVelocityCommand(-5)));
 
   }
 
@@ -241,7 +243,7 @@ public class Robot extends TimedRobot {
     
     // Intake with algae gripper
     operator.rightBumper()
-        .whileTrue(algaeIntake.createSetIntakeVelocityCommand(5)
+        .whileTrue(algaeRoller.createSetIntakeVelocityCommand(5)
         .onlyIf(() -> elevator.getTargetState() != ElevatorState.Intake));
 
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
@@ -264,17 +266,17 @@ public class Robot extends TimedRobot {
         new AutoOption(
             Alliance.Red,
             1,
-            new RedL4AlgaeAuto(swerve, elevator, coralRoller, algaeIntake, autoCG)));
+            new RedL4AlgaeAuto(swerve, elevator, coralRoller, algaeRoller, autoCG)));
     autoSelector.addAuto(
         new AutoOption(
             Alliance.Blue,
             1,
-            new BlueL4AlgaeAuto(swerve, elevator, coralRoller, algaeIntake, autoCG)));
+            new BlueL4AlgaeAuto(swerve, elevator, coralRoller, algaeRoller, autoCG)));
     autoSelector.addAuto(
         new AutoOption(
             Alliance.Blue,
             2,
-            new BlueNoProcess3PieceAuto(swerve, elevator, coralRoller, algaeIntake, autoCG)));
+            new BlueNoProcess3PieceAuto(swerve, elevator, coralRoller, algaeRoller, autoCG)));
     autoSelector.addAuto(new AutoOption(Alliance.Blue, 3, new ExampleAuto(swerve)));
   }
 

@@ -76,7 +76,7 @@ public class AlgaeRoller extends SubsystemBase {
 
   public Trigger hasCoral = new Trigger(() -> algaeSensor.get());
 
-  public Command createStopIntakeCommand() {
+  public Command createStopCommand() {
     return this.runOnce(() -> setIntakeVelocity(0));
   }
 

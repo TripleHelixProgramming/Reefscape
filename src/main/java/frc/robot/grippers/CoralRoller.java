@@ -70,7 +70,7 @@ public class CoralRoller extends SubsystemBase {
     return () -> (coralSensor.get() == true);
   }
 
-  public Command createStopIntakeCommand() {
+  public Command createStopCommand() {
     return this.runOnce(() -> setIntakeVelocity(0));
   }
 
