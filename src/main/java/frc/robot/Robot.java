@@ -52,7 +52,6 @@ public class Robot extends TimedRobot {
       new AutoSelector(
           AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
 
-  // private final Lifter elevator = new Lifter();
   private final Elevator elevator = new Elevator();
   private final Lifter lifter = elevator.getLifter();
   private final CoralRoller coralRoller = elevator.getCoralRoller();
