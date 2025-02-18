@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceSelector;
@@ -24,14 +23,13 @@ import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
-import frc.robot.Constants.AlgaeIntakeConstants.AlgaeIntakeStates;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.Constants.CoralIntakeConstants.CoralIntakeStates;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
+import frc.robot.auto.AutoCGs;
 import frc.robot.auto.BlueL4AlgaeAuto;
 import frc.robot.auto.BlueNoProcess3PieceAuto;
 import frc.robot.auto.ExampleAuto;
@@ -54,6 +52,7 @@ public class Robot extends TimedRobot {
   private final AutoSelector autoSelector =
       new AutoSelector(
           AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
+
   private final Elevator elevator = new Elevator();
   private final Drivetrain swerve =
       new Drivetrain(allianceSelector::fieldRotated, elevator::getProportionOfMaxHeight);
@@ -62,6 +61,8 @@ public class Robot extends TimedRobot {
   private final Vision vision = new Vision();
   private final CoralIntake coralIntake = new CoralIntake();
   private final AlgaeIntake algaeIntake = new AlgaeIntake();
+  private final AutoCGs autoCG = new AutoCGs(elevator, coralIntake, algaeIntake);
+
   private CommandZorroController driver;
   private CommandXboxController operator;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
@@ -215,19 +216,19 @@ public class Robot extends TimedRobot {
     Trigger algaeMode = operator.leftBumper();
 
     // set elevator to either L4 or barge position
-    operator.y().whileTrue(new ConditionalCommand(algaeBargePositionCommand, coralL4PositionCommand, algaeMode));
+    operator.y().whileTrue(new ConditionalCommand(autoCG.algaeBargePositionCommand(), autoCG.coralL4PositionCommand(), algaeMode));
 
     // set elevator to either L3 or algaeL3 position
-    operator.a().whileTrue(new ConditionalCommand(algaeProcessorPositionCommand, coralL1PositionCommand, algaeMode));
+    operator.a().whileTrue(new ConditionalCommand(autoCG.algaeProcessorPositionCommand(), autoCG.coralL1PositionCommand(), algaeMode));
 
     // set elevator to either L2 or algaeL2 position
-    operator.b().whileTrue(new ConditionalCommand(algaeL2PositionCommand, coralL2PositionCommand, algaeMode));
+    operator.b().whileTrue(new ConditionalCommand(autoCG.algaeL2PositionCommand(), autoCG.coralL2PositionCommand(), algaeMode));
 
     // set elevator to either L1 or processor position
-    operator.x().whileTrue(new ConditionalCommand(algaeL3PositionCommand, coralL3PositionCommand, algaeMode));
+    operator.x().whileTrue(new ConditionalCommand(autoCG.algaeL3PositionCommand(), autoCG.coralL3PositionCommand(), algaeMode));
 
     // set elevator to either FloorIntake or SourceIntake position
-    operator.start().whileTrue(new ConditionalCommand(algaeFloorIntakePositionCommand, coralIntakePositionCommand, algaeMode));
+    operator.start().whileTrue(new ConditionalCommand(autoCG.algaeFloorIntakePositionCommand(), autoCG.coralIntakePositionCommand(), algaeMode));
 
     // Intake with coral gripper
     operator.rightBumper()
@@ -261,7 +262,11 @@ public class Robot extends TimedRobot {
     autoSelector.addAuto(
         new AutoOption(
             Alliance.Blue, 1, new BlueL4AlgaeAuto(swerve, elevator, coralIntake, algaeIntake)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevator, coralIntake, algaeIntake)));
+    autoSelector.addAuto(
+        new AutoOption(
+            Alliance.Blue,
+            2,
+            new BlueNoProcess3PieceAuto(swerve, elevator, coralIntake, algaeIntake)));
     autoSelector.addAuto(new AutoOption(Alliance.Blue, 3, new ExampleAuto(swerve)));
   }
 
@@ -295,64 +300,4 @@ public class Robot extends TimedRobot {
               getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
             });
   }
-
-  private ParallelCommandGroup coralL4PositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.L4),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L4.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
-
-  private ParallelCommandGroup coralL3PositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.L3),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L3.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
-
-  private ParallelCommandGroup coralL2PositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.L2),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L2.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
-
-  private ParallelCommandGroup coralL1PositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.L1),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.L1.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
-
-  private ParallelCommandGroup coralIntakePositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.Intake),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.Intake.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.CoralMode.angle));
-
-  private ParallelCommandGroup algaeBargePositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.Max),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Barge.angle));
-
-  private ParallelCommandGroup algaeL3PositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.AlgaeL3),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L3.angle));
-
-  private ParallelCommandGroup algaeL2PositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.AlgaeL2),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.L2.angle));
-
-  private ParallelCommandGroup algaeProcessorPositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.Processor),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Processor.angle));
-
-  private ParallelCommandGroup algaeFloorIntakePositionCommand =
-      new ParallelCommandGroup(
-          elevator.createSetPositionCommand(ElevatorState.Floor),
-          coralIntake.createSetRotationPositionCommand(CoralIntakeStates.AlgaeMode.angle),
-          algaeIntake.createSetRotationPositionCommand(AlgaeIntakeStates.Floor.angle));
 }

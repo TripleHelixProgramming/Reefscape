@@ -249,13 +249,13 @@ public final class Constants {
     public static final int kCoralSensorPort = 3;
 
     public static final double kCoralWristBeltReduction = 42.0 / 24.0;
-    public static final double kCoralWristTotalGearRatio =
-        5.0 * kCoralWristBeltReduction;
+    public static final double kCoralWristTotalGearRatio = 5.0 * kCoralWristBeltReduction;
     // By default, the REV Through Bore encoder in absolute mode measures rotations
     // Convert to degrees
     public static final double kCoralWristPositionConversionFactor =
         360.0 / kCoralWristBeltReduction;
-    public static final double kCoralWristPositionOffset = 0.0 / kCoralWristPositionConversionFactor;
+    public static final double kCoralWristPositionOffset =
+        0.0 / kCoralWristPositionConversionFactor;
 
     public static enum CoralIntakeStates {
       L1(90),
@@ -294,7 +294,8 @@ public final class Constants {
     // By default, the REV Through Bore encoder in absolute mode measures rotations
     // Convert to degrees
     public static final double kAlgaeWristPositionConversionFactor = 360.0;
-    public static final double kAlgaeWristPositionOffset = 322.0 / kAlgaeWristPositionConversionFactor;
+    public static final double kAlgaeWristPositionOffset =
+        322.0 / kAlgaeWristPositionConversionFactor;
 
     public static enum AlgaeIntakeStates {
       Floor(80),

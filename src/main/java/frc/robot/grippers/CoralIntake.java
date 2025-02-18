@@ -1,7 +1,5 @@
 package frc.robot.grippers;
 
-import java.util.function.BooleanSupplier;
-
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -20,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CoralIntakeConstants;
 import frc.robot.Constants.RobotConstants;
+import java.util.function.BooleanSupplier;
 
 public class CoralIntake extends SubsystemBase {
 

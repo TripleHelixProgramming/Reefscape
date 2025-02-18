@@ -66,7 +66,7 @@ public class AutoSelector {
     int sum = 0;
     for (int i = 0; i < switchPositions.length; i++) {
       if (!switchPositions[i].get()) {
-        sum += 2^i;
+        sum += 2 ^ i;
       }
     }
     return sum;
