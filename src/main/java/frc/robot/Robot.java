@@ -29,7 +29,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
-import frc.robot.auto.AutoCGs;
 import frc.robot.auto.BlueL4AlgaeAuto;
 import frc.robot.auto.BlueNoProcess3PieceAuto;
 import frc.robot.auto.ExampleAuto;
@@ -38,11 +37,12 @@ import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
+import frc.robot.elevator.AlgaeRoller;
+import frc.robot.elevator.AlgaeWrist;
+import frc.robot.elevator.ElevatorCGs;
+import frc.robot.elevator.CoralRoller;
+import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
-import frc.robot.grippers.AlgaeRoller;
-import frc.robot.grippers.AlgaeWrist;
-import frc.robot.grippers.CoralRoller;
-import frc.robot.grippers.CoralWrist;
 import frc.robot.vision.Vision;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,8 +65,8 @@ public class Robot extends TimedRobot {
   private final CoralWrist coralWrist = new CoralWrist();
   private final AlgaeRoller algaeRoller = new AlgaeRoller();
   private final AlgaeWrist algaeWrist = new AlgaeWrist();
-  private final AutoCGs autoCG =
-      new AutoCGs(elevator, coralWrist, coralRoller, algaeWrist, algaeRoller);
+  private final ElevatorCGs autoCG =
+      new ElevatorCGs(elevator, coralWrist, coralRoller, algaeWrist, algaeRoller);
 
   private CommandZorroController driver;
   private CommandXboxController operator;

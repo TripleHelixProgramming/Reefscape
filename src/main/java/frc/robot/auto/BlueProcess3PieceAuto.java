@@ -7,9 +7,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.drivetrain.Drivetrain;
+import frc.robot.elevator.AlgaeRoller;
+import frc.robot.elevator.ElevatorCGs;
+import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
-import frc.robot.grippers.AlgaeRoller;
-import frc.robot.grippers.CoralRoller;
+
 import java.util.Optional;
 
 public class BlueProcess3PieceAuto extends AutoMode {
@@ -17,14 +19,14 @@ public class BlueProcess3PieceAuto extends AutoMode {
   Elevator elevator;
   CoralRoller coralRoller;
   AlgaeRoller algaeIntake;
-  AutoCGs autoCG;
+  ElevatorCGs autoCG;
 
   public BlueProcess3PieceAuto(
       Drivetrain drivetrain,
       Elevator elevatorsubsystem,
       CoralRoller coralRollerSubsystem,
       AlgaeRoller algaeIntakeSubsystem,
-      AutoCGs autoCommandGroups) {
+      ElevatorCGs autoCommandGroups) {
     super(drivetrain);
     elevator = elevatorsubsystem;
     coralRoller = coralRollerSubsystem;

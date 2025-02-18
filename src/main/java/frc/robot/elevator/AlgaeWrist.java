@@ -1,4 +1,4 @@
-package frc.robot.grippers;
+package frc.robot.elevator;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;

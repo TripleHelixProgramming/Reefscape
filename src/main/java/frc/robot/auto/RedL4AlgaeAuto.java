@@ -9,9 +9,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
 import frc.robot.drivetrain.Drivetrain;
+import frc.robot.elevator.AlgaeRoller;
+import frc.robot.elevator.ElevatorCGs;
+import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
-import frc.robot.grippers.AlgaeRoller;
-import frc.robot.grippers.CoralRoller;
+
 import java.util.Optional;
 
 public class RedL4AlgaeAuto extends AutoMode {
@@ -19,14 +21,14 @@ public class RedL4AlgaeAuto extends AutoMode {
   Elevator elevator;
   CoralRoller coralRoller;
   AlgaeRoller algaeIntake;
-  AutoCGs autoCG;
+  ElevatorCGs autoCG;
 
   public RedL4AlgaeAuto(
       Drivetrain drivetrain,
       Elevator elevatorsubsystem,
       CoralRoller coralRollerSubsystem,
       AlgaeRoller algaeIntakeSubsystem,
-      AutoCGs autoCommandGroups) {
+      ElevatorCGs autoCommandGroups) {
     super(drivetrain);
     elevator = elevatorsubsystem;
     coralRoller = coralRollerSubsystem;

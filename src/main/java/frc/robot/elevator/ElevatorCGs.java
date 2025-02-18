@@ -1,16 +1,11 @@
-package frc.robot.auto;
+package frc.robot.elevator;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.Constants.CoralWristConstants.CoralWristState;
 import frc.robot.Constants.ElevatorConstants.ElevatorState;
-import frc.robot.elevator.Elevator;
-import frc.robot.grippers.AlgaeRoller;
-import frc.robot.grippers.AlgaeWrist;
-import frc.robot.grippers.CoralRoller;
-import frc.robot.grippers.CoralWrist;
 
-public class AutoCGs {
+public class ElevatorCGs {
 
   Elevator elevator;
   CoralWrist coralWrist;
@@ -18,7 +13,7 @@ public class AutoCGs {
   AlgaeWrist algaeWrist;
   AlgaeRoller algaeRoller;
 
-  public AutoCGs(
+  public ElevatorCGs(
       Elevator elevatorsubsystem,
       CoralWrist coralWristSubsystem,
       CoralRoller coralRollerSubsystem,
