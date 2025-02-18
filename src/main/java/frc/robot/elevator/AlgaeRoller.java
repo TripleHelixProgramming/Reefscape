@@ -1,5 +1,7 @@
 package frc.robot.elevator;
 
+import static edu.wpi.first.units.Units.FeetPerSecond;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -78,10 +80,12 @@ public class AlgaeRoller extends SubsystemBase {
   }
 
   public Command createIntakeCommand() {
-    return this.startEnd(() -> setVelocity(AlgaeRollerConstants.kIntakeSpeed), () -> {});
+    return this.startEnd(
+        () -> setVelocity(AlgaeRollerConstants.kIntakeSpeed.in(FeetPerSecond)), () -> {});
   }
 
   public Command createOuttakeCommand() {
-    return this.startEnd(() -> setVelocity(AlgaeRollerConstants.kOuttakeSpeed), () -> {});
+    return this.startEnd(
+        () -> setVelocity(AlgaeRollerConstants.kOuttakeSpeed.in(FeetPerSecond)), () -> {});
   }
 }

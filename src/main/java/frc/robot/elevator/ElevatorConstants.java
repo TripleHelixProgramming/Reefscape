@@ -3,6 +3,7 @@ package frc.robot.elevator;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -88,8 +89,8 @@ public class ElevatorConstants {
     public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kIntakeSpeed = 5.0;
-    public static final double kOuttakeSpeed = -kIntakeSpeed;
+    public static final LinearVelocity kIntakeSpeed = FeetPerSecond.of(5.0);
+    public static final LinearVelocity kOuttakeSpeed = kIntakeSpeed.unaryMinus();
   }
 
   public static final class CoralWristConstants {
@@ -143,8 +144,8 @@ public class ElevatorConstants {
     public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kIntakeSpeed = 5.0;
-    public static final double kOuttakeSpeed = -kIntakeSpeed;
+    public static final LinearVelocity kIntakeSpeed = FeetPerSecond.of(5.0);
+    public static final LinearVelocity kOuttakeSpeed = kIntakeSpeed.unaryMinus();
   }
 
   public static final class AlgaeWristConstants {
