@@ -40,7 +40,7 @@ public class AlgaeRoller extends SubsystemBase {
         .inverted(false);
 
     config.closedLoop
-        .p(AlgaeRollerConstants.kVelocityP)
+        .p(AlgaeRollerConstants.kP)
         .i(0.0)
         .d(0.0)
         .outputRange(-1, 1);

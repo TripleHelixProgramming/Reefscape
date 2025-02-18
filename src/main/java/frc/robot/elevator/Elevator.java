@@ -144,13 +144,6 @@ public class Elevator extends SubsystemBase {
         this);
   }
 
-  public Command createStopCommand() {
-    return this.runOnce(
-        () -> {
-          leaderMotor.set(0.0);
-        });
-  }
-
   private Boolean isInRange(double height) {
     if (height < ElevatorState.Min.height) return false;
     if (height > ElevatorState.Max.height) return false;

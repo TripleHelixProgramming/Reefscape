@@ -170,6 +170,7 @@ public class Robot extends TimedRobot {
     climber.resetEncoder();
     climber.lockRatchet();
     elevator.resetPositionController();
+    coralWrist.resetPositionController();
   }
 
   @Override

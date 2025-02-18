@@ -37,7 +37,7 @@ public class AlgaeWrist extends SubsystemBase {
         .inverted(true);
     
     config.closedLoop
-        .p(AlgaeWristConstants.kPositionP)
+        .p(AlgaeWristConstants.kP)
         .i(0.0)
         .d(0.0)
         .outputRange(-1, 1)

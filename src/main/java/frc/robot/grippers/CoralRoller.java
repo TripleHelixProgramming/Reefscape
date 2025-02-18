@@ -36,7 +36,7 @@ public class CoralRoller extends SubsystemBase {
         .inverted(false);
 
     config.closedLoop
-        .p(CoralRollerConstants.kVelocityP)
+        .p(CoralRollerConstants.kP)
         .i(0.0)
         .d(0.0)
         .outputRange(-1, 1);
