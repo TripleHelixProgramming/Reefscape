@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.Elevator;
-import frc.robot.grippers.AlgaeIntake;
+import frc.robot.grippers.AlgaeRoller;
 import frc.robot.grippers.CoralRoller;
 import java.util.Optional;
 
@@ -16,14 +16,14 @@ public class RedNoProcess3PieceAuto extends AutoMode {
 
   Elevator elevator;
   CoralRoller coralRoller;
-  AlgaeIntake algaeIntake;
+  AlgaeRoller algaeIntake;
   AutoCGs autoCG;
 
   public RedNoProcess3PieceAuto(
       Drivetrain drivetrain,
       Elevator elevatorsubsystem,
       CoralRoller coralRollerSubsystem,
-      AlgaeIntake algaeIntakeSubsystem,
+      AlgaeRoller algaeIntakeSubsystem,
       AutoCGs autoCommandGroups) {
     super(drivetrain);
     elevator = elevatorsubsystem;

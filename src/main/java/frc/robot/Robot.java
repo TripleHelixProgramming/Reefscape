@@ -39,7 +39,8 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.Elevator;
-import frc.robot.grippers.AlgaeIntake;
+import frc.robot.grippers.AlgaeRoller;
+import frc.robot.grippers.AlgaeWrist;
 import frc.robot.grippers.CoralRoller;
 import frc.robot.grippers.CoralWrist;
 import frc.robot.vision.Vision;
@@ -62,8 +63,9 @@ public class Robot extends TimedRobot {
   private final Vision vision = new Vision();
   private final CoralRoller coralRoller = new CoralRoller();
   private final CoralWrist coralWrist = new CoralWrist();
-  private final AlgaeIntake algaeIntake = new AlgaeIntake();
-  private final AutoCGs autoCG = new AutoCGs(elevator, coralWrist, algaeIntake);
+  private final AlgaeRoller algaeIntake = new AlgaeRoller();
+  private final AlgaeWrist algaeWrist = new AlgaeWrist();
+  private final AutoCGs autoCG = new AutoCGs(elevator, coralWrist, algaeWrist);
 
   private CommandZorroController driver;
   private CommandXboxController operator;

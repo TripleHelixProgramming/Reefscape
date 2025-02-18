@@ -1,14 +1,12 @@
 package frc.robot.grippers;
 
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -19,28 +17,21 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AlgaeIntakeConstants;
 import frc.robot.Constants.RobotConstants;
 
-public class AlgaeIntake extends SubsystemBase {
+public class AlgaeRoller extends SubsystemBase {
 
   private final SparkMax rollerLeaderMotor =
       new SparkMax(AlgaeIntakeConstants.kRollerLeaderMotorPort, MotorType.kBrushless);
   private final SparkMax rollerFollowerMotor =
       new SparkMax(AlgaeIntakeConstants.kRollerFollowerMotorPort, MotorType.kBrushless);
-  private final SparkMax wristMotor =
-      new SparkMax(AlgaeIntakeConstants.kWristMotorPort, MotorType.kBrushless);
 
   private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
   private final SparkMaxConfig rollerFollowerConfig = new SparkMaxConfig();
-  private final SparkMaxConfig wristConfig = new SparkMaxConfig();
 
   private final RelativeEncoder rollerEncoder = rollerLeaderMotor.getEncoder();
-  private final SparkAbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
-
   private final SparkClosedLoopController rollerController = rollerLeaderMotor.getClosedLoopController();
-  private final SparkClosedLoopController wristController = wristMotor.getClosedLoopController();
-
   private final DigitalInput algaeSensor = new DigitalInput(AlgaeIntakeConstants.kAlgaeSensorPort);
 
-  public AlgaeIntake() {
+  public AlgaeRoller() {
     // spotless:off
     rollerConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
@@ -61,52 +52,22 @@ public class AlgaeIntake extends SubsystemBase {
     rollerFollowerConfig
         .apply(rollerConfig)
         .follow(rollerLeaderMotor);
-
-    wristConfig
-        .voltageCompensation(RobotConstants.kNominalVoltage)
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
-        .inverted(false);
-    
-    wristConfig.absoluteEncoder
-        .positionConversionFactor(AlgaeIntakeConstants.kAlgaeWristPositionConversionFactor)
-        .zeroOffset(AlgaeIntakeConstants.kAlgaeWristPositionOffset)
-        .inverted(true);
-    
-    wristConfig.closedLoop
-        .p(AlgaeIntakeConstants.kPositionP)
-        .i(0.0)
-        .d(0.0)
-        .outputRange(-1, 1)
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     // spotless:on
 
     rollerLeaderMotor.configure(
         rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     rollerFollowerMotor.configure(
         rollerFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    wristMotor.configure(
-        wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Algae Rotation Position", wristEncoder.getPosition());
     SmartDashboard.putNumber("Algae Intake Velocity", rollerEncoder.getVelocity());
-
     SmartDashboard.putBoolean("Algae Sensor", algaeSensor.get());
   }
 
   private void resetIntakeEncoder() {
     rollerEncoder.setPosition(0.0);
-  }
-
-  private void getRotationPosition() {
-    wristEncoder.getPosition();
-  }
-
-  private void setRotationPosition(double position) {
-    wristController.setReference(position, ControlType.kPosition);
   }
 
   private void setIntakeVelocity(double velocity) {
@@ -117,10 +78,6 @@ public class AlgaeIntake extends SubsystemBase {
 
   public Command createStopIntakeCommand() {
     return this.runOnce(() -> setIntakeVelocity(0));
-  }
-
-  public Command createSetRotationPositionCommand(double position) {
-    return this.runOnce(() -> setRotationPosition(position));
   }
 
   public Command createSetIntakeVelocityCommand(double velocity) {
