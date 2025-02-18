@@ -59,7 +59,8 @@ public class CoralWrist extends SubsystemBase {
     // controller.setIZone();
     // controller.setIntegratorRange();
 
-    setDefaultCommand(createRemainAtCurrentAngleCommand());
+    // setDefaultCommand(createRemainAtCurrentAngleCommand());
+    setDefaultCommand(this.startEnd(() -> motor.set(0.0), () -> {}));
   }
 
   @Override

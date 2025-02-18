@@ -229,8 +229,8 @@ public class Robot extends TimedRobot {
     // operator.start().whileTrue(algaeRoller.createOuttakeCommand());
 
     // Test coral roller motion
-    operator.back().whileTrue(coralRoller.createIntakeCommand());
-    operator.start().whileTrue(coralRoller.createOuttakeCommand());
+    // operator.back().whileTrue(coralRoller.createIntakeCommand());
+    // operator.start().whileTrue(coralRoller.createOuttakeCommand());
 
     // Configure to either score coral on L1 or score algae in processor
     operator.a().whileTrue(new ConditionalCommand(
