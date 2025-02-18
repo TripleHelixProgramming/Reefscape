@@ -46,7 +46,7 @@ public class BlueNoProcess3PieceAuto extends AutoMode {
 
     blueNoProcess3PieceRoutine
         .active()
-        .onTrue(Commands.parallel(blueNoProcessToL4I.cmd(), elevator.coralL4PositionCommand()));
+        .onTrue(Commands.parallel(blueNoProcessToL4I.cmd(), elevator.coralL4PositionCG()));
 
     blueNoProcessToL4I
         .done()
@@ -56,14 +56,14 @@ public class BlueNoProcess3PieceAuto extends AutoMode {
                 coralRoller.createOuttakeCommand(),
                 new WaitCommand(0.2),
                 coralRoller.createStopCommand(),
-                new ParallelCommandGroup(blueL4IToSource.cmd(), elevator.coralIntakeCommand())));
+                new ParallelCommandGroup(blueL4IToSource.cmd(), elevator.coralIntakeCG())));
 
     blueL4IToSource
         .done()
         .onTrue(
             Commands.sequence(
                 new WaitCommand(0.2),
-                Commands.parallel(blueSourceToL4L.cmd(), elevator.coralL4PositionCommand())));
+                Commands.parallel(blueSourceToL4L.cmd(), elevator.coralL4PositionCG())));
 
     blueSourceToL4L
         .done()
@@ -73,14 +73,14 @@ public class BlueNoProcess3PieceAuto extends AutoMode {
                 coralRoller.createOuttakeCommand(),
                 new WaitCommand(0.2),
                 coralRoller.createStopCommand(),
-                Commands.parallel(elevator.coralIntakeCommand(), blueL4LToSource.cmd())));
+                Commands.parallel(elevator.coralIntakeCG(), blueL4LToSource.cmd())));
 
     blueL4LToSource
         .done()
         .onTrue(
             Commands.sequence(
                 new WaitCommand(0.2),
-                Commands.parallel(elevator.coralL4PositionCommand(), blueSourceToL4K.cmd())));
+                Commands.parallel(elevator.coralL4PositionCG(), blueSourceToL4K.cmd())));
 
     blueSourceToL4K
         .done()

@@ -46,7 +46,7 @@ public class RedProcess3PieceAuto extends AutoMode {
 
     redProcess3PieceRoutine
         .active()
-        .onTrue(Commands.parallel(redCenterToL4F.cmd(), elevator.coralL4PositionCommand()));
+        .onTrue(Commands.parallel(redCenterToL4F.cmd(), elevator.coralL4PositionCG()));
 
     redCenterToL4F
         .done()
@@ -56,14 +56,14 @@ public class RedProcess3PieceAuto extends AutoMode {
                 coralRoller.createOuttakeCommand(),
                 new WaitCommand(0.2),
                 coralRoller.createStopCommand(),
-                new ParallelCommandGroup(redL4FToSource.cmd(), elevator.coralIntakeCommand())));
+                new ParallelCommandGroup(redL4FToSource.cmd(), elevator.coralIntakeCG())));
 
     redL4FToSource
         .done()
         .onTrue(
             Commands.sequence(
                 new WaitCommand(0.2),
-                Commands.parallel(redSourceToL4D.cmd(), elevator.coralL4PositionCommand())));
+                Commands.parallel(redSourceToL4D.cmd(), elevator.coralL4PositionCG())));
 
     redSourceToL4D
         .done()
@@ -73,14 +73,14 @@ public class RedProcess3PieceAuto extends AutoMode {
                 coralRoller.createOuttakeCommand(),
                 new WaitCommand(0.2),
                 coralRoller.createStopCommand(),
-                Commands.parallel(elevator.coralIntakeCommand(), redL4DToSource.cmd())));
+                Commands.parallel(elevator.coralIntakeCG(), redL4DToSource.cmd())));
 
     redL4DToSource
         .done()
         .onTrue(
             Commands.sequence(
                 new WaitCommand(0.2),
-                Commands.parallel(elevator.coralL4PositionCommand(), redSourceToL4C.cmd())));
+                Commands.parallel(elevator.coralL4PositionCG(), redSourceToL4C.cmd())));
 
     redSourceToL4C
         .done()

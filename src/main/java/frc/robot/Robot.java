@@ -213,19 +213,19 @@ public class Robot extends TimedRobot {
     Trigger algaeMode = operator.leftBumper();
 
     // Configure to either score coral on L1 or score algae in processor
-    operator.a().whileTrue(new ConditionalCommand(elevator.algaeProcessorPositionCommand(), elevator.coralL1PositionCommand(), algaeMode));
+    operator.a().whileTrue(new ConditionalCommand(elevator.algaeProcessorPositionCG(), elevator.coralL1PositionCG(), algaeMode));
 
     // Configure to either score coral on L2 or intake algae from L2
-    operator.b().whileTrue(new ConditionalCommand(elevator.algaeL2IntakeCommand(), elevator.coralL2PositionCommand(), algaeMode));
+    operator.b().whileTrue(new ConditionalCommand(elevator.algaeL2IntakeCG(), elevator.coralL2PositionCG(), algaeMode));
 
     // Configure to either score coral on L3 or intake algae from L3
-    operator.x().whileTrue(new ConditionalCommand(elevator.algaeL3IntakeCommand(), elevator.coralL3PositionCommand(), algaeMode));
+    operator.x().whileTrue(new ConditionalCommand(elevator.algaeL3IntakeCG(), elevator.coralL3PositionCG(), algaeMode));
 
     // Configure to either score coral on L4 or score algae in barge
-    operator.y().whileTrue(new ConditionalCommand(elevator.algaeBargePositionCommand(), elevator.coralL4PositionCommand(), algaeMode));
+    operator.y().whileTrue(new ConditionalCommand(elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
 
     // Configure to either intake coral from source or intake algae from floor
-    operator.start().whileTrue(new ConditionalCommand(elevator.algaeFloorIntakeCommand(), elevator.coralIntakeCommand(), algaeMode));
+    operator.start().whileTrue(new ConditionalCommand(elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     // Intake with coral gripper
     operator.rightBumper()

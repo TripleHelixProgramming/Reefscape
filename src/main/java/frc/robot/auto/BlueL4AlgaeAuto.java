@@ -52,7 +52,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
 
     blueL4AlgAutoRoutine
         .active()
-        .onTrue(Commands.parallel(blueCenterToL4G.cmd(), elevator.coralL4PositionCommand()));
+        .onTrue(Commands.parallel(blueCenterToL4G.cmd(), elevator.coralL4PositionCG()));
 
     blueCenterToL4G
         .done()
@@ -67,10 +67,10 @@ public class BlueL4AlgaeAuto extends AutoMode {
         .done()
         .onTrue(
             Commands.sequence(
-                elevator.algaeL3IntakeCommand(),
+                elevator.algaeL3IntakeCG(),
                 new WaitCommand(0.2),
                 new ParallelCommandGroup(
-                    blueAlgaeToProcess.cmd(), elevator.algaeProcessorPositionCommand())));
+                    blueAlgaeToProcess.cmd(), elevator.algaeProcessorPositionCG())));
 
     blueAlgaeToProcess
         .done()
