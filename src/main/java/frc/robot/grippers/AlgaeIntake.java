@@ -32,11 +32,11 @@ public class AlgaeIntake extends SubsystemBase {
   private final SparkMaxConfig rollerFollowerConfig = new SparkMaxConfig();
   private final SparkMaxConfig wristConfig = new SparkMaxConfig();
 
-  private final RelativeEncoder rollerEncoder;
-  private final SparkAbsoluteEncoder wristEncoder;
+  private final RelativeEncoder rollerEncoder = rollerLeaderMotor.getEncoder();
+  private final SparkAbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
 
-  private final SparkClosedLoopController rollerController;
-  private final SparkClosedLoopController wristController;
+  private final SparkClosedLoopController rollerController = rollerLeaderMotor.getClosedLoopController();
+  private final SparkClosedLoopController wristController = wristMotor.getClosedLoopController();
 
   private final DigitalInput algaeSensor = new DigitalInput(AlgaeIntakeConstants.kAlgaeSensorPort);
 
@@ -87,12 +87,6 @@ public class AlgaeIntake extends SubsystemBase {
         rollerFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     wristMotor.configure(
         wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-    rollerEncoder = rollerLeaderMotor.getEncoder();
-    wristEncoder = wristMotor.getAbsoluteEncoder();
-
-    rollerController = rollerLeaderMotor.getClosedLoopController();
-    wristController = wristMotor.getClosedLoopController();
   }
 
   @Override

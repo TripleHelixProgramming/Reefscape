@@ -30,11 +30,11 @@ public class CoralIntake extends SubsystemBase {
   private final SparkMaxConfig rollerConfig = new SparkMaxConfig();
   private final SparkMaxConfig wristConfig = new SparkMaxConfig();
 
-  private final RelativeEncoder rollerEncoder;
-  private final SparkAbsoluteEncoder wristEncoder;
+  private final RelativeEncoder rollerEncoder = rollerMotor.getEncoder();
+  private final SparkAbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
 
-  private final SparkClosedLoopController rollerController;
-  private final SparkClosedLoopController wristController;
+  private final SparkClosedLoopController rollerController = rollerMotor.getClosedLoopController();
+  private final SparkClosedLoopController wristController = wristMotor.getClosedLoopController();
 
   private final DigitalInput coralSensor = new DigitalInput(CoralIntakeConstants.kCoralSensorPort);
 
@@ -79,12 +79,6 @@ public class CoralIntake extends SubsystemBase {
         rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     wristMotor.configure(
         wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-    rollerEncoder = rollerMotor.getEncoder();
-    wristEncoder = wristMotor.getAbsoluteEncoder();
-
-    rollerController = rollerMotor.getClosedLoopController();
-    wristController = wristMotor.getClosedLoopController();
   }
 
   @Override
