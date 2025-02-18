@@ -27,16 +27,6 @@ public class Elevator {
     return algaeRoller;
   }
 
-  public void setRollerDefaultCommands() {
-    algaeRoller.setDefaultCommand(algaeRoller.createStopCommand());
-    coralRoller.setDefaultCommand(coralRoller.createStopCommand());
-  }
-
-  public void setWristDefaultCommands() {
-    algaeWrist.setDefaultCommand(algaeWrist.createRemainAtCurrentAngleCommand());
-    coralWrist.setDefaultCommand(coralWrist.createRemainAtCurrentAngleCommand());
-  }
-
   public void resetPositionControllers() {
     lifter.resetController();
     coralWrist.resetController();

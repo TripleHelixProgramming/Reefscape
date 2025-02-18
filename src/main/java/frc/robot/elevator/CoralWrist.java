@@ -56,6 +56,8 @@ public class CoralWrist extends SubsystemBase {
     controller.setTolerance(CoralWristConstants.kAllowableAngleError.in(Degrees));
     // controller.setIZone();
     // controller.setIntegratorRange();
+
+    setDefaultCommand(createRemainAtCurrentAngleCommand());
   }
 
   @Override

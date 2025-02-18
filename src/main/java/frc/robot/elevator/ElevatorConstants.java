@@ -1,13 +1,6 @@
 package frc.robot.elevator;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.FeetPerSecond;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.InchesPerSecond;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.LinearAccelerationUnit;

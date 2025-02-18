@@ -61,6 +61,8 @@ public class Climber extends SubsystemBase {
 
     encoder = motor.getEncoder();
     controller = motor.getClosedLoopController();
+
+    setDefaultCommand(createDefaultClimberCommand());
   }
 
   @Override

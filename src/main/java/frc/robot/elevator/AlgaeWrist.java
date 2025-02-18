@@ -56,6 +56,8 @@ public class AlgaeWrist extends SubsystemBase {
     controller.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Degrees));
     // controller.setIZone();
     // controller.setIntegratorRange();
+
+    setDefaultCommand(createRemainAtCurrentAngleCommand());
   }
 
   @Override

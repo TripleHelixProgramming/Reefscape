@@ -59,6 +59,8 @@ public class AlgaeRoller extends SubsystemBase {
     leaderMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     followerMotor.configure(
         followerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    
+    setDefaultCommand(createStopCommand());
   }
 
   @Override

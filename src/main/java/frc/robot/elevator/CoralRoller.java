@@ -48,6 +48,8 @@ public class CoralRoller extends SubsystemBase {
     // spotless:on
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+    setDefaultCommand(createStopCommand());
   }
 
   @Override
