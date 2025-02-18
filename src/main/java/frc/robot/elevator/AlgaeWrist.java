@@ -1,5 +1,7 @@
 package frc.robot.elevator;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -43,15 +45,16 @@ public class AlgaeWrist extends SubsystemBase {
         .inverted(true);
     
     config.softLimit
-        .reverseSoftLimit(AlgaeWristState.Min.angle)
+        .reverseSoftLimit(AlgaeWristState.Min.angle.in(Degrees))
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(AlgaeWristState.Max.angle)
+        .forwardSoftLimit(AlgaeWristState.Max.angle.in(Degrees))
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    controller.setTolerance(AlgaeWristConstants.kAllowableAngleError);
+    controller.setTolerance(
+        AlgaeWristConstants.kAllowableAngleError.in(Degrees));
     // controller.setIZone();
     // controller.setIntegratorRange();
   }
@@ -84,7 +87,7 @@ public class AlgaeWrist extends SubsystemBase {
         // initialize
         () -> {
           targetState = state;
-          controller.setGoal(targetState.angle);
+          controller.setGoal(targetState.angle.in(Degrees));
         },
         // execute
         () -> control(),

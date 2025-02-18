@@ -12,9 +12,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.LinearAccelerationUnit;
-import edu.wpi.first.units.LinearVelocityUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -314,10 +314,12 @@ public final class Constants {
     public static final double kPositionOffset = 322.0 / kPositionConversionFactor;
 
     public static final double kP = 0.1;
-    private static final double kMaxVelocity = 30.0;
-    private static final double kMaxAcceleration = kMaxVelocity;
-    public static final Constraints kConstraints = new Constraints(kMaxVelocity, kMaxAcceleration);
-    public static final double kAllowableAngleError = 3.0;
+    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(30.0);
+    public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
+    public static final AngularAcceleration kMaxAcceleration = kMaxVelocity.div(kTimeToMaxVelocity);
+    public static final Constraints kConstraints =
+        new Constraints(kMaxVelocity.in(DegreesPerSecond), kMaxAcceleration.in(DegreesPerSecondPerSecond));
+    public static final Angle kAllowableAngleError = Degrees.of(3.0);
 
     public static enum AlgaeWristState {
       Unknown(180),
@@ -330,10 +332,10 @@ public final class Constants {
       Barge(140),
       CoralMode(180);
 
-      public double angle;
+      public Angle angle;
 
-      private AlgaeWristState(double angle) {
-        this.angle = angle;
+      private AlgaeWristState(double degrees) {
+        this.angle = Degrees.of(degrees);
       }
     }
   }
@@ -405,12 +407,9 @@ public final class Constants {
   }
 
   public static final class LifterConstants {
-    public static final DistanceUnit kDistanceUnit = Inches;
-    public static final LinearVelocityUnit kVelocityUnit = kDistanceUnit.per(Second);
-    public static final LinearAccelerationUnit kAccelerationUnit = kVelocityUnit.per(Second);
-
     public static final int kLeaderMotorPort = 24;
     public static final int kFollowerMotorPort = 25;
+    public static final int lowerLimitSwitchPort = 9;
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the final stage
@@ -423,22 +422,21 @@ public final class Constants {
     // Convert to inches per second at the final stage
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final LinearVelocity kFineVelocity = kVelocityUnit.of(15.0);
-    public static final LinearVelocity kRapidVelocity = kVelocityUnit.of(50.0);
+    public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
+    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(50.0);
 
+    public static final LinearAccelerationUnit inchesPerSecondPerSecond = InchesPerSecond.per(Second);
     public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
     public static final LinearAcceleration kRapidAcceleration =
         kRapidVelocity.div(kTimeToMaxVelocity);
 
-    public static final int lowerLimitSwitchPort = 9;
-
-    public static final Distance kAllowableHeightError = kDistanceUnit.of(0.2);
+    public static final Distance kAllowableHeightError = Inches.of(0.2);
 
     public final class LifterController {
       public static final double kP = 0.1;
       public static final Constraints kConstraints =
           new Constraints(
-              kRapidVelocity.in(kVelocityUnit), kRapidAcceleration.in(kAccelerationUnit));
+              kRapidVelocity.in(InchesPerSecond), kRapidAcceleration.in(inchesPerSecondPerSecond));
     }
 
     public static enum LifterState {
@@ -459,7 +457,7 @@ public final class Constants {
       public Distance height;
 
       private LifterState(double inches) {
-        this.height = kDistanceUnit.of(inches);
+        this.height = Inches.of(inches);
       }
     }
   }

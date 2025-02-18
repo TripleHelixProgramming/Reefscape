@@ -81,7 +81,8 @@ public class Lifter extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    controller.setTolerance(LifterConstants.kAllowableHeightError.in(Inches));
+    controller.setTolerance(
+        LifterConstants.kAllowableHeightError.in(Inches));
     // controller.setIZone();
     // controller.setIntegratorRange();
     resetController();
@@ -186,7 +187,8 @@ public class Lifter extends SubsystemBase {
               LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
           targetPosition = targetPosition.plus(adder);
 
-          if (isInRange(targetPosition)) controller.setGoal(targetPosition.in(Inches));
+          if (isInRange(targetPosition))
+            controller.setGoal(targetPosition.in(Inches));
           control();
         });
   }
