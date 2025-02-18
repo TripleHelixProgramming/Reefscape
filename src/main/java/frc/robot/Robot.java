@@ -37,7 +37,6 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import java.util.HashMap;
@@ -213,29 +212,32 @@ public class Robot extends TimedRobot {
     Trigger algaeMode = operator.leftBumper();
 
     // Configure to either score coral on L1 or score algae in processor
-    operator.a().whileTrue(new ConditionalCommand(elevator.algaeProcessorPositionCG(), elevator.coralL1PositionCG(), algaeMode));
+    operator.a().whileTrue(new ConditionalCommand(
+        elevator.algaeProcessorPositionCG(), elevator.coralL1PositionCG(), algaeMode));
 
     // Configure to either score coral on L2 or intake algae from L2
-    operator.b().whileTrue(new ConditionalCommand(elevator.algaeL2IntakeCG(), elevator.coralL2PositionCG(), algaeMode));
+    operator.b().whileTrue(new ConditionalCommand(
+        elevator.algaeL2IntakeCG(), elevator.coralL2PositionCG(), algaeMode));
 
     // Configure to either score coral on L3 or intake algae from L3
-    operator.x().whileTrue(new ConditionalCommand(elevator.algaeL3IntakeCG(), elevator.coralL3PositionCG(), algaeMode));
+    operator.x().whileTrue(new ConditionalCommand(
+        elevator.algaeL3IntakeCG(), elevator.coralL3PositionCG(), algaeMode));
 
     // Configure to either score coral on L4 or score algae in barge
-    operator.y().whileTrue(new ConditionalCommand(elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
+    operator.y().whileTrue(new ConditionalCommand(
+        elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
 
     // Configure to either intake coral from source or intake algae from floor
-    operator.start().whileTrue(new ConditionalCommand(elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
+    operator.start().whileTrue(new ConditionalCommand(
+        elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     // Intake with coral gripper
-    operator.rightBumper()
-        .whileTrue(elevator.getCoralRoller().createIntakeCommand()
-        .onlyIf(() -> lifter.getTargetState() == LifterState.Intake));
+    operator.rightBumper().and(lifter.atIntakingHeight)
+        .whileTrue(elevator.getCoralRoller().createIntakeCommand());
     
     // Intake with algae gripper
-    operator.rightBumper()
-        .whileTrue(elevator.getAlgaeRoller().createIntakeCommand()
-        .onlyIf(() -> lifter.getTargetState() != LifterState.Intake));
+    operator.rightBumper().and(lifter.atIntakingHeight.negate())
+        .whileTrue(elevator.getAlgaeRoller().createIntakeCommand());
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);

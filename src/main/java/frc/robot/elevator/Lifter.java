@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterController;
@@ -134,6 +135,12 @@ public class Lifter extends SubsystemBase {
   public LifterState getTargetState() {
     return this.targetState;
   }
+
+  public Boolean inState(LifterState state) {
+    return this.targetState.equals(state);
+  }
+
+  public Trigger atIntakingHeight = new Trigger(() -> inState(LifterState.Intake));
 
   private void resetEncoder() {
     encoder.setPosition(LifterState.Reset.height.in(Inches));
