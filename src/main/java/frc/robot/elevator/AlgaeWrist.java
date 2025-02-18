@@ -61,7 +61,11 @@ public class AlgaeWrist extends SubsystemBase {
   public void periodic() {
     loop.poll();
 
-    SmartDashboard.putNumber("Algae Rotation Position", encoder.getPosition());
+    SmartDashboard.putNumber("Algae Wrist Angle", encoder.getPosition());
+    SmartDashboard.putString("Algae Wrist Target State", getTargetState().name());
+    SmartDashboard.putNumber("Algae Wrist Target Angle", controller.getGoal().position);
+    SmartDashboard.putNumber("Algae Wrist Applied Duty Cycle", motor.getAppliedOutput());
+    SmartDashboard.putNumber("Algae Wrist Current", motor.getOutputCurrent());
   }
 
   public void resetPositionController() {

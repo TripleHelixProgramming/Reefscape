@@ -61,12 +61,10 @@ public class AlgaeRoller extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Algae Intake Velocity", encoder.getVelocity());
+    SmartDashboard.putNumber("Algae Roller Velocity", encoder.getVelocity());
+    SmartDashboard.putNumber("Algae Roller Applied Duty Cycle", leaderMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Algae Roller Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putBoolean("Algae Sensor", algaeSensor.get());
-  }
-
-  private void resetEncoder() {
-    encoder.setPosition(0.0);
   }
 
   private void setVelocity(double velocity) {

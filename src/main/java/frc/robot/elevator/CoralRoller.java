@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CoralRollerConstants;
 import frc.robot.Constants.RobotConstants;
-import java.util.function.BooleanSupplier;
 
 public class CoralRoller extends SubsystemBase {
 
@@ -51,12 +50,10 @@ public class CoralRoller extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Coral Intake Velocity", encoder.getVelocity());
+    SmartDashboard.putNumber("Coral Roller Velocity", encoder.getVelocity());
+    SmartDashboard.putNumber("Coral Roller Applied Duty Cycle", motor.getAppliedOutput());
+    SmartDashboard.putNumber("Coral Roller Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
-  }
-
-  private void resetEncoder() {
-    encoder.setPosition(0.0);
   }
 
   private void setVelocity(double velocity) {
@@ -64,10 +61,6 @@ public class CoralRoller extends SubsystemBase {
   }
 
   public Trigger hasCoral = new Trigger(() -> coralSensor.get());
-
-  public BooleanSupplier hasCoralPiece() {
-    return () -> (coralSensor.get() == true);
-  }
 
   public Command createStopCommand() {
     return this.startEnd(() -> motor.set(0.0), () -> {});

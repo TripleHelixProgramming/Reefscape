@@ -98,7 +98,7 @@ public class Elevator extends SubsystemBase {
       resetEncoder();
     }
 
-    SmartDashboard.putNumber("Elevator Lead Applied Duty Cycle", leaderMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Elevator Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
     SmartDashboard.putNumber(
         "Elevator Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
     SmartDashboard.putNumber("Elevator Lead Current", leaderMotor.getOutputCurrent());

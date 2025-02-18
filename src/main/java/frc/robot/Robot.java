@@ -249,6 +249,7 @@ public class Robot extends TimedRobot {
         .whileTrue(algaeRoller.createIntakeCommand()
         .onlyIf(() -> elevator.getTargetState() != ElevatorState.Intake));
 
+    // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
     Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
     elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(elevator.createJoystickControlCommand(operator.getHID()));
