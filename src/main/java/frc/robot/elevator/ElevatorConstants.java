@@ -2,7 +2,6 @@ package frc.robot.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.LinearAccelerationUnit;
 import edu.wpi.first.units.measure.Angle;
@@ -143,7 +142,7 @@ public class ElevatorConstants {
     public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
 
     // By default, the encoder in velocity mode measures RPM at the drive motor
-    // Convert to inches per `second at the wheel
+    // Convert to inches per second at the wheel
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
@@ -154,12 +153,21 @@ public class ElevatorConstants {
     public static final int kMotorPort = 14;
 
     public static final double kTotalGearRatio = 5 * (36 / 18); // 5:1 for motor, 36:18 for belt
-    // By default, the REV Through Bore encoder in absolute mode measures rotations
-    // Convert to degrees
-    public static final double kPositionConversionFactor = 360.0;
-    public static final double kPositionOffset = 232.0 / kPositionConversionFactor;
 
-    public static final double kP = 0.001;
+    /*
+    When used as an absolute encoder, the REV Through Bore encoder measures position
+    in rotations at the sensor by default. Convert to radians at the algae wrist.
+     */ 
+    public static final double kPositionConversionFactor = Math.PI * 2.0;
+    public static final double kPositionOffset = Degrees.of(232.0).in(Rotations);
+
+    /*
+    When used as an absolute encoder, the REV Through Bore encoder measures velocity
+    in rotations per minute at the sensor by default. Convert to radians per second at the algae wrist.
+     */ 
+    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+
+    public static final double kP = 1.0;
     public static final double kI = 0.01;
     public static final double kD = 0.001;
     public static final Angle kIZone = Degrees.of(120.0);
@@ -179,8 +187,8 @@ public class ElevatorConstants {
     public static enum AlgaeWristState {
       Unknown(90),
       Floor(-10),
-      Min(-20),
-      Max(100),
+      Min(-15),
+      Max(95),
       Processor(0),
       L2(-10),
       L3(-10),
