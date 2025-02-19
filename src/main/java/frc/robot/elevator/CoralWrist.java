@@ -3,16 +3,12 @@ package frc.robot.elevator;
 import static edu.wpi.first.units.Units.Degrees;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.event.EventLoop;
@@ -34,8 +30,8 @@ public class CoralWrist extends SubsystemBase {
   // TODO: Add ArmFeedforward
   // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
   private final ProfiledPIDController controller =
-      new ProfiledPIDController(CoralWristConstants.kP, CoralWristConstants.kI, 0.0,
-  CoralWristConstants.kConstraints);
+      new ProfiledPIDController(
+          CoralWristConstants.kP, CoralWristConstants.kI, 0.0, CoralWristConstants.kConstraints);
 
   private final EventLoop loop = new EventLoop();
   private CoralWristState targetState = CoralWristState.Unknown;

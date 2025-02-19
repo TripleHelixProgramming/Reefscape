@@ -157,26 +157,26 @@ public class ElevatorConstants {
     /*
     When used as an absolute encoder, the REV Through Bore encoder measures position
     in rotations at the sensor by default. Convert to radians at the algae wrist.
-     */ 
+     */
     public static final double kPositionConversionFactor = Math.PI * 2.0;
     public static final double kPositionOffset = Degrees.of(232.0).in(Rotations);
 
     /*
     When used as an absolute encoder, the REV Through Bore encoder measures velocity
     in rotations per minute at the sensor by default. Convert to radians per second at the algae wrist.
-     */ 
+     */
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final double kP = 1.0;
-    public static final double kI = 0.01;
-    public static final double kD = 0.001;
-    public static final Angle kIZone = Degrees.of(120.0);
+    public static final double kI = 1.0;
+    public static final double kD = 0.03;
+    public static final Angle kIZone = Degrees.of(30.0);
 
-    public static final double kS = 0.0; // Static gain in volts
-    public static final double kG = 0.0; // Gravity gain in volts
-    public static final double kV = 0.0; // Velocity gain in V/(rad/s)
+    public static final double kS = 0.1; // Static gain in volts
+    public static final double kG = 0.3; // Gravity gain in volts
+    public static final double kV = 0.03; // Velocity gain in V/(rad/s)
 
-    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(150.0);
+    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(30.0);
     public static final Time kTimeToMaxVelocity = Seconds.of(0.5);
     public static final AngularAcceleration kMaxAcceleration = kMaxVelocity.div(kTimeToMaxVelocity);
     public static final Constraints kConstraints =
