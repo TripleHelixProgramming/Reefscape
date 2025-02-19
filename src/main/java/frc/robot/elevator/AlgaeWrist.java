@@ -2,6 +2,7 @@ package frc.robot.elevator;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Seconds;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -11,8 +12,8 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -27,16 +28,17 @@ public class AlgaeWrist extends SubsystemBase {
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
 
-  private final ProfiledPIDController controller =
-      new ProfiledPIDController(
-          AlgaeWristConstants.kP,
-          AlgaeWristConstants.kI,
-          AlgaeWristConstants.kD,
-          AlgaeWristConstants.kConstraints);
-  private final ArmFeedforward feedforward =
+  private ExponentialProfile profile =
+      new ExponentialProfile(
+          ExponentialProfile.Constraints.fromCharacteristics(
+              AlgaeWristConstants.kMaxOutput, AlgaeWristConstants.kV, AlgaeWristConstants.kA));
+  private ArmFeedforward feedforward =
       new ArmFeedforward(AlgaeWristConstants.kS, AlgaeWristConstants.kG, AlgaeWristConstants.kV);
+  private final PIDController feedback =
+      new PIDController(AlgaeWristConstants.kP, AlgaeWristConstants.kI, AlgaeWristConstants.kD);
 
-  private final EventLoop loop = new EventLoop();
+  private ExponentialProfile.State currentSetpoint = new ExponentialProfile.State();
+  private ExponentialProfile.State goal = new ExponentialProfile.State();
   private AlgaeWristState targetState = AlgaeWristState.Unknown;
 
   public AlgaeWrist() {
@@ -56,16 +58,16 @@ public class AlgaeWrist extends SubsystemBase {
     
     config.softLimit
         .reverseSoftLimit(AlgaeWristState.Min.angle.in(Radians) - (2.0 * Math.PI))
-        .reverseSoftLimitEnabled(true)
+        .reverseSoftLimitEnabled(false)
         .forwardSoftLimit(AlgaeWristState.Max.angle.in(Radians))
-        .forwardSoftLimitEnabled(true);
+        .forwardSoftLimitEnabled(false);
     // spotless:on
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    controller.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Radians));
-    controller.setIZone(AlgaeWristConstants.kIZone.in(Radians));
-    controller.enableContinuousInput(0, 2.0 * Math.PI);
+    feedback.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Radians));
+    feedback.setIZone(AlgaeWristConstants.kIZone.in(Radians));
+    feedback.enableContinuousInput(0, 2.0 * Math.PI);
     // controller.setIntegratorRange();
 
     setDefaultCommand(createRemainAtCurrentAngleCommand());
@@ -74,20 +76,16 @@ public class AlgaeWrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    loop.poll();
-
     SmartDashboard.putNumber("Algae Wrist/Current Angle Degrees", getCurrentAngleDegrees());
     SmartDashboard.putNumber("Algae Wrist/Current Angle Radians", encoder.getPosition());
     SmartDashboard.putNumber("Algae Wrist/Current Angular Velocity RPS", encoder.getVelocity());
     SmartDashboard.putString("Algae Wrist/Target State", getTargetState().name());
     SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Degrees", getSetpointAngleDegrees());
-    SmartDashboard.putNumber(
-        "Algae Wrist/Setpoint Angle Radians", controller.getSetpoint().position);
-    SmartDashboard.putNumber(
-        "Algae Wrist/Setpoint Angular Velocity RPS", controller.getSetpoint().velocity); 
+    SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Radians", currentSetpoint.position);
+    SmartDashboard.putNumber("Algae Wrist/Setpoint Angular Velocity RPS", currentSetpoint.velocity);
     SmartDashboard.putNumber("Algae Wrist/Applied Duty Cycle", motor.getAppliedOutput());
     SmartDashboard.putNumber("Algae Wrist/Current", motor.getOutputCurrent());
-    SmartDashboard.putBoolean("Algae Wrist/At Goal", controller.atGoal());
+    SmartDashboard.putBoolean("Algae Wrist/At Goal", atGoal());
   }
 
   private double getCurrentAngleDegrees() {
@@ -95,17 +93,29 @@ public class AlgaeWrist extends SubsystemBase {
   }
 
   private double getSetpointAngleDegrees() {
-    return Radians.of(controller.getSetpoint().position).in(Degrees);
+    return Radians.of(feedback.getSetpoint()).in(Degrees);
   }
 
   public void resetController() {
-    controller.reset(encoder.getPosition(), encoder.getVelocity());
+    feedback.reset();
   }
 
-  private void control() {
+  private void setGoalRadians(double goal) {
+    this.goal.position = goal;
+  }
+
+  private boolean atGoal() {
+    return feedback.atSetpoint() && goal.equals(currentSetpoint);
+  }
+
+  private void controller() {
+    var nextSetpoint = profile.calculate(RobotConstants.kPeriod.in(Seconds), currentSetpoint, goal);
     motor.setVoltage(
-        controller.calculate(encoder.getPosition())
-            + feedforward.calculate(controller.getSetpoint().position, controller.getSetpoint().velocity));
+        feedforward.calculateWithVelocities(
+                encoder.getPosition(), encoder.getVelocity(), nextSetpoint.velocity)
+            // feedforward.calculate(nextSetpoint.position, nextSetpoint.velocity)
+            + feedback.calculate(encoder.getPosition(), nextSetpoint.position));
+    currentSetpoint = nextSetpoint;
   }
 
   public AlgaeWristState getTargetState() {
@@ -117,14 +127,14 @@ public class AlgaeWrist extends SubsystemBase {
         // initialize
         () -> {
           targetState = state;
-          controller.setGoal(targetState.angle.in(Radians));
+          setGoalRadians(targetState.angle.in(Radians));
         },
         // execute
-        () -> control(),
+        () -> controller(),
         // end
         interrupted -> {},
         // isFinished
-        () -> controller.atGoal(),
+        () -> atGoal(),
         // requirements
         this);
   }
@@ -133,10 +143,10 @@ public class AlgaeWrist extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == AlgaeWristState.Unknown) controller.setGoal(encoder.getPosition());
+          if (targetState == AlgaeWristState.Unknown) setGoalRadians(encoder.getPosition());
         },
         // execute
-        () -> control(),
+        () -> controller(),
         // end
         interrupted -> {},
         // isFinished

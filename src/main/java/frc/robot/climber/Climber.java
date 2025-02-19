@@ -73,7 +73,8 @@ public class Climber extends SubsystemBase {
     SmartDashboard.putNumber("Climber/Servo", servo.get());
 
     SmartDashboard.putNumber("Climber/Motor Current", motor.getOutputCurrent());
-    SmartDashboard.putBoolean("Climber/Deploy Command is Finished", createDeployCommand().isFinished());
+    SmartDashboard.putBoolean(
+        "Climber/Deploy Command is Finished", createDeployCommand().isFinished());
     SmartDashboard.putNumber("Climber/Applied Duty Cycle", motor.getAppliedOutput());
   }
 

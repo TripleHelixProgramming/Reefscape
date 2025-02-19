@@ -167,21 +167,22 @@ public class ElevatorConstants {
      */
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kP = 1.0;
-    public static final double kI = 1.0;
-    public static final double kD = 0.03;
+    public static final double kP = 0.1;
+    public static final double kI = 0.0;
+    public static final double kD = 0.1;
     public static final Angle kIZone = Degrees.of(30.0);
 
+    public static final double kMaxOutput = 10.0; // Volts
     public static final double kS = 0.1; // Static gain in volts
-    public static final double kG = 0.3; // Gravity gain in volts
-    public static final double kV = 0.03; // Velocity gain in V/(rad/s)
+    public static final double kG = 2.0; // Gravity gain in volts
+    public static final double kV = 0.2; // Velocity gain in V*s/rad
+    public static final double kA = 0.03; // Acceleration gain in V*s^2/rad
 
-    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(30.0);
-    public static final Time kTimeToMaxVelocity = Seconds.of(0.5);
-    public static final AngularAcceleration kMaxAcceleration = kMaxVelocity.div(kTimeToMaxVelocity);
-    public static final Constraints kConstraints =
-        new Constraints(
-            kMaxVelocity.in(DegreesPerSecond), kMaxAcceleration.in(DegreesPerSecondPerSecond));
+    // private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(90.0);
+    // public static final AngularAcceleration kMaxAcceleration = DegreesPerSecondPerSecond.of(90);
+    // public static final Constraints kConstraints =
+    //     new Constraints(
+    //         kMaxVelocity.in(RadiansPerSecond), kMaxAcceleration.in(RadiansPerSecondPerSecond));
     public static final Angle kAllowableAngleError = Degrees.of(3.0);
 
     public static enum AlgaeWristState {
