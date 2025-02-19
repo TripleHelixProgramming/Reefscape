@@ -28,7 +28,7 @@ public class AlgaeWrist extends SubsystemBase {
   // TODO: Add ArmFeedforward
   // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
   private final ProfiledPIDController controller =
-      new ProfiledPIDController(AlgaeWristConstants.kP, 0.0, 0.0, AlgaeWristConstants.kConstraints);
+      new ProfiledPIDController(AlgaeWristConstants.kP, AlgaeWristConstants.kI, 0.0, AlgaeWristConstants.kConstraints);
 
   private final EventLoop loop = new EventLoop();
   private AlgaeWristState targetState = AlgaeWristState.Unknown;
@@ -56,7 +56,7 @@ public class AlgaeWrist extends SubsystemBase {
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     controller.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Degrees));
-    // controller.setIZone();
+    controller.setIZone(AlgaeWristConstants.kIZone.in(Degrees));
     // controller.setIntegratorRange();
 
     // setDefaultCommand(createRemainAtCurrentAngleCommand());

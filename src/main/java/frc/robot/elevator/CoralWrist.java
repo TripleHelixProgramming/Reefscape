@@ -14,6 +14,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -37,6 +38,7 @@ public class CoralWrist extends SubsystemBase {
 
   private final EventLoop loop = new EventLoop();
   private CoralWristState targetState = CoralWristState.Unknown;
+  private Angle targetAngle = targetState.angle;
 
   public CoralWrist() {
     // spotless:off
@@ -52,9 +54,6 @@ public class CoralWrist extends SubsystemBase {
         .d(0.0)
         // .izone(),
         // .outputRange(-1, 1)
-        .positionWrappingEnabled(true)
-        .positionWrappingMinInput(0.0)
-        .positionWrappingMaxInput(204.0)
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     
     config.absoluteEncoder
@@ -86,6 +85,7 @@ public class CoralWrist extends SubsystemBase {
     SmartDashboard.putNumber("Coral Wrist Angle", encoder.getPosition());
     SmartDashboard.putString("Coral Wrist Target State", getTargetState().name());
     // SmartDashboard.putNumber("Coral Wrist Target Angle", controller.getGoal().position);
+    SmartDashboard.putNumber("Coral Wrist Target Angle", targetAngle.in(Degrees));
     SmartDashboard.putNumber("Coral Wrist Applied Duty Cycle", motor.getAppliedOutput());
     SmartDashboard.putNumber("Coral Wrist Current", motor.getOutputCurrent());
   }
@@ -107,6 +107,7 @@ public class CoralWrist extends SubsystemBase {
         // initialize
         () -> {
           targetState = state;
+          targetAngle = state.angle;
           // controller.setGoal(targetState.angle.in(Degrees));
           controller.setReference(targetState.angle.in(Degrees), ControlType.kPosition);
         },

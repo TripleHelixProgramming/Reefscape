@@ -293,7 +293,7 @@ public final class Constants {
 
   public static final class LedConstants {
     public static final int kLedPort = 0;
-    public static final int kLedBufferLength = 17;
+    public static final int kLedBufferLength = 40;
 
     public static final int kLEDsPerBlock = 2;
     public static final int kLEDsBetweenBlocks = 1;

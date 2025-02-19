@@ -159,9 +159,12 @@ public class ElevatorConstants {
     public static final double kPositionConversionFactor = 360.0;
     public static final double kPositionOffset = 322.0 / kPositionConversionFactor;
 
-    public static final double kP = 1.0;
-    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(30.0);
-    public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
+    public static final double kP = 0.001;
+    public static final double kI = 0.01;
+    public static final Angle kIZone = Degrees.of(120.0);
+
+    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(150.0);
+    public static final Time kTimeToMaxVelocity = Seconds.of(0.5);
     public static final AngularAcceleration kMaxAcceleration = kMaxVelocity.div(kTimeToMaxVelocity);
     public static final Constraints kConstraints =
         new Constraints(
