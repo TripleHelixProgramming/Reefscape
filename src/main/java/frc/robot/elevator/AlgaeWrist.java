@@ -9,6 +9,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +35,11 @@ public class AlgaeWrist extends SubsystemBase {
           AlgaeWristConstants.kI,
           AlgaeWristConstants.kD,
           AlgaeWristConstants.kConstraints);
+  private final ArmFeedforward kFeedforward = 
+      new ArmFeedforward(
+          AlgaeWristConstants.kS,
+          AlgaeWristConstants.kG,
+          AlgaeWristConstants.kV);
 
   private final EventLoop loop = new EventLoop();
   private AlgaeWristState targetState = AlgaeWristState.Unknown;
@@ -40,15 +47,16 @@ public class AlgaeWrist extends SubsystemBase {
   public AlgaeWrist() {
     // spotless:off
     config
-        .voltageCompensation(RobotConstants.kNominalVoltage)
+        .inverted(false)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
-        .inverted(false);
-    
+        .voltageCompensation(RobotConstants.kNominalVoltage);
+        
     config.absoluteEncoder
-        .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor)
+        .inverted(true)
+        .zeroCentered(true)
         .zeroOffset(AlgaeWristConstants.kPositionOffset)
-        .inverted(true);
+        .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor);
     
     config.softLimit
         .reverseSoftLimit(AlgaeWristState.Min.angle.in(Degrees))

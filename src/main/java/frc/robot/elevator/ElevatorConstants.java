@@ -2,6 +2,7 @@ package frc.robot.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.LinearAccelerationUnit;
 import edu.wpi.first.units.measure.Angle;
@@ -156,12 +157,16 @@ public class ElevatorConstants {
     // By default, the REV Through Bore encoder in absolute mode measures rotations
     // Convert to degrees
     public static final double kPositionConversionFactor = 360.0;
-    public static final double kPositionOffset = 322.0 / kPositionConversionFactor;
+    public static final double kPositionOffset = 232.0 / kPositionConversionFactor;
 
     public static final double kP = 0.001;
     public static final double kI = 0.01;
     public static final double kD = 0.001;
     public static final Angle kIZone = Degrees.of(120.0);
+
+    public static final double kS = 0.0; // Static gain in volts
+    public static final double kG = 0.0; // Gravity gain in volts
+    public static final double kV = 0.0; // Velocity gain in V/(rad/s)
 
     private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(150.0);
     public static final Time kTimeToMaxVelocity = Seconds.of(0.5);
@@ -172,15 +177,15 @@ public class ElevatorConstants {
     public static final Angle kAllowableAngleError = Degrees.of(3.0);
 
     public static enum AlgaeWristState {
-      Unknown(180),
-      Floor(80),
-      Min(70),
-      Max(190),
-      Processor(90),
-      L2(80),
-      L3(80),
-      Barge(140),
-      CoralMode(180);
+      Unknown(90),
+      Floor(-10),
+      Min(-20),
+      Max(100),
+      Processor(0),
+      L2(-10),
+      L3(-10),
+      Barge(80),
+      CoralMode(90);
 
       public Angle angle;
 
