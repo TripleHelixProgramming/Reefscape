@@ -94,25 +94,25 @@ public class Lifter extends SubsystemBase {
   public void periodic() {
     loop.poll();
 
-    SmartDashboard.putNumber("Lifter Height", encoder.getPosition());
-    SmartDashboard.putNumber("Lifter Velocity", encoder.getVelocity());
+    SmartDashboard.putNumber("Lifter/Height", encoder.getPosition());
+    SmartDashboard.putNumber("Lifter/Velocity", encoder.getVelocity());
 
-    SmartDashboard.putString("Lifter Target State", getTargetState().name());
-    SmartDashboard.putNumber("Lifter Target Height", controller.getGoal().position);
+    SmartDashboard.putString("Lifter/Target State", getTargetState().name());
+    SmartDashboard.putNumber("Lifter/Target Height", controller.getGoal().position);
 
     if (SmartDashboard.getBoolean("Lifter Reset Encoder", false)) {
       SmartDashboard.putBoolean("Lifter Reset Encoder", false);
       resetEncoder();
     }
 
-    SmartDashboard.putNumber("Lifter Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Lifter/Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
     SmartDashboard.putNumber(
-        "Lifter Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Lifter Lead Current", leaderMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Lifter Follower Current", followerMotor.getOutputCurrent());
+        "Lifter/Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Lifter/Leader Current", leaderMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Lifter/Follower Current", followerMotor.getOutputCurrent());
 
-    SmartDashboard.putBoolean("Lifter Lower Limit Switch", !lowerLimitSwitch.get());
-    SmartDashboard.putBoolean("Lifter At Target Height", controller.atGoal());
+    SmartDashboard.putBoolean("Lifter/Lower Limit Switch", !lowerLimitSwitch.get());
+    SmartDashboard.putBoolean("Lifter/At Target Height", controller.atGoal());
   }
 
   public Distance getHeight() {

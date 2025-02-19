@@ -27,8 +27,6 @@ public class AlgaeWrist extends SubsystemBase {
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
 
-  // TODO: Add ArmFeedforward
-  // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
   private final ProfiledPIDController controller =
       new ProfiledPIDController(
           AlgaeWristConstants.kP,
@@ -78,15 +76,16 @@ public class AlgaeWrist extends SubsystemBase {
   public void periodic() {
     loop.poll();
 
-    SmartDashboard.putNumber("Algae Wrist Angle Degrees", getCurrentAngleDegrees());
-    SmartDashboard.putNumber("Algae Wrist Angle Radians", encoder.getPosition());
-    SmartDashboard.putString("Algae Wrist Target State", getTargetState().name());
-    SmartDashboard.putNumber("Algae Wrist Setpoint Angle Degrees", getSetpointAngleDegrees());
+    SmartDashboard.putNumber("Algae Wrist/Current Angle Degrees", getCurrentAngleDegrees());
+    SmartDashboard.putNumber("Algae Wrist/Current Angle Radians", encoder.getPosition());
+    SmartDashboard.putNumber("Algae Wrist/Current Angular Velocity RPS", encoder.getVelocity());
+    SmartDashboard.putString("Algae Wrist/Target State", getTargetState().name());
+    SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Degrees", getSetpointAngleDegrees());
     SmartDashboard.putNumber(
-        "Algae Wrist Setpoint Angle Radians", controller.getSetpoint().position);
-    SmartDashboard.putNumber("Algae Wrist Applied Duty Cycle", motor.getAppliedOutput());
-    SmartDashboard.putNumber("Algae Wrist Current", motor.getOutputCurrent());
-    SmartDashboard.putBoolean("Algae Wrist At Goal", controller.atGoal());
+        "Algae Wrist/Setpoint Angle Radians", controller.getSetpoint().position);
+    SmartDashboard.putNumber("Algae Wrist/Applied Duty Cycle", motor.getAppliedOutput());
+    SmartDashboard.putNumber("Algae Wrist/Current", motor.getOutputCurrent());
+    SmartDashboard.putBoolean("Algae Wrist/At Goal", controller.atGoal());
   }
 
   private double getCurrentAngleDegrees() {
@@ -104,7 +103,7 @@ public class AlgaeWrist extends SubsystemBase {
   private void control() {
     motor.setVoltage(
         controller.calculate(encoder.getPosition())
-            + feedforward.calculate(controller.getSetpoint().position, 0.0));
+            + feedforward.calculate(controller.getSetpoint().position, controller.getSetpoint().velocity));
   }
 
   public AlgaeWristState getTargetState() {
