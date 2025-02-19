@@ -39,7 +39,7 @@ public class CoralWrist extends SubsystemBase {
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
-        .inverted(true);
+        .inverted(false);
     
     config.absoluteEncoder
         .positionConversionFactor(CoralWristConstants.kPositionConversionFactor)
@@ -79,7 +79,7 @@ public class CoralWrist extends SubsystemBase {
   }
 
   public void control() {
-    motor.set(controller.calculate(encoder.getPosition()));
+    motor.setVoltage(controller.calculate(encoder.getPosition()));
   }
 
   public CoralWristState getTargetState() {
@@ -96,9 +96,9 @@ public class CoralWrist extends SubsystemBase {
         // execute
         () -> control(),
         // end
-        interrupted -> {},
+        interrupted -> {System.err.println("Set angle command ended " + interrupted);},
         // isFinished
-        () -> controller.atGoal(),
+        () -> false, // controller.atGoal()
         // requirements
         this);
   }

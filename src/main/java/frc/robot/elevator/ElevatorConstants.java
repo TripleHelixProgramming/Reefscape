@@ -101,7 +101,7 @@ public class ElevatorConstants {
     public static final double kPositionConversionFactor = 360.0 / kBeltReduction;
     public static final double kPositionOffset = 0.0 / kPositionConversionFactor;
 
-    public static final double kP = 0.1;
+    public static final double kP = 0.3;
     private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(30.0);
     public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
     private static final AngularAcceleration kMaxAcceleration =
