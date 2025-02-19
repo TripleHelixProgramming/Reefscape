@@ -86,9 +86,11 @@ public class CoralWrist extends SubsystemBase {
     SmartDashboard.putNumber("Coral Wrist Angle", encoder.getPosition());
     SmartDashboard.putString("Coral Wrist Target State", getTargetState().name());
     SmartDashboard.putNumber("Coral Wrist Target Angle", controller.getGoal().position);
-    SmartDashboard.putNumber("Coral Wrist Target Angle", targetAngle.in(Degrees));
+    // SmartDashboard.putNumber("Coral Wrist Target Angle", targetAngle.in(Degrees));
     SmartDashboard.putNumber("Coral Wrist Applied Duty Cycle", motor.getAppliedOutput());
     SmartDashboard.putNumber("Coral Wrist Current", motor.getOutputCurrent());
+
+    SmartDashboard.putBoolean("Coral Wrist At Goal", controller.atGoal());
   }
 
   public void resetController() {
