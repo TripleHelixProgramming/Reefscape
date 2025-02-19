@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,8 +32,6 @@ public class AlgaeWrist extends SubsystemBase {
           AlgaeWristConstants.kI,
           AlgaeWristConstants.kD,
           AlgaeWristConstants.kConstraints);
-  private final ArmFeedforward feedforward =
-      new ArmFeedforward(AlgaeWristConstants.kS, AlgaeWristConstants.kG, AlgaeWristConstants.kV);
 
   private final EventLoop loop = new EventLoop();
   private AlgaeWristState targetState = AlgaeWristState.Unknown;
@@ -56,9 +53,9 @@ public class AlgaeWrist extends SubsystemBase {
     
     config.softLimit
         .reverseSoftLimit(AlgaeWristState.Min.angle.in(Radians) - (2.0 * Math.PI))
-        .reverseSoftLimitEnabled(true)
+        .reverseSoftLimitEnabled(false)
         .forwardSoftLimit(AlgaeWristState.Max.angle.in(Radians))
-        .forwardSoftLimitEnabled(true);
+        .forwardSoftLimitEnabled(false);
     // spotless:on
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -105,8 +102,7 @@ public class AlgaeWrist extends SubsystemBase {
   private void control() {
     motor.setVoltage(
         controller.calculate(encoder.getPosition())
-            + feedforward.calculate(
-                controller.getSetpoint().position, controller.getSetpoint().velocity));
+            + AlgaeWristConstants.kG * Math.cos(encoder.getPosition()));
   }
 
   public AlgaeWristState getTargetState() {
