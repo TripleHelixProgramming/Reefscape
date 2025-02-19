@@ -28,7 +28,11 @@ public class AlgaeWrist extends SubsystemBase {
   // TODO: Add ArmFeedforward
   // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
   private final ProfiledPIDController controller =
-      new ProfiledPIDController(AlgaeWristConstants.kP, AlgaeWristConstants.kI, 0.0, AlgaeWristConstants.kConstraints);
+      new ProfiledPIDController(
+          AlgaeWristConstants.kP,
+          AlgaeWristConstants.kI,
+          AlgaeWristConstants.kD,
+          AlgaeWristConstants.kConstraints);
 
   private final EventLoop loop = new EventLoop();
   private AlgaeWristState targetState = AlgaeWristState.Unknown;
@@ -59,8 +63,8 @@ public class AlgaeWrist extends SubsystemBase {
     controller.setIZone(AlgaeWristConstants.kIZone.in(Degrees));
     // controller.setIntegratorRange();
 
-    // setDefaultCommand(createRemainAtCurrentAngleCommand());
-    setDefaultCommand(this.startEnd(() -> motor.set(0.0), () -> {}));
+    setDefaultCommand(createRemainAtCurrentAngleCommand());
+    // setDefaultCommand(this.startEnd(() -> motor.set(0.0), () -> {}));
   }
 
   @Override
@@ -72,6 +76,7 @@ public class AlgaeWrist extends SubsystemBase {
     SmartDashboard.putNumber("Algae Wrist Target Angle", controller.getGoal().position);
     SmartDashboard.putNumber("Algae Wrist Applied Duty Cycle", motor.getAppliedOutput());
     SmartDashboard.putNumber("Algae Wrist Current", motor.getOutputCurrent());
+    SmartDashboard.putBoolean("Algae Wrist At Goal", controller.atGoal());
   }
 
   public void resetController() {

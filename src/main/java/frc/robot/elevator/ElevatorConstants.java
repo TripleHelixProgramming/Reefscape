@@ -78,7 +78,7 @@ public class ElevatorConstants {
 
     public static final double kGearRatio = 5.0;
     public static final double kRollerDiameter = 2.0; // inches
-    
+
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the wheel
     public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
@@ -161,6 +161,7 @@ public class ElevatorConstants {
 
     public static final double kP = 0.001;
     public static final double kI = 0.01;
+    public static final double kD = 0.01;
     public static final Angle kIZone = Degrees.of(120.0);
 
     private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(150.0);
