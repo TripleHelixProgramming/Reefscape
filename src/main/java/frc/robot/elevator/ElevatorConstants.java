@@ -169,14 +169,14 @@ public class ElevatorConstants {
 
     public static final double kP = 1.0;
     public static final double kI = 1.0;
-    public static final double kD = 0.03;
+    public static final double kD = 0.0;
     public static final Angle kIZone = Degrees.of(30.0);
 
-    public static final double kS = 0.1; // Static gain in volts
-    public static final double kG = 0.3; // Gravity gain in volts
+    public static final double kS = 0.2; // Static gain in volts
+    public static final double kG = 0.2; // Gravity gain in volts
     public static final double kV = 0.03; // Velocity gain in V/(rad/s)
 
-    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(30.0);
+    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(90.0);
     public static final Time kTimeToMaxVelocity = Seconds.of(0.5);
     public static final AngularAcceleration kMaxAcceleration = kMaxVelocity.div(kTimeToMaxVelocity);
     public static final Constraints kConstraints =

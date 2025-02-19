@@ -84,7 +84,7 @@ public class AlgaeWrist extends SubsystemBase {
     SmartDashboard.putNumber(
         "Algae Wrist/Setpoint Angle Radians", controller.getSetpoint().position);
     SmartDashboard.putNumber(
-        "Algae Wrist/Setpoint Angular Velocity RPS", controller.getSetpoint().velocity); 
+        "Algae Wrist/Setpoint Angular Velocity RPS", controller.getSetpoint().velocity);
     SmartDashboard.putNumber("Algae Wrist/Applied Duty Cycle", motor.getAppliedOutput());
     SmartDashboard.putNumber("Algae Wrist/Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Algae Wrist/At Goal", controller.atGoal());
@@ -105,7 +105,8 @@ public class AlgaeWrist extends SubsystemBase {
   private void control() {
     motor.setVoltage(
         controller.calculate(encoder.getPosition())
-            + feedforward.calculate(controller.getSetpoint().position, controller.getSetpoint().velocity));
+            + feedforward.calculate(
+                controller.getSetpoint().position, controller.getSetpoint().velocity));
   }
 
   public AlgaeWristState getTargetState() {
