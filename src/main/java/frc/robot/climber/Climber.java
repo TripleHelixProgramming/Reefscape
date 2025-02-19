@@ -67,14 +67,14 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Climber Position", getPosition());
-    SmartDashboard.putBoolean("Climber Cage Sensor", cageSensor.get());
+    SmartDashboard.putNumber("Climber/Position", getPosition());
+    SmartDashboard.putBoolean("Climber/Cage Sensor", cageSensor.get());
 
-    SmartDashboard.putNumber("Climber Servo", servo.get());
+    SmartDashboard.putNumber("Climber/Servo", servo.get());
 
-    SmartDashboard.putNumber("Climber Motor Current", motor.getOutputCurrent());
-    SmartDashboard.putBoolean("Climber isfinished for Command", createDeployCommand().isFinished());
-    SmartDashboard.putNumber("Climber Applied Duty Cycle", motor.getAppliedOutput());
+    SmartDashboard.putNumber("Climber/Motor Current", motor.getOutputCurrent());
+    SmartDashboard.putBoolean("Climber/Deploy Command is Finished", createDeployCommand().isFinished());
+    SmartDashboard.putNumber("Climber/Applied Duty Cycle", motor.getAppliedOutput());
   }
 
   public void resetEncoder() {

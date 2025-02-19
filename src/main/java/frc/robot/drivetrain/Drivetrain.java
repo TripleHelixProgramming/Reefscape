@@ -90,21 +90,21 @@ public class Drivetrain extends SubsystemBase {
 
     for (SwerveModule module : SwerveModule.values()) {
       SmartDashboard.putNumber(
-          module.getName() + "RelativeTurningPosition",
+          module.getName() + "/RelativeTurningPosition",
           module.getRelativeTurningPosition().getDegrees());
 
       SmartDashboard.putNumber(
-          module.getName() + "AbsoluteTurningPosition",
+          module.getName() + "/AbsoluteTurningPosition",
           module.getAbsTurningPosition(0.0).getDegrees());
 
       SmartDashboard.putNumber(
-          module.getName() + "RelativeDrivePosition", module.getRelativeDrivePosition());
+          module.getName() + "/RelativeDrivePosition", module.getRelativeDrivePosition());
 
       SmartDashboard.putNumber(
-          module.getName() + "AbsoluteMagnetOffset",
+          module.getName() + "/AbsoluteMagnetOffset",
           module.getAbsTurningEncoderOffset().getDegrees());
 
-      SmartDashboard.putNumber(module.getName() + "OutputCurrent", module.getDriveMotorCurrent());
+      SmartDashboard.putNumber(module.getName() + "/OutputCurrent", module.getDriveMotorCurrent());
     }
 
     SmartDashboard.putNumber("Heading", getHeading().getDegrees());
