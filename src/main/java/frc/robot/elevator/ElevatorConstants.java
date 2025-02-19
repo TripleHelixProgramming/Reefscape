@@ -33,12 +33,9 @@ public class ElevatorConstants {
 
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
     public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(50.0);
-
     public static final LinearAccelerationUnit inchesPerSecondPerSecond =
         InchesPerSecond.per(Second);
-    public static final Time kTimeToMaxVelocity = Seconds.of(0.02);
-    public static final LinearAcceleration kRapidAcceleration =
-        kRapidVelocity.div(kTimeToMaxVelocity);
+    public static final LinearAcceleration kRapidAcceleration = inchesPerSecondPerSecond.of(1000);
 
     public static final Distance kAllowableHeightError = Inches.of(0.2);
 
