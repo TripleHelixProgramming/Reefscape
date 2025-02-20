@@ -58,11 +58,9 @@ public class AlgaeWrist extends SubsystemBase {
         .velocityConversionFactor(AlgaeWristConstants.kVelocityConversionFactor);
     
     config.softLimit
-        .reverseSoftLimit((AlgaeWristState.Min.angle.in(Radians) - AlgaeWristConstants.kPositionOffset.in(Rotations))
-            * AlgaeWristConstants.kTotalGearRatio / (Math.PI * 2.0))
+        .reverseSoftLimit(AlgaeWristState.Min.angle.in(Radians))
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit((AlgaeWristState.Max.angle.in(Radians) - AlgaeWristConstants.kPositionOffset.in(Rotations))
-            * AlgaeWristConstants.kTotalGearRatio / (Math.PI * 2.0))
+        .forwardSoftLimit(AlgaeWristState.Max.angle.in(Radians))
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
