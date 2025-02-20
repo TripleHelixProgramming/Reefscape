@@ -108,14 +108,14 @@ public class ElevatorConstants {
     public static final AngularVelocity kVelocityConversionFactor =
         Rotations.of(kGearRatioEncoderToArm).per(Minute);
 
-    public static final double kP = 0.3;
-    public static final double kI = 0.0;
-    public static final double kD = 0.1;
-    public static final double kG = 0.0;
+    public static final double kP = 4.0;
+    public static final double kI = 3.0;
+    public static final double kD = 0.03;
+    public static final double kG = 2.0;
     public static final Angle kIZone = Degrees.of(30.0);
 
-    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(30.0);
-    private static final AngularAcceleration kMaxAcceleration = DegreesPerSecondPerSecond.of(30.0);
+    private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(90.0);
+    private static final AngularAcceleration kMaxAcceleration = DegreesPerSecondPerSecond.of(180.0);
     public static final Constraints kConstraints =
         new Constraints(
             kMaxVelocity.in(RadiansPerSecond), kMaxAcceleration.in(RadiansPerSecondPerSecond));

@@ -69,8 +69,8 @@ public class CoralWrist extends SubsystemBase {
     controller.enableContinuousInput(0, 2.0 * Math.PI);
     // controller.setIntegratorRange();
 
-    // setDefaultCommand(createRemainAtCurrentAngleCommand());
-    setDefaultCommand(this.startEnd(() -> motor.setVoltage(1.0), () -> {}));
+    setDefaultCommand(createRemainAtCurrentAngleCommand());
+    // setDefaultCommand(this.startEnd(() -> motor.setVoltage(-0.5), () -> {}));
   }
 
   @Override
