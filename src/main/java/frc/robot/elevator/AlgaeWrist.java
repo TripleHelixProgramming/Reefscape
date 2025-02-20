@@ -55,11 +55,9 @@ public class AlgaeWrist extends SubsystemBase {
         .velocityConversionFactor(AlgaeWristConstants.kVelocityConversionFactor);
     
     config.softLimit
-        .reverseSoftLimit((AlgaeWristState.Min.angle.in(Radians) - AlgaeWristConstants.kPositionOffset.in(Rotations))
-            * AlgaeWristConstants.kTotalGearRatio / (Math.PI * 2.0))
+        .reverseSoftLimit(AlgaeWristState.Min.angle.in(Radians))
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit((AlgaeWristState.Max.angle.in(Radians) - AlgaeWristConstants.kPositionOffset.in(Rotations))
-            * AlgaeWristConstants.kTotalGearRatio / (Math.PI * 2.0))
+        .forwardSoftLimit(AlgaeWristState.Max.angle.in(Radians))
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
@@ -71,7 +69,7 @@ public class AlgaeWrist extends SubsystemBase {
     // controller.setIntegratorRange();
 
     setDefaultCommand(createRemainAtCurrentAngleCommand());
-    // setDefaultCommand(this.startEnd(() -> motor.setVoltage(0.3), () -> {}));
+    // setDefaultCommand(this.startEnd(() -> motor.setVoltage(-0.3), () -> {}));
   }
 
   @Override
