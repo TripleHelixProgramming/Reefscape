@@ -72,7 +72,6 @@ public class AlgaeWrist extends SubsystemBase {
     // controller.setIntegratorRange();
 
     setDefaultCommand(createRemainAtCurrentAngleCommand());
-    // setDefaultCommand(this.startEnd(() -> motor.setVoltage(-0.3), () -> {}));
   }
 
   @Override

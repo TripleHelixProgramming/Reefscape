@@ -27,8 +27,6 @@ public class CoralWrist extends SubsystemBase {
   private final SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
   // private final SparkClosedLoopController controller = motor.getClosedLoopController();
 
-  // TODO: Add ArmFeedforward
-  // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
   private final ProfiledPIDController controller =
       new ProfiledPIDController(
           CoralWristConstants.kP, CoralWristConstants.kI, 0.0, CoralWristConstants.kConstraints);
