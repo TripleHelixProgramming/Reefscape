@@ -62,7 +62,7 @@ public class CoralWrist extends SubsystemBase {
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     controller.setTolerance(CoralWristConstants.kAllowableAngleError.in(Radians));
     controller.setIZone(CoralWristConstants.kIZone.in(Radians));
@@ -70,7 +70,6 @@ public class CoralWrist extends SubsystemBase {
     // controller.setIntegratorRange();
 
     setDefaultCommand(createRemainAtCurrentAngleCommand());
-    // setDefaultCommand(this.startEnd(() -> motor.setVoltage(-0.5), () -> {}));
   }
 
   @Override

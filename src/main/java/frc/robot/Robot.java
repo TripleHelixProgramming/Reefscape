@@ -37,10 +37,11 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
-// import frc.robot.elevator.AlgaeWrist;
+import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
+import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
@@ -60,7 +61,7 @@ public class Robot extends TimedRobot {
   private final CoralRoller coralRoller = elevator.getCoralRoller();
   private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
   private final CoralWrist coralWrist = elevator.getCoralWrist();
-  // private final AlgaeWrist algaeWrist = elevator.getAlgaeWrist();
+  private final AlgaeWrist algaeWrist = elevator.getAlgaeWrist();
 
   private final Drivetrain swerve =
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
@@ -216,12 +217,12 @@ public class Robot extends TimedRobot {
     Trigger algaeMode = operator.leftBumper();
 
     // Test coral wrist motion
-    operator.back().onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
-    operator.start().onTrue(coralWrist.createSetAngleCommand(CoralWristState.L4));
-
-    // Test algae wrist motion
-    // operator.back().onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor));
-    // operator.start().onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
+    operator.back()
+        .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode)
+        .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor)));
+    operator.start()
+        .onTrue(coralWrist.createSetAngleCommand(CoralWristState.L4)
+        .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode)));
 
     // Test algae roller motion
     // operator.back().whileTrue(algaeRoller.createIntakeCommand());
