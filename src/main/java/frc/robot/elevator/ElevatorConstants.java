@@ -152,20 +152,23 @@ public class ElevatorConstants {
   public static final class AlgaeWristConstants {
     public static final int kMotorPort = 14;
 
-    public static final double kTotalGearRatio = 5 * (36 / 18); // 5:1 for motor, 36:18 for belt
+    public static final double kGearRatioEncoderToMotor =
+        5.0 * (36.0 / 18.0); // 5:1 for motor, 36:18 for belt
+    public static final double kGearRatioArmToEncoder = 1.0;
 
     /*
     When used as an absolute encoder, the REV Through Bore encoder measures position
     in rotations at the sensor by default. Convert to radians at the algae wrist.
      */
-    public static final double kPositionConversionFactor = Math.PI * 2.0;
+    public static final Angle kPositionConversionFactor = Rotations.of(kGearRatioArmToEncoder);
     public static final Angle kPositionOffset = Degrees.of(232.0);
 
     /*
     When used as an absolute encoder, the REV Through Bore encoder measures velocity
     in rotations per minute at the sensor by default. Convert to radians per second at the algae wrist.
      */
-    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+    public static final AngularVelocity kVelocityConversionFactor =
+        Rotations.of(kGearRatioArmToEncoder).per(Minute);
 
     public static final double kP = 1.0;
     public static final double kI = 1.0;

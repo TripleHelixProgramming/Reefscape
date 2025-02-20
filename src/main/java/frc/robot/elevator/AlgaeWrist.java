@@ -2,6 +2,7 @@ package frc.robot.elevator;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -9,10 +10,9 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,8 +54,8 @@ public class AlgaeWrist extends SubsystemBase {
         .inverted(true)
         .zeroCentered(true)
         .zeroOffset(AlgaeWristConstants.kPositionOffset.in(Rotations))
-        .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor)
-        .velocityConversionFactor(AlgaeWristConstants.kVelocityConversionFactor);
+        .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor.in(Radians))
+        .velocityConversionFactor(AlgaeWristConstants.kVelocityConversionFactor.in(RadiansPerSecond));
     
     config.softLimit
         .reverseSoftLimit(AlgaeWristState.Min.angle.in(Radians))
