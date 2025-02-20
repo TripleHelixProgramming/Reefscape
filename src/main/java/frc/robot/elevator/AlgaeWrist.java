@@ -2,6 +2,7 @@ package frc.robot.elevator;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -10,6 +11,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,18 +46,23 @@ public class AlgaeWrist extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
         .voltageCompensation(RobotConstants.kNominalVoltage);
-        
+    
+    config.closedLoop
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+    
     config.absoluteEncoder
         .inverted(true)
         .zeroCentered(true)
-        .zeroOffset(AlgaeWristConstants.kPositionOffset)
+        .zeroOffset(AlgaeWristConstants.kPositionOffset.in(Rotations))
         .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor)
         .velocityConversionFactor(AlgaeWristConstants.kVelocityConversionFactor);
     
     config.softLimit
-        .reverseSoftLimit((AlgaeWristState.Min.angle.in(Radians)-AlgaeWristConstants.kPositionOffset)*Math.PI/2.0)
+        .reverseSoftLimit((AlgaeWristState.Min.angle.in(Radians) - AlgaeWristConstants.kPositionOffset.in(Rotations))
+            * AlgaeWristConstants.kTotalGearRatio / (Math.PI * 2.0))
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit((AlgaeWristState.Max.angle.in(Radians)-AlgaeWristConstants.kPositionOffset)*Math.PI/2.0)
+        .forwardSoftLimit((AlgaeWristState.Max.angle.in(Radians) - AlgaeWristConstants.kPositionOffset.in(Rotations))
+            * AlgaeWristConstants.kTotalGearRatio / (Math.PI * 2.0))
         .forwardSoftLimitEnabled(true);
     // spotless:on
 

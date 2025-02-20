@@ -159,7 +159,7 @@ public class ElevatorConstants {
     in rotations at the sensor by default. Convert to radians at the algae wrist.
      */
     public static final double kPositionConversionFactor = Math.PI * 2.0;
-    public static final double kPositionOffset = Degrees.of(232.0).in(Rotations);
+    public static final Angle kPositionOffset = Degrees.of(232.0);
 
     /*
     When used as an absolute encoder, the REV Through Bore encoder measures velocity
