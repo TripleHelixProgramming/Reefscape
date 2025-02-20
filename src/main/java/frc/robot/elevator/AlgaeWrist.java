@@ -14,7 +14,6 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -36,7 +35,6 @@ public class AlgaeWrist extends SubsystemBase {
           AlgaeWristConstants.kD,
           AlgaeWristConstants.kConstraints);
 
-  private final EventLoop loop = new EventLoop();
   private AlgaeWristState targetState = AlgaeWristState.Unknown;
 
   public AlgaeWrist() {
@@ -64,7 +62,7 @@ public class AlgaeWrist extends SubsystemBase {
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     controller.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Radians));
     controller.setIZone(AlgaeWristConstants.kIZone.in(Radians));
@@ -76,8 +74,6 @@ public class AlgaeWrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    loop.poll();
-
     SmartDashboard.putNumber("Algae Wrist/Current Angle Degrees", getCurrentAngleDegrees());
     SmartDashboard.putNumber("Algae Wrist/Current Angle Radians", encoder.getPosition());
     SmartDashboard.putNumber("Algae Wrist/Current Angular Velocity RPS", encoder.getVelocity());
