@@ -47,9 +47,6 @@ public class AlgaeWrist extends SubsystemBase {
         .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
         .voltageCompensation(RobotConstants.kNominalVoltage);
     
-    config.closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-    
     config.absoluteEncoder
         .inverted(true)
         .zeroCentered(true)
