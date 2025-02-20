@@ -98,7 +98,8 @@ public class ElevatorConstants {
     in rotations at the sensor by default. Convert to radians at the algae wrist.
      */
     public static final Angle kPositionConversionFactor = Rotations.of(kGearRatioEncoderToArm);
-    public static final Angle kPositionOffset = Radians.of(0.888);
+    public static final Angle kPositionOffset =
+        Radians.of(0.888).times(Rotations.of(1.0).div(kPositionConversionFactor));
 
     /*
     When used as an absolute encoder, the CTRE SRX Mag encoder measures velocity

@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
-import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 
@@ -51,7 +50,7 @@ public class CoralWrist extends SubsystemBase {
     
     config.absoluteEncoder
         .inverted(false)
-        .zeroCentered(true)
+        .zeroCentered(false)
         .zeroOffset(CoralWristConstants.kPositionOffset.in(Rotations))
         .positionConversionFactor(CoralWristConstants.kPositionConversionFactor.in(Radians))
         .velocityConversionFactor(CoralWristConstants.kVelocityConversionFactor.in(RadiansPerSecond));
@@ -104,7 +103,8 @@ public class CoralWrist extends SubsystemBase {
 
   public void control() {
     motor.setVoltage(
-        controller.calculate(encoder.getPosition()) + AlgaeWristConstants.kG * Math.cos(encoder.getPosition()));
+        controller.calculate(encoder.getPosition())
+            + CoralWristConstants.kG * Math.cos(encoder.getPosition()));
   }
 
   public CoralWristState getTargetState() {
