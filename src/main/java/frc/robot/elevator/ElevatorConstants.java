@@ -90,14 +90,14 @@ public class ElevatorConstants {
   public static final class CoralWristConstants {
     public static final int kMotorPort = 22;
 
-    public static final double kGearRatioArmToEncoder = 42.0 / 24.0;
-    public static final double kGearRatioEncoderToMotor = 5.0;
+    public static final double kGearRatioMotortoEncoder = 1.0 / 5.0;
+    public static final double kGearRatioEncoderToArm = 24.0 / 42.0;
 
     /*
     When used as an absolute encoder, the CTRE SRX Mag encoder measures position
     in rotations at the sensor by default. Convert to radians at the algae wrist.
      */
-    public static final Angle kPositionConversionFactor = Rotations.of(kGearRatioArmToEncoder);
+    public static final Angle kPositionConversionFactor = Rotations.of(kGearRatioEncoderToArm);
     public static final Angle kPositionOffset = Degrees.of(0.0);
 
     /*
@@ -105,7 +105,7 @@ public class ElevatorConstants {
     in rotations per minute at the sensor by default. Convert to radians per second at the algae wrist.
      */
     public static final AngularVelocity kVelocityConversionFactor =
-        Rotations.of(kGearRatioArmToEncoder).per(Minute);
+        Rotations.of(kGearRatioEncoderToArm).per(Minute);
 
     public static final double kP = 0.3;
     public static final double kI = 0.0;
@@ -162,15 +162,15 @@ public class ElevatorConstants {
   public static final class AlgaeWristConstants {
     public static final int kMotorPort = 14;
 
-    public static final double kGearRatioEncoderToMotor =
-        5.0 * (36.0 / 18.0); // 5:1 for motor, 36:18 for belt
-    public static final double kGearRatioArmToEncoder = 1.0;
+    public static final double kGearRatioMotortoEncoder =
+        (1.0 / 5.0) * (18.0 / 36.0); // 5:1 for motor, 36:18 for belt
+    public static final double kGearRatioEncoderToArm = 1.0;
 
     /*
     When used as an absolute encoder, the REV Through Bore encoder measures position
     in rotations at the sensor by default. Convert to radians at the algae wrist.
      */
-    public static final Angle kPositionConversionFactor = Rotations.of(kGearRatioArmToEncoder);
+    public static final Angle kPositionConversionFactor = Rotations.of(kGearRatioEncoderToArm);
     public static final Angle kPositionOffset = Degrees.of(232.0);
 
     /*
@@ -178,7 +178,7 @@ public class ElevatorConstants {
     in rotations per minute at the sensor by default. Convert to radians per second at the algae wrist.
      */
     public static final AngularVelocity kVelocityConversionFactor =
-        Rotations.of(kGearRatioArmToEncoder).per(Minute);
+        Rotations.of(kGearRatioEncoderToArm).per(Minute);
 
     public static final double kP = 1.0;
     public static final double kI = 1.0;
