@@ -1,17 +1,19 @@
 package frc.robot.elevator;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -25,66 +27,73 @@ public class CoralWrist extends SubsystemBase {
   private final SparkMax motor = new SparkMax(CoralWristConstants.kMotorPort, MotorType.kBrushless);
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
-  // private final SparkClosedLoopController controller = motor.getClosedLoopController();
 
   private final ProfiledPIDController controller =
       new ProfiledPIDController(
-          CoralWristConstants.kP, CoralWristConstants.kI, 0.0, CoralWristConstants.kConstraints);
+          CoralWristConstants.kP,
+          CoralWristConstants.kI,
+          CoralWristConstants.kD,
+          CoralWristConstants.kConstraints);
 
-  private final EventLoop loop = new EventLoop();
   private CoralWristState targetState = CoralWristState.Unknown;
-  private Angle targetAngle = targetState.angle;
 
   public CoralWrist() {
     // spotless:off
     config
-        .voltageCompensation(RobotConstants.kNominalVoltage)
+        .inverted(true)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
-        .inverted(false);
+        .voltageCompensation(RobotConstants.kNominalVoltage);
 
-    // config.closedLoop
-    //     .p(CoralWristConstants.kP)
-    //     .i(0.0)
-    //     .d(0.0)
-    //     // .izone(),
-    //     // .outputRange(-1, 1)
-    //     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+    config.closedLoop
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     
     config.absoluteEncoder
-        .positionConversionFactor(CoralWristConstants.kPositionConversionFactor)
-        .zeroOffset(CoralWristConstants.kPositionOffset)
-        .inverted(false);
+        .inverted(false)
+        .zeroCentered(false)
+        .zeroOffset(CoralWristConstants.kPositionOffset.in(Rotations))
+        .positionConversionFactor(CoralWristConstants.kPositionConversionFactor.in(Radians))
+        .velocityConversionFactor(CoralWristConstants.kVelocityConversionFactor.in(RadiansPerSecond));
 
     config.softLimit
-        .reverseSoftLimit(CoralWristState.Min.angle.in(Degrees))
+        .reverseSoftLimit(CoralWristState.Min.angle.in(Radians))
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(CoralWristState.Max.angle.in(Degrees))
+        .forwardSoftLimit(CoralWristState.Max.angle.in(Radians))
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    controller.setTolerance(CoralWristConstants.kAllowableAngleError.in(Degrees));
-    // controller.setIZone();
+    controller.setTolerance(CoralWristConstants.kAllowableAngleError.in(Radians));
+    controller.setIZone(CoralWristConstants.kIZone.in(Radians));
+    controller.enableContinuousInput(0, 2.0 * Math.PI);
     // controller.setIntegratorRange();
 
-    // setDefaultCommand(createRemainAtCurrentAngleCommand());
-    setDefaultCommand(this.startEnd(() -> motor.set(0.0), () -> {}));
+    setDefaultCommand(createRemainAtCurrentAngleCommand());
   }
 
   @Override
   public void periodic() {
-    loop.poll();
-
-    SmartDashboard.putNumber("Coral Wrist/Angle", encoder.getPosition());
+    SmartDashboard.putNumber("Coral Wrist/Current Angle Degrees", getCurrentAngleDegrees());
+    SmartDashboard.putNumber("Coral Wrist/Current Angle Radians", encoder.getPosition());
+    SmartDashboard.putNumber("Coral Wrist/Current Angular Velocity RPS", encoder.getVelocity());
     SmartDashboard.putString("Coral Wrist/Target State", getTargetState().name());
-    SmartDashboard.putNumber("Coral Wrist/Target Angle", controller.getGoal().position);
-    // SmartDashboard.putNumber("Coral Wrist/Target Angle", targetAngle.in(Degrees));
+    SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Degrees", getSetpointAngleDegrees());
+    SmartDashboard.putNumber(
+        "Coral Wrist/Setpoint Angle Radians", controller.getSetpoint().position);
+    SmartDashboard.putNumber(
+        "Coral Wrist/Setpoint Angular Velocity RPS", controller.getSetpoint().velocity);
     SmartDashboard.putNumber("Coral Wrist/Applied Duty Cycle", motor.getAppliedOutput());
     SmartDashboard.putNumber("Coral Wrist/Current", motor.getOutputCurrent());
-
     SmartDashboard.putBoolean("Coral Wrist/At Goal", controller.atGoal());
+  }
+
+  private double getCurrentAngleDegrees() {
+    return Radians.of(encoder.getPosition()).in(Degrees);
+  }
+
+  private double getSetpointAngleDegrees() {
+    return Radians.of(controller.getSetpoint().position).in(Degrees);
   }
 
   public void resetController() {
@@ -92,7 +101,9 @@ public class CoralWrist extends SubsystemBase {
   }
 
   public void control() {
-    motor.set(controller.calculate(encoder.getPosition()));
+    motor.setVoltage(
+        controller.calculate(encoder.getPosition())
+            + CoralWristConstants.kG * Math.cos(encoder.getPosition()));
   }
 
   public CoralWristState getTargetState() {
@@ -104,18 +115,14 @@ public class CoralWrist extends SubsystemBase {
         // initialize
         () -> {
           targetState = state;
-          targetAngle = state.angle;
-          controller.setGoal(targetState.angle.in(Degrees));
-          // controller.setReference(targetState.angle.in(Degrees), ControlType.kPosition);
+          controller.setGoal(targetState.angle.in(Radians));
         },
         // execute
-        () -> {}, // control()
+        () -> control(),
         // end
-        interrupted -> {
-          System.err.println("Set angle command ended " + interrupted);
-        },
+        interrupted -> {},
         // isFinished
-        () -> false, // controller.atGoal()
+        () -> controller.atGoal(),
         // requirements
         this);
   }
@@ -125,8 +132,6 @@ public class CoralWrist extends SubsystemBase {
         // initialize
         () -> {
           if (targetState == CoralWristState.Unknown) controller.setGoal(encoder.getPosition());
-          // if (targetState == CoralWristState.Unknown)
-          //   controller.setReference(targetState.angle.in(Degrees), ControlType.kPosition);
         },
         // execute
         () -> control(),
