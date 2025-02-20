@@ -3,7 +3,6 @@ package frc.robot.elevator;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -52,7 +51,7 @@ public class CoralWrist extends SubsystemBase {
     config.absoluteEncoder
         .inverted(false)
         .zeroCentered(false)
-        .zeroOffset(CoralWristConstants.kPositionOffset.in(Rotations))
+        .zeroOffset(0.0)
         .positionConversionFactor(CoralWristConstants.kPositionConversionFactor.in(Radians))
         .velocityConversionFactor(CoralWristConstants.kVelocityConversionFactor.in(RadiansPerSecond));
 
@@ -77,7 +76,7 @@ public class CoralWrist extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Coral Wrist/Current Angle Degrees", getCurrentAngleDegrees());
-    SmartDashboard.putNumber("Coral Wrist/Current Angle Radians", encoder.getPosition());
+    SmartDashboard.putNumber("Coral Wrist/Current Angle Radians", getPosition());
     SmartDashboard.putNumber("Coral Wrist/Current Angular Velocity RPS", encoder.getVelocity());
     SmartDashboard.putString("Coral Wrist/Target State", getTargetState().name());
     SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Degrees", getSetpointAngleDegrees());
@@ -90,8 +89,12 @@ public class CoralWrist extends SubsystemBase {
     SmartDashboard.putBoolean("Coral Wrist/At Goal", controller.atGoal());
   }
 
+  private double getPosition() {
+    return encoder.getPosition() + CoralWristConstants.kPositionOffset.in(Radians);
+  }
+
   private double getCurrentAngleDegrees() {
-    return Radians.of(encoder.getPosition()).in(Degrees);
+    return Radians.of(getPosition()).in(Degrees);
   }
 
   private double getSetpointAngleDegrees() {
@@ -99,13 +102,12 @@ public class CoralWrist extends SubsystemBase {
   }
 
   public void resetController() {
-    controller.reset(encoder.getPosition(), encoder.getVelocity());
+    controller.reset(getPosition(), encoder.getVelocity());
   }
 
   public void control() {
     motor.setVoltage(
-        controller.calculate(encoder.getPosition())
-            + AlgaeWristConstants.kG * Math.cos(encoder.getPosition()));
+        controller.calculate(getPosition()) + AlgaeWristConstants.kG * Math.cos(getPosition()));
   }
 
   public CoralWristState getTargetState() {
@@ -133,7 +135,7 @@ public class CoralWrist extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == CoralWristState.Unknown) controller.setGoal(encoder.getPosition());
+          if (targetState == CoralWristState.Unknown) controller.setGoal(getPosition());
         },
         // execute
         () -> control(),
