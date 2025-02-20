@@ -183,7 +183,7 @@ public class ElevatorConstants {
     public static enum AlgaeWristState {
       Unknown(90),
       Floor(-10),
-      Min(-15),
+      Min(-20),
       Max(95),
       Processor(0),
       L2(-10),

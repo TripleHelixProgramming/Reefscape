@@ -52,13 +52,13 @@ public class AlgaeWrist extends SubsystemBase {
         .velocityConversionFactor(AlgaeWristConstants.kVelocityConversionFactor);
     
     config.softLimit
-        .reverseSoftLimit(AlgaeWristState.Min.angle.in(Radians) - (2.0 * Math.PI))
-        .reverseSoftLimitEnabled(false)
-        .forwardSoftLimit(AlgaeWristState.Max.angle.in(Radians))
-        .forwardSoftLimitEnabled(false);
+        .reverseSoftLimit((AlgaeWristState.Min.angle.in(Radians)-AlgaeWristConstants.kPositionOffset)*Math.PI/2.0)
+        .reverseSoftLimitEnabled(true)
+        .forwardSoftLimit((AlgaeWristState.Max.angle.in(Radians)-AlgaeWristConstants.kPositionOffset)*Math.PI/2.0)
+        .forwardSoftLimitEnabled(true);
     // spotless:on
 
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     controller.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Radians));
     controller.setIZone(AlgaeWristConstants.kIZone.in(Radians));
@@ -66,7 +66,7 @@ public class AlgaeWrist extends SubsystemBase {
     // controller.setIntegratorRange();
 
     setDefaultCommand(createRemainAtCurrentAngleCommand());
-    // setDefaultCommand(this.startEnd(() -> motor.setVoltage(0.5), () -> {}));
+    // setDefaultCommand(this.startEnd(() -> motor.setVoltage(0.3), () -> {}));
   }
 
   @Override
