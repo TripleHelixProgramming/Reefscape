@@ -54,7 +54,7 @@ public class CoralWrist extends SubsystemBase {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     
     config.absoluteEncoder
-        .inverted(false)
+        .inverted(false) // TODO: determine if has any effect
         .zeroCentered(false)
         .zeroOffset(CoralWristConstants.kPositionOffset.in(Rotations))
         .positionConversionFactor(CoralWristConstants.kPositionConversionFactor.in(Radians))
@@ -71,7 +71,7 @@ public class CoralWrist extends SubsystemBase {
 
     feedback.setTolerance(CoralWristConstants.kAllowableAngleError.in(Radians));
     feedback.setIZone(CoralWristConstants.kIZone.in(Radians));
-    feedback.enableContinuousInput(0, 2.0 * Math.PI);
+    feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // controller.setIntegratorRange();
 
     // setDefaultCommand(createRemainAtCurrentAngleCommand());

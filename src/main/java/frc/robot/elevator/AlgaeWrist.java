@@ -54,7 +54,7 @@ public class AlgaeWrist extends SubsystemBase {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     
     config.absoluteEncoder
-        .inverted(true)
+        .inverted(true) // TODO: determine if has any effect
         .zeroCentered(true)
         .zeroOffset(AlgaeWristConstants.kPositionOffset.in(Rotations))
         .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor.in(Radians))
@@ -71,8 +71,8 @@ public class AlgaeWrist extends SubsystemBase {
 
     feedback.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Radians));
     feedback.setIZone(AlgaeWristConstants.kIZone.in(Radians));
-    feedback.enableContinuousInput(0, 2.0 * Math.PI);
-    // controller.setIntegratorRange();
+    feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
+    // feedback.setIntegratorRange();
 
     // setDefaultCommand(createRemainAtCurrentAngleCommand());
   }
