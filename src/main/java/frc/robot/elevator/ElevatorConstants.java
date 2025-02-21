@@ -100,6 +100,7 @@ public class ElevatorConstants {
     public static final Angle kPositionConversionFactor = Rotations.of(kGearRatioEncoderToArm);
     public static final Angle kPositionOffset =
         Radians.of(0.888).times(Rotations.of(1.0).div(kPositionConversionFactor));
+    public static final Angle kCenterOfGravityOffset = Degrees.of(0.0);
 
     /*
     When used as an absolute encoder, the CTRE SRX Mag encoder measures velocity
@@ -108,10 +109,13 @@ public class ElevatorConstants {
     public static final AngularVelocity kVelocityConversionFactor =
         Rotations.of(kGearRatioEncoderToArm).per(Minute);
 
+    public static final double kG = 2.0;
+    public static final double kS = 0.0;
+    public static final double kV = 0.0;
+
     public static final double kP = 4.0;
     public static final double kI = 3.0;
     public static final double kD = 0.03;
-    public static final double kG = 2.0;
     public static final Angle kIZone = Degrees.of(30.0);
 
     private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(90.0);
@@ -173,6 +177,7 @@ public class ElevatorConstants {
      */
     public static final Angle kPositionConversionFactor = Rotations.of(kGearRatioEncoderToArm);
     public static final Angle kPositionOffset = Degrees.of(232.0);
+    public static final Angle kCenterOfGravityOffset = Degrees.of(0.0);
 
     /*
     When used as an absolute encoder, the REV Through Bore encoder measures velocity
@@ -181,10 +186,13 @@ public class ElevatorConstants {
     public static final AngularVelocity kVelocityConversionFactor =
         Rotations.of(kGearRatioEncoderToArm).per(Minute);
 
+    public static final double kG = 0.0;
+    public static final double kS = 0.0;
+    public static final double kV = 0.0;
+
     public static final double kP = 1.0;
     public static final double kI = 1.0;
     public static final double kD = 0.1;
-    public static final double kG = 0.0;
     public static final Angle kIZone = Degrees.of(30.0);
 
     private static final AngularVelocity kMaxVelocity = DegreesPerSecond.of(180.0);
