@@ -69,7 +69,7 @@ public class CoralWrist extends SubsystemBase {
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    feedback.setTolerance(CoralWristConstants.kAllowableAngleError.in(Radians));
+    feedback.setTolerance(CoralWristConstants.kAllowableError.in(Radians));
     feedback.setIZone(CoralWristConstants.kIZone.in(Radians));
     feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // controller.setIntegratorRange();

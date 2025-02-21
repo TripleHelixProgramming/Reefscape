@@ -69,7 +69,7 @@ public class AlgaeWrist extends SubsystemBase {
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    feedback.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Radians));
+    feedback.setTolerance(AlgaeWristConstants.kAllowableError.in(Radians));
     feedback.setIZone(AlgaeWristConstants.kIZone.in(Radians));
     feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // feedback.setIntegratorRange();
