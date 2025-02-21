@@ -108,7 +108,7 @@ public class ElevatorConstants {
     in rotations at the sensor by default. Convert to radians at the algae wrist.
      */
     public static final Angle kPositionConversionFactor = Rotations.of(gearRatioEncoderToArm);
-    public static final Angle kPositionOffset =
+    public static final Angle kZeroOffset =
         Radians.of(0.888).times(Rotations.of(1.0).div(kPositionConversionFactor));
     public static final Angle kCenterOfGravityOffset = Degrees.of(0.0);
     public static final Angle kAllowableError = Degrees.of(3.0);
@@ -171,9 +171,9 @@ public class ElevatorConstants {
   public static final class AlgaeWristConstants {
     public static final int kMotorPort = 14;
 
-    public static final double gearRatioMotortoEncoder =
+    private static final double gearRatioMotortoEncoder =
         (1.0 / 5.0) * (18.0 / 36.0); // 5:1 for motor, 36:18 for belt
-    public static final double gearRatioEncoderToArm = 1.0;
+    private static final double gearRatioEncoderToArm = 1.0;
     private static final AngularVelocity maxMotorVelocity = RPM.of(5676);
     private static final AngularVelocity maxArmVelocityTheoretical =
         maxMotorVelocity.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
@@ -190,7 +190,7 @@ public class ElevatorConstants {
     in rotations at the sensor by default. Convert to radians at the algae wrist.
      */
     public static final Angle kPositionConversionFactor = Rotations.of(gearRatioEncoderToArm);
-    public static final Angle kPositionOffset = Degrees.of(232.0);
+    public static final Angle kZeroOffset = Degrees.of(232.0);
     public static final Angle kCenterOfGravityOffset = Degrees.of(0.0);
     public static final Angle kAllowableError = Degrees.of(3.0);
 

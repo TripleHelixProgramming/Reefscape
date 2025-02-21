@@ -56,7 +56,7 @@ public class AlgaeWrist extends SubsystemBase {
     config.absoluteEncoder
         .inverted(true) // TODO: determine if has any effect
         .zeroCentered(true)
-        .zeroOffset(AlgaeWristConstants.kPositionOffset.in(Rotations))
+        .zeroOffset(AlgaeWristConstants.kZeroOffset.in(Rotations))
         .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor.in(Radians))
         .velocityConversionFactor(AlgaeWristConstants.kVelocityConversionFactor.in(RadiansPerSecond));
     
