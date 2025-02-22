@@ -16,11 +16,13 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
@@ -81,11 +83,11 @@ public class CoralWrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Coral Wrist/Current Angle Degrees", getCurrentAngleDegrees());
+    SmartDashboard.putNumber("Coral Wrist/Current Angle Degrees", getCurrentAngle().in(Degrees));
     SmartDashboard.putNumber("Coral Wrist/Current Angle Radians", encoder.getPosition());
     SmartDashboard.putNumber("Coral Wrist/Current Angular Velocity RPS", encoder.getVelocity());
     SmartDashboard.putString("Coral Wrist/Target State", getTargetState().name());
-    SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Degrees", getSetpointAngleDegrees());
+    SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Degrees", getSetpointAngle().in(Degrees));
     SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Radians", feedback.getSetpoint().position);
     SmartDashboard.putNumber(
         "Coral Wrist/Setpoint Angular Velocity RPS", feedback.getSetpoint().velocity);
@@ -94,12 +96,12 @@ public class CoralWrist extends SubsystemBase {
     SmartDashboard.putBoolean("Coral Wrist/At Goal", feedback.atGoal());
   }
 
-  private double getCurrentAngleDegrees() {
-    return Radians.of(encoder.getPosition()).in(Degrees);
+  private Angle getCurrentAngle() {
+    return Radians.of(encoder.getPosition());
   }
 
-  private double getSetpointAngleDegrees() {
-    return Radians.of(feedback.getSetpoint().position).in(Degrees);
+  private Angle getSetpointAngle() {
+    return Radians.of(feedback.getSetpoint().position);
   }
 
   public void resetController() {
@@ -119,6 +121,14 @@ public class CoralWrist extends SubsystemBase {
   public CoralWristState getTargetState() {
     return this.targetState;
   }
+
+  public Boolean inState(CoralWristState state) {
+    return this.targetState.equals(state);
+  }
+
+  public Trigger atRiskOfDamage =
+      new Trigger(
+          () -> getCurrentAngle().gt(CoralWristState.AlgaeMode.angle.plus(Degrees.of(3.0))));
 
   public Command createSetAngleCommand(CoralWristState state) {
     return new FunctionalCommand(

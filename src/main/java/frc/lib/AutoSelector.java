@@ -95,7 +95,9 @@ public class AutoSelector {
   /**
    * @return Object for binding a command to a change in autonomous mode selection
    */
-  public Trigger changedAutoSelection = autoSelectionChanged.castTo(Trigger::new);
+  public Trigger getChangedAutoSelection() {
+    return autoSelectionChanged.castTo(Trigger::new);
+  }
 
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
