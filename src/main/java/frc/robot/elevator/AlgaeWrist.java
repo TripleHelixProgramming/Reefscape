@@ -140,7 +140,10 @@ public class AlgaeWrist extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == AlgaeWristState.Unknown) feedback.setGoal(encoder.getPosition());
+          if (targetState == AlgaeWristState.Unknown) {
+            targetState = AlgaeWristState.CoralMode;
+            feedback.setGoal(targetState.angle.in(Radians));
+          }
         },
         // execute
         () -> control(),
