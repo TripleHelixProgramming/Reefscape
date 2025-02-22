@@ -58,7 +58,7 @@ public class ElevatorConstants {
       Processor(12.0),
       AlgaeL2(30),
       AlgaeL3(46.5),
-      Max(30.00);
+      Max(52.0);
 
       public Distance height;
 
