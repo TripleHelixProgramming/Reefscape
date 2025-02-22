@@ -43,12 +43,12 @@ public class ElevatorConstants {
     public final class LifterController {
       public static final double kS = 0.08; // Found empirically 2/22/2025
       public static final double kG = 0.0; // Found empirically 2/22/2025
-      public static final double kV = (12.0 - kS) / maxTheoreticalVelocity.in(InchesPerSecond);
+      public static final double kV = (12.0 - kS) / maxTheoreticalVelocity.in(MetersPerSecond);
 
       public static final double kP = 0.1;
       public static final Constraints kConstraints =
           new Constraints(
-              kRapidVelocity.in(InchesPerSecond), kRapidAcceleration.in(inchesPerSecondPerSecond));
+              kRapidVelocity.in(MetersPerSecond), kRapidAcceleration.in(MetersPerSecondPerSecond));
     }
 
     public static enum LifterState {

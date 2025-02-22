@@ -1,7 +1,8 @@
 package frc.robot.elevator;
 
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.InchesPerSecond;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -68,13 +69,13 @@ public class Lifter extends SubsystemBase {
         .follow(leaderMotor, true);
 
     leaderConfig.encoder
-        .positionConversionFactor(LifterConstants.kPositionConversionFactor.in(Inches))
-        .velocityConversionFactor(LifterConstants.kVelocityConversionFactor.in(InchesPerSecond));
+        .positionConversionFactor(LifterConstants.kPositionConversionFactor.in(Meters))
+        .velocityConversionFactor(LifterConstants.kVelocityConversionFactor.in(MetersPerSecond));
 
     leaderConfig.softLimit
-        .reverseSoftLimit(LifterState.Min.height.in(Inches))
+        .reverseSoftLimit(LifterState.Min.height.in(Meters))
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(LifterState.Max.height.in(Inches))
+        .forwardSoftLimit(LifterState.Max.height.in(Meters))
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
@@ -86,7 +87,7 @@ public class Lifter extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    feedback.setTolerance(LifterConstants.kAllowableHeightError.in(Inches));
+    feedback.setTolerance(LifterConstants.kAllowableHeightError.in(Meters));
     // controller.setIZone();
     // controller.setIntegratorRange();
     resetController();
@@ -96,8 +97,9 @@ public class Lifter extends SubsystemBase {
   public void periodic() {
     loop.poll();
 
-    SmartDashboard.putNumber("Lifter/Height", encoder.getPosition());
-    SmartDashboard.putNumber("Lifter/Velocity", encoder.getVelocity());
+    SmartDashboard.putNumber("Lifter/Height Inches", getHeight().in(Inches));
+    SmartDashboard.putNumber("Lifter/Height Meters", getHeight().in(Meters));
+    SmartDashboard.putNumber("Lifter/Velocity MetersPerSecond", encoder.getVelocity());
 
     SmartDashboard.putString("Lifter/Target State", getTargetState().name());
     SmartDashboard.putNumber("Lifter/Target Height", feedback.getGoal().position);
@@ -118,7 +120,7 @@ public class Lifter extends SubsystemBase {
   }
 
   public Distance getHeight() {
-    return Inches.of(encoder.getPosition());
+    return Meters.of(encoder.getPosition());
   }
 
   public Dimensionless getProportionOfMaxHeight() {
@@ -149,7 +151,7 @@ public class Lifter extends SubsystemBase {
       new Trigger(() -> getHeight().gt(LifterState.CoralL3.height.plus(Inches.of(2.0))));
 
   private void resetEncoder() {
-    encoder.setPosition(LifterState.EncoderReset.height.in(Inches));
+    encoder.setPosition(LifterState.EncoderReset.height.in(Meters));
   }
 
   public Command createSetHeightCommand(LifterState state) {
@@ -157,7 +159,7 @@ public class Lifter extends SubsystemBase {
         // initialize
         () -> {
           targetState = state;
-          feedback.setGoal(targetState.height.in(Inches));
+          feedback.setGoal(targetState.height.in(Meters));
         },
         // execute
         () -> control(),
@@ -194,14 +196,14 @@ public class Lifter extends SubsystemBase {
   public Command createJoystickControlCommand(XboxController gamepad) {
     return this.run(
         () -> {
-          Distance targetPosition = Inches.of(feedback.getGoal().position);
+          Distance targetPosition = Meters.of(feedback.getGoal().position);
 
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
           Distance adder =
               LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
           targetPosition = targetPosition.plus(adder);
 
-          if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Inches));
+          if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
           control();
         });
   }
