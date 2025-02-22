@@ -164,6 +164,10 @@ public class Robot extends TimedRobot {
     climber.lockRatchet();
     elevator.resetPositionControllers();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+
+    // Test wrist feedforwards
+    // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
+    // coralWrist.setDefaultCommand(coralWrist.createJoystickControlCommand(operator.getHID()));
   }
 
   @Override
@@ -216,7 +220,7 @@ public class Robot extends TimedRobot {
 
     Trigger algaeMode = operator.leftBumper();
 
-    // Test coral wrist motion
+    // Test wrist motion
     operator.back()
         .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode)
         .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor)));

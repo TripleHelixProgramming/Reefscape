@@ -42,8 +42,6 @@ public class Lifter extends SubsystemBase {
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
 
-  // TODO: Add ElevatorFeedforward
-  // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ElevatorFeedforward.html
   private final ProfiledPIDController controller =
       new ProfiledPIDController(LifterController.kP, 0.0, 0.0, LifterController.kConstraints);
 

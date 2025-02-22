@@ -13,7 +13,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -28,12 +31,14 @@ public class AlgaeWrist extends SubsystemBase {
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
 
-  private final ProfiledPIDController controller =
+  private final ProfiledPIDController feedback =
       new ProfiledPIDController(
           AlgaeWristConstants.kP,
           AlgaeWristConstants.kI,
           AlgaeWristConstants.kD,
           AlgaeWristConstants.kConstraints);
+  private final ArmFeedforward feedforward =
+      new ArmFeedforward(AlgaeWristConstants.kS, AlgaeWristConstants.kG, AlgaeWristConstants.kV);
 
   private AlgaeWristState targetState = AlgaeWristState.Unknown;
 
@@ -49,9 +54,9 @@ public class AlgaeWrist extends SubsystemBase {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     
     config.absoluteEncoder
-        .inverted(true)
+        .inverted(true) // TODO: determine if has any effect
         .zeroCentered(true)
-        .zeroOffset(AlgaeWristConstants.kPositionOffset.in(Rotations))
+        .zeroOffset(AlgaeWristConstants.kZeroOffset.in(Rotations))
         .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor.in(Radians))
         .velocityConversionFactor(AlgaeWristConstants.kVelocityConversionFactor.in(RadiansPerSecond));
     
@@ -64,10 +69,10 @@ public class AlgaeWrist extends SubsystemBase {
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    controller.setTolerance(AlgaeWristConstants.kAllowableAngleError.in(Radians));
-    controller.setIZone(AlgaeWristConstants.kIZone.in(Radians));
-    controller.enableContinuousInput(0, 2.0 * Math.PI);
-    // controller.setIntegratorRange();
+    feedback.setTolerance(AlgaeWristConstants.kAllowableError.in(Radians));
+    feedback.setIZone(AlgaeWristConstants.kIZone.in(Radians));
+    feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
+    // feedback.setIntegratorRange();
 
     setDefaultCommand(createRemainAtCurrentAngleCommand());
   }
@@ -79,13 +84,12 @@ public class AlgaeWrist extends SubsystemBase {
     SmartDashboard.putNumber("Algae Wrist/Current Angular Velocity RPS", encoder.getVelocity());
     SmartDashboard.putString("Algae Wrist/Target State", getTargetState().name());
     SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Degrees", getSetpointAngleDegrees());
+    SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Radians", feedback.getSetpoint().position);
     SmartDashboard.putNumber(
-        "Algae Wrist/Setpoint Angle Radians", controller.getSetpoint().position);
-    SmartDashboard.putNumber(
-        "Algae Wrist/Setpoint Angular Velocity RPS", controller.getSetpoint().velocity);
+        "Algae Wrist/Setpoint Angular Velocity RPS", feedback.getSetpoint().velocity);
     SmartDashboard.putNumber("Algae Wrist/Applied Duty Cycle", motor.getAppliedOutput());
     SmartDashboard.putNumber("Algae Wrist/Current", motor.getOutputCurrent());
-    SmartDashboard.putBoolean("Algae Wrist/At Goal", controller.atGoal());
+    SmartDashboard.putBoolean("Algae Wrist/At Goal", feedback.atGoal());
   }
 
   private double getCurrentAngleDegrees() {
@@ -93,17 +97,21 @@ public class AlgaeWrist extends SubsystemBase {
   }
 
   private double getSetpointAngleDegrees() {
-    return Radians.of(controller.getSetpoint().position).in(Degrees);
+    return Radians.of(feedback.getSetpoint().position).in(Degrees);
   }
 
   public void resetController() {
-    controller.reset(encoder.getPosition(), encoder.getVelocity());
+    feedback.reset(encoder.getPosition(), encoder.getVelocity());
   }
 
   private void control() {
+    double currentPosition = encoder.getPosition();
+    double offsetPosition =
+        currentPosition + AlgaeWristConstants.kCenterOfGravityOffset.in(Radians);
+    double currentVelocitySetpoint = feedback.getSetpoint().velocity;
     motor.setVoltage(
-        controller.calculate(encoder.getPosition())
-            + AlgaeWristConstants.kG * Math.cos(encoder.getPosition()));
+        feedforward.calculate(offsetPosition, currentVelocitySetpoint)
+            + feedback.calculate(currentPosition));
   }
 
   public AlgaeWristState getTargetState() {
@@ -115,14 +123,14 @@ public class AlgaeWrist extends SubsystemBase {
         // initialize
         () -> {
           targetState = state;
-          controller.setGoal(targetState.angle.in(Radians));
+          feedback.setGoal(targetState.angle.in(Radians));
         },
         // execute
         () -> control(),
         // end
         interrupted -> {},
         // isFinished
-        () -> controller.atGoal(),
+        () -> feedback.atGoal(),
         // requirements
         this);
   }
@@ -131,7 +139,7 @@ public class AlgaeWrist extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == AlgaeWristState.Unknown) controller.setGoal(encoder.getPosition());
+          if (targetState == AlgaeWristState.Unknown) feedback.setGoal(encoder.getPosition());
         },
         // execute
         () -> control(),
@@ -141,5 +149,13 @@ public class AlgaeWrist extends SubsystemBase {
         () -> false,
         // requirements
         this);
+  }
+
+  public Command createJoystickControlCommand(XboxController gamepad) {
+    return this.run(
+        () -> {
+          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+          motor.setVoltage(joystickInput);
+        });
   }
 }
