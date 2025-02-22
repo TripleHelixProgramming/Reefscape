@@ -12,7 +12,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
@@ -47,8 +46,6 @@ public class Lifter extends SubsystemBase {
 
   private final ProfiledPIDController feedback =
       new ProfiledPIDController(LifterController.kP, 0.0, 0.0, LifterController.kConstraints);
-
-  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(LifterController.kS, 0.0, LifterController.kV);
 
   private final EventLoop loop = new EventLoop();
   private LifterState targetState = LifterState.Unknown;
@@ -138,8 +135,7 @@ public class Lifter extends SubsystemBase {
 
   public void control() {
     double currentPosition = encoder.getPosition();
-    double currentVelocitySetpoint = feedback.getSetpoint().velocity;
-    leaderMotor.setVoltage(feedforward.calculate(currentVelocitySetpoint) + feedback.calculate(currentPosition) + (LifterController.kG * encoder.getPosition()));
+    leaderMotor.setVoltage(feedback.calculate(currentPosition) + (LifterController.kG * encoder.getPosition()));
   }
 
   public LifterState getTargetState() {
