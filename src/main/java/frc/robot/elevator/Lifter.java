@@ -1,6 +1,7 @@
 package frc.robot.elevator;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -67,8 +68,8 @@ public class Lifter extends SubsystemBase {
         .follow(leaderMotor, true);
 
     leaderConfig.encoder
-        .positionConversionFactor(LifterConstants.kPositionConversionFactor)
-        .velocityConversionFactor(LifterConstants.kVelocityConversionFactor);
+        .positionConversionFactor(LifterConstants.kPositionConversionFactor.in(Inches))
+        .velocityConversionFactor(LifterConstants.kVelocityConversionFactor.in(InchesPerSecond));
 
     leaderConfig.softLimit
         .reverseSoftLimit(LifterState.Floor.height.in(Inches))
