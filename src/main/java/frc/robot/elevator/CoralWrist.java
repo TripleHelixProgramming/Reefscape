@@ -125,7 +125,11 @@ public class CoralWrist extends SubsystemBase {
     return this.targetState.equals(state);
   }
 
-  public Trigger intaking = new Trigger(() -> inState(CoralWristState.Intake));
+  public Trigger atRiskOfDamage =
+      new Trigger(
+          () ->
+              encoder.getPosition()
+                  > CoralWristState.AlgaeMode.angle.plus(Degrees.of(3.0)).in(Radians));
 
   public Command createSetAngleCommand(CoralWristState state) {
     return new FunctionalCommand(
