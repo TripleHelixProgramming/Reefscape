@@ -30,7 +30,7 @@ public class CoralRoller extends SubsystemBase {
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
-        .inverted(false);
+        .inverted(true);
 
     config.encoder
         .velocityConversionFactor(CoralRollerConstants.kVelocityConversionFactor)

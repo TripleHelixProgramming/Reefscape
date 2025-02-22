@@ -54,7 +54,7 @@ public class ElevatorConstants {
       CoralL2(13.8),
       CoralL3(30.0),
       CoralL4(60.75),
-      CoralIntake(14.7),
+      CoralIntake(7.7),
       AlgaeProcessor(12.0),
       AlgaeL2(30),
       AlgaeL3(46.5),
