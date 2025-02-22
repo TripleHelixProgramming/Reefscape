@@ -277,7 +277,8 @@ public class Robot extends TimedRobot {
   // spotless:on
 
   private void configureEventBindings() {
-    autoSelector.getChangedAutoSelection().onTrue(leds.createChangeAutoAnimationCommand());
+    autoSelector.changedAutoSelection.onTrue(leds.createChangeAutoAnimationCommand());
+    lifter.impendingCoralGripperDamage.onTrue(coralWrist.createSetAngleCommand(CoralWristState.L1));
   }
 
   private void configureAutoOptions() {

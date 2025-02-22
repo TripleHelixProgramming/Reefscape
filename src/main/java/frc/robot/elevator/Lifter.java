@@ -139,6 +139,8 @@ public class Lifter extends SubsystemBase {
   }
 
   public Trigger atIntakingHeight = new Trigger(() -> inState(LifterState.Intake));
+  public Trigger impendingCoralGripperDamage =
+      new Trigger(() -> getHeight().gt(LifterState.L3.height.plus(Inches.of(2.0))));
 
   private void resetEncoder() {
     encoder.setPosition(LifterState.Reset.height.in(Inches));
