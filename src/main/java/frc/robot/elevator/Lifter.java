@@ -48,7 +48,7 @@ public class Lifter extends SubsystemBase {
   private final ProfiledPIDController feedback =
       new ProfiledPIDController(LifterController.kP, 0.0, 0.0, LifterController.kConstraints);
 
-  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(LifterController.kS, LifterController.kG, LifterController.kV);
+  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(LifterController.kS, 0.0, LifterController.kV);
 
   private final EventLoop loop = new EventLoop();
   private LifterState targetState = LifterState.Unknown;
@@ -97,12 +97,12 @@ public class Lifter extends SubsystemBase {
   public void periodic() {
     loop.poll();
 
-    SmartDashboard.putNumber("Lifter/Height Inches", getHeight().in(Inches));
-    SmartDashboard.putNumber("Lifter/Height Meters", getHeight().in(Meters));
+    SmartDashboard.putNumber("Lifter/Current Height Inches", getCurrentHeight().in(Inches));
     SmartDashboard.putNumber("Lifter/Velocity MetersPerSecond", encoder.getVelocity());
 
     SmartDashboard.putString("Lifter/Target State", getTargetState().name());
-    SmartDashboard.putNumber("Lifter/Target Height", feedback.getGoal().position);
+    SmartDashboard.putNumber("Lifter/Target Height Meters", getSetPointHeight().in(Meters));
+    SmartDashboard.putNumber("Lifter/Target Height Inches", getSetPointHeight().in(Inches));
 
     if (SmartDashboard.getBoolean("Lifter Reset Encoder", false)) {
       SmartDashboard.putBoolean("Lifter Reset Encoder", false);
@@ -119,12 +119,16 @@ public class Lifter extends SubsystemBase {
     SmartDashboard.putBoolean("Lifter/At Target Height", feedback.atGoal());
   }
 
-  public Distance getHeight() {
+  public Distance getCurrentHeight() {
     return Meters.of(encoder.getPosition());
   }
 
+  private Distance getSetPointHeight() {
+    return Meters.of(feedback.getSetpoint().position);
+  }
+
   public Dimensionless getProportionOfMaxHeight() {
-    return getHeight().div(LifterState.Max.height);
+    return getCurrentHeight().div(LifterState.Max.height);
   }
 
   public void resetController() {
@@ -135,7 +139,7 @@ public class Lifter extends SubsystemBase {
   public void control() {
     double currentPosition = encoder.getPosition();
     double currentVelocitySetpoint = feedback.getSetpoint().velocity;
-    leaderMotor.setVoltage(feedforward.calculate(currentVelocitySetpoint) + feedback.calculate(currentPosition));
+    leaderMotor.setVoltage(feedforward.calculate(currentVelocitySetpoint) + feedback.calculate(currentPosition) + (LifterController.kG * encoder.getPosition()));
   }
 
   public LifterState getTargetState() {
@@ -148,7 +152,7 @@ public class Lifter extends SubsystemBase {
 
   public Trigger atIntakingHeight = new Trigger(() -> inState(LifterState.CoralIntake));
   public Trigger tooHighForCoralWrist =
-      new Trigger(() -> getHeight().gt(LifterState.CoralL3.height.plus(Inches.of(2.0))));
+      new Trigger(() -> getCurrentHeight().gt(LifterState.CoralL3.height.plus(Inches.of(2.0))));
 
   private void resetEncoder() {
     encoder.setPosition(LifterState.EncoderReset.height.in(Meters));
@@ -212,7 +216,7 @@ public class Lifter extends SubsystemBase {
     return this.run(
         () -> {
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          leaderMotor.setVoltage(joystickInput);
+          leaderMotor.setVoltage(joystickInput * 2.0);
         });
   }
 }
