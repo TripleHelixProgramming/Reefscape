@@ -16,6 +16,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -79,11 +80,11 @@ public class AlgaeWrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Algae Wrist/Current Angle Degrees", getCurrentAngleDegrees());
+    SmartDashboard.putNumber("Algae Wrist/Current Angle Degrees", getCurrentAngle().in(Degrees));
     SmartDashboard.putNumber("Algae Wrist/Current Angle Radians", encoder.getPosition());
     SmartDashboard.putNumber("Algae Wrist/Current Angular Velocity RPS", encoder.getVelocity());
     SmartDashboard.putString("Algae Wrist/Target State", getTargetState().name());
-    SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Degrees", getSetpointAngleDegrees());
+    SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Degrees", getSetpointAngle().in(Degrees));
     SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Radians", feedback.getSetpoint().position);
     SmartDashboard.putNumber(
         "Algae Wrist/Setpoint Angular Velocity RPS", feedback.getSetpoint().velocity);
@@ -92,12 +93,12 @@ public class AlgaeWrist extends SubsystemBase {
     SmartDashboard.putBoolean("Algae Wrist/At Goal", feedback.atGoal());
   }
 
-  private double getCurrentAngleDegrees() {
-    return Radians.of(encoder.getPosition()).in(Degrees);
+  private Angle getCurrentAngle() {
+    return Radians.of(encoder.getPosition());
   }
 
-  private double getSetpointAngleDegrees() {
-    return Radians.of(feedback.getSetpoint().position).in(Degrees);
+  private Angle getSetpointAngle() {
+    return Radians.of(feedback.getSetpoint().position);
   }
 
   public void resetController() {
