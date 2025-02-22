@@ -98,6 +98,7 @@ public class AutoSelector {
   public Trigger getChangedAutoSelection() {
     return autoSelectionChanged.castTo(Trigger::new);
   }
+
   /** Schedules the command corresponding to the selected autonomous mode */
   public void scheduleAuto() {
     currentAutoOption.ifPresent(ao -> ao.getAutoCommand().ifPresent(Command::schedule));

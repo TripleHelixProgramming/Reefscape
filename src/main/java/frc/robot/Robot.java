@@ -278,7 +278,10 @@ public class Robot extends TimedRobot {
 
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection().onTrue(leds.createChangeAutoAnimationCommand());
-    lifter.impendingCoralGripperDamage.onTrue(coralWrist.createSetAngleCommand(CoralWristState.L1));
+    lifter
+        .tooHighForCoralWrist
+        .and(coralWrist.intaking)
+        .onTrue(coralWrist.createSetAngleCommand(CoralWristState.L1));
   }
 
   private void configureAutoOptions() {

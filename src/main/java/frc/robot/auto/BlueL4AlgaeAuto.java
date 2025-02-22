@@ -71,7 +71,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
             algaeRoller.createOuttakeCommand().withTimeout(0.2),
             Commands.parallel(
                 blueProcessToSource.cmd(),
-                lifter.createSetHeightCommand(LifterState.Intake))));
+                lifter.createSetHeightCommand(LifterState.CoralIntake))));
     // spotless:on
 
     return blueL4AlgAutoRoutine;

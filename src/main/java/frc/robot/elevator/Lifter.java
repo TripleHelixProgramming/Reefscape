@@ -68,7 +68,7 @@ public class Lifter extends SubsystemBase {
         .velocityConversionFactor(LifterConstants.kVelocityConversionFactor);
 
     leaderConfig.softLimit
-        .reverseSoftLimit(LifterState.Floor.height.in(Inches))
+        .reverseSoftLimit(LifterState.Min.height.in(Inches))
         .reverseSoftLimitEnabled(true)
         .forwardSoftLimit(LifterState.Max.height.in(Inches))
         .forwardSoftLimitEnabled(true);
@@ -138,12 +138,12 @@ public class Lifter extends SubsystemBase {
     return this.targetState.equals(state);
   }
 
-  public Trigger atIntakingHeight = new Trigger(() -> inState(LifterState.Intake));
-  public Trigger impendingCoralGripperDamage =
-      new Trigger(() -> getHeight().gt(LifterState.L3.height.plus(Inches.of(2.0))));
+  public Trigger atIntakingHeight = new Trigger(() -> inState(LifterState.CoralIntake));
+  public Trigger tooHighForCoralWrist =
+      new Trigger(() -> getHeight().gt(LifterState.CoralL3.height.plus(Inches.of(2.0))));
 
   private void resetEncoder() {
-    encoder.setPosition(LifterState.Reset.height.in(Inches));
+    encoder.setPosition(LifterState.EncoderReset.height.in(Inches));
   }
 
   public Command createSetHeightCommand(LifterState state) {

@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
@@ -119,6 +120,12 @@ public class CoralWrist extends SubsystemBase {
   public CoralWristState getTargetState() {
     return this.targetState;
   }
+
+  public Boolean inState(CoralWristState state) {
+    return this.targetState.equals(state);
+  }
+
+  public Trigger intaking = new Trigger(() -> inState(CoralWristState.Intake));
 
   public Command createSetAngleCommand(CoralWristState state) {
     return new FunctionalCommand(
