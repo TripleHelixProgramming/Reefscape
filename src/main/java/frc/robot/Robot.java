@@ -163,7 +163,8 @@ public class Robot extends TimedRobot {
     climber.resetEncoder();
     climber.lockRatchet();
     elevator.resetPositionControllers();
-    lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+    // lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+    lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
 
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));

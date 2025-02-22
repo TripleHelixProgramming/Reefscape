@@ -21,14 +21,16 @@ public class ElevatorConstants {
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the final stage
-    public static final double kGearRatio = 15.0 / 3.0;
-    public static final double kSprocketPitchDiameter = 1.7567; // inches
-    public static final double kPositionConversionFactor =
-        (kSprocketPitchDiameter * Math.PI) / kGearRatio;
+    private static final double gearRatioMotorToMechanism = 3.0 / 15.0;
+    private static final Distance sprocketPitchDiameter = Inches.of(1.7567);
+    public static final Distance kPositionConversionFactor =
+        sprocketPitchDiameter.times(Math.PI).times(gearRatioMotorToMechanism);
+    private static final double maxMotorVelocityRadPerSec = RPM.of(5676).in(RadiansPerSecond);
+    private static final LinearVelocity maxTheoreticalVelocity = InchesPerSecond.of(maxMotorVelocityRadPerSec * kPositionConversionFactor.in(Inches));
 
     // By default, the encoder in velocity mode measures RPM at the motor
     // Convert to inches per second at the final stage
-    public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
+    public static final LinearVelocity kVelocityConversionFactor = kPositionConversionFactor.per(Minutes);
 
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
     public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(50.0);
@@ -39,6 +41,10 @@ public class ElevatorConstants {
     public static final Distance kAllowableHeightError = Inches.of(0.2);
 
     public final class LifterController {
+      public static final double kS = 0;
+      public static final double kG = 0;
+      public static final double kV = (12.0 - kS) / maxTheoreticalVelocity.in(InchesPerSecond);
+
       public static final double kP = 0.1;
       public static final Constraints kConstraints =
           new Constraints(
@@ -72,12 +78,12 @@ public class ElevatorConstants {
     public static final int kMotorPort = 23;
     public static final int kCoralSensorPort = 3;
 
-    public static final double kGearRatio = 5.0;
-    public static final double kRollerDiameter = 2.0; // inches
+    private static final double gearRatio = 5.0;
+    private static final double rollerDiameter = 2.0; // inches
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the wheel
-    public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
+    public static final double kPositionConversionFactor = (rollerDiameter * Math.PI) / gearRatio;
 
     // By default, the encoder in velocity mode measures RPM at the drive motor
     // Convert to inches per second at the wheel
@@ -153,12 +159,12 @@ public class ElevatorConstants {
     public static final int kFollowerMotorPort = 16;
     public static final int kSensorPort = 4;
 
-    public static final double kGearRatio = 5.0;
-    public static final double kRollerDiameter = 4.0; // inches
+    private static final double gearRatio = 5.0;
+    private static final double rollerDiameter = 4.0; // inches
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the wheel
-    public static final double kPositionConversionFactor = (kRollerDiameter * Math.PI) / kGearRatio;
+    public static final double kPositionConversionFactor = (rollerDiameter * Math.PI) / gearRatio;
 
     // By default, the encoder in velocity mode measures RPM at the drive motor
     // Convert to inches per second at the wheel
