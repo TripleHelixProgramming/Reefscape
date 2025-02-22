@@ -39,6 +39,10 @@ public class ElevatorConstants {
     public static final Distance kAllowableHeightError = Inches.of(0.2);
 
     public final class LifterController {
+      public static final double kS = 0;
+      public static final double kG = 0;
+      public static final double kV = 0;
+
       public static final double kP = 0.1;
       public static final Constraints kConstraints =
           new Constraints(
