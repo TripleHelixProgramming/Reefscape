@@ -63,8 +63,10 @@ public class CoralWrist extends SubsystemBase {
     config.softLimit
         .reverseSoftLimit(CoralWristState.Min.angle.in(Radians))
         .reverseSoftLimitEnabled(true)
+        // .reverseSoftLimitEnabled(false)
         .forwardSoftLimit(CoralWristState.Max.angle.in(Radians))
         .forwardSoftLimitEnabled(true);
+        // .forwardSoftLimitEnabled(false);
     // spotless:on
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -74,7 +76,7 @@ public class CoralWrist extends SubsystemBase {
     feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // controller.setIntegratorRange();
 
-    // setDefaultCommand(createRemainAtCurrentAngleCommand());
+    setDefaultCommand(createRemainAtCurrentAngleCommand());
   }
 
   @Override
@@ -154,7 +156,7 @@ public class CoralWrist extends SubsystemBase {
   public Command createJoystickControlCommand(XboxController gamepad) {
     return this.run(
         () -> {
-          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+          double joystickInput = 2.0 * MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
           motor.setVoltage(joystickInput);
         });
   }

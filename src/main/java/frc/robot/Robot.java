@@ -163,10 +163,10 @@ public class Robot extends TimedRobot {
     climber.resetEncoder();
     climber.lockRatchet();
     elevator.resetPositionControllers();
-    // lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+    lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
 
     // Test wrist feedforwards
-    algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
+    // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
     // coralWrist.setDefaultCommand(coralWrist.createJoystickControlCommand(operator.getHID()));
   }
 
@@ -265,9 +265,9 @@ public class Robot extends TimedRobot {
         .whileTrue(algaeRoller.createIntakeCommand());
 
     // Force joystick operation of the elevator
-    // Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
-    // Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
-    // elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
+    Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
+    Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
+    elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
 
     // Actuate climber winch
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
