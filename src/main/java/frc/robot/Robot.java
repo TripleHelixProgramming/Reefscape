@@ -274,12 +274,14 @@ public class Robot extends TimedRobot {
     climbTrigger.onTrue(climber.createDeployCommand()
         .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
   }
-  // spotless:on
 
   private void configureEventBindings() {
-    autoSelector.changedAutoSelection.onTrue(leds.createChangeAutoAnimationCommand());
-    lifter.impendingCoralGripperDamage.onTrue(coralWrist.createSetAngleCommand(CoralWristState.L1));
+    autoSelector.getChangedAutoSelection()
+        .onTrue(leds.createChangeAutoAnimationCommand());
+    lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
+        .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
+  // spotless:on
 
   private void configureAutoOptions() {
     autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4AlgaeAuto(swerve, elevator)));

@@ -71,7 +71,7 @@ public class RedL4AlgaeAuto extends AutoMode {
             algaeRoller.createOuttakeCommand().withTimeout(0.2),
             Commands.parallel(
                 redProcessToSource.cmd(),
-                lifter.createSetHeightCommand(LifterState.Intake))));
+                lifter.createSetHeightCommand(LifterState.CoralIntake))));
     // spotless:on
 
     return redL4AlgAutoRoutine;
