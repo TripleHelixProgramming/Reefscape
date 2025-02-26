@@ -92,7 +92,8 @@ public class CoralWrist extends SubsystemBase {
     // SmartDashboard.putNumber("Coral Wrist/Current Angular Velocity RPS", encoder.getVelocity());
     SmartDashboard.putString("Coral Wrist/Target State", getTargetState().name());
     SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Degrees", getSetpointAngle().in(Degrees));
-    // SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Radians", feedback.getSetpoint().position);
+    // SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Radians",
+    // feedback.getSetpoint().position);
     // SmartDashboard.putNumber(
     //     "Coral Wrist/Setpoint Angular Velocity RPS", feedback.getSetpoint().velocity);
     // SmartDashboard.putNumber("Coral Wrist/Applied Duty Cycle", motor.getAppliedOutput());
