@@ -41,6 +41,9 @@ public class AlgaeRoller extends SubsystemBase {
         .velocityConversionFactor(AlgaeRollerConstants.kVelocityConversionFactor)
         .positionConversionFactor(AlgaeRollerConstants.kPositionConversionFactor);
 
+    config.signals
+        .absoluteEncoderPositionPeriodMs(100);
+
     followerConfig
         .apply(config)
         .follow(leaderMotor, true);
@@ -56,8 +59,8 @@ public class AlgaeRoller extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Algae Roller/Velocity", encoder.getVelocity());
-    SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
+    // SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putBoolean("Algae Sensor", algaeSensor.get());
   }
 

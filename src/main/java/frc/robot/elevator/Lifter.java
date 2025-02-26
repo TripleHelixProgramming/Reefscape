@@ -72,6 +72,9 @@ public class Lifter extends SubsystemBase {
         .reverseSoftLimitEnabled(true)
         .forwardSoftLimit(LifterState.Max.height.in(Inches))
         .forwardSoftLimitEnabled(true);
+
+    leaderConfig.signals
+        .primaryEncoderVelocityPeriodMs(100);
     // spotless:on
 
     leaderMotor.configure(
@@ -93,21 +96,16 @@ public class Lifter extends SubsystemBase {
     loop.poll();
 
     SmartDashboard.putNumber("Lifter/Height", encoder.getPosition());
-    SmartDashboard.putNumber("Lifter/Velocity", encoder.getVelocity());
+    // SmartDashboard.putNumber("Lifter/Velocity", encoder.getVelocity());
 
     SmartDashboard.putString("Lifter/Target State", getTargetState().name());
     SmartDashboard.putNumber("Lifter/Target Height", controller.getGoal().position);
 
-    if (SmartDashboard.getBoolean("Lifter Reset Encoder", false)) {
-      SmartDashboard.putBoolean("Lifter Reset Encoder", false);
-      resetEncoder();
-    }
-
-    SmartDashboard.putNumber("Lifter/Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
-    SmartDashboard.putNumber(
-        "Lifter/Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Lifter/Leader Current", leaderMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Lifter/Follower Current", followerMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("Lifter/Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
+    // SmartDashboard.putNumber(
+    //     "Lifter/Follower Applied Duty Cycle", followerMotor.getAppliedOutput());
+    // SmartDashboard.putNumber("Lifter/Leader Current", leaderMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("Lifter/Follower Current", followerMotor.getOutputCurrent());
 
     SmartDashboard.putBoolean("Lifter/Lower Limit Switch", !lowerLimitSwitch.get());
     SmartDashboard.putBoolean("Lifter/At Target Height", controller.atGoal());
