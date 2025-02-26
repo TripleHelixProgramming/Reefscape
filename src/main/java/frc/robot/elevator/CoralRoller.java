@@ -41,7 +41,7 @@ public class CoralRoller extends SubsystemBase {
         .positionConversionFactor(CoralRollerConstants.kPositionConversionFactor);
     // spotless:on
 
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configureAsync(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     setDefaultCommand(createStopCommand());
   }

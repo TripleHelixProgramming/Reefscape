@@ -77,9 +77,9 @@ public class Lifter extends SubsystemBase {
         .primaryEncoderVelocityPeriodMs(100);
     // spotless:on
 
-    leaderMotor.configure(
+    leaderMotor.configureAsync(
         leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    followerMotor.configure(
+    followerMotor.configureAsync(
         followerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());

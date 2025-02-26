@@ -72,7 +72,7 @@ public class AlgaeWrist extends SubsystemBase {
         .forwardSoftLimitEnabled(true);
     // spotless:on
 
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configureAsync(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     feedback.setTolerance(AlgaeWristConstants.kAllowableError.in(Radians));
     feedback.setIZone(AlgaeWristConstants.kIZone.in(Radians));
