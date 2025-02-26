@@ -62,6 +62,10 @@ public class CoralWrist extends SubsystemBase {
         .positionConversionFactor(CoralWristConstants.kPositionConversionFactor.in(Radians))
         .velocityConversionFactor(CoralWristConstants.kVelocityConversionFactor.in(RadiansPerSecond));
 
+    config.signals
+        .primaryEncoderVelocityPeriodMs(100)
+        .outputCurrentPeriodMs(100);
+
     config.softLimit
         .reverseSoftLimit(CoralWristState.Min.angle.in(Radians))
         .reverseSoftLimitEnabled(true)
@@ -84,15 +88,16 @@ public class CoralWrist extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Coral Wrist/Current Angle Degrees", getCurrentAngle().in(Degrees));
-    SmartDashboard.putNumber("Coral Wrist/Current Angle Radians", encoder.getPosition());
-    SmartDashboard.putNumber("Coral Wrist/Current Angular Velocity RPS", encoder.getVelocity());
+    // SmartDashboard.putNumber("Coral Wrist/Current Angle Radians", encoder.getPosition());
+    // SmartDashboard.putNumber("Coral Wrist/Current Angular Velocity RPS", encoder.getVelocity());
     SmartDashboard.putString("Coral Wrist/Target State", getTargetState().name());
     SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Degrees", getSetpointAngle().in(Degrees));
-    SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Radians", feedback.getSetpoint().position);
-    SmartDashboard.putNumber(
-        "Coral Wrist/Setpoint Angular Velocity RPS", feedback.getSetpoint().velocity);
-    SmartDashboard.putNumber("Coral Wrist/Applied Duty Cycle", motor.getAppliedOutput());
-    SmartDashboard.putNumber("Coral Wrist/Current", motor.getOutputCurrent());
+    // SmartDashboard.putNumber("Coral Wrist/Setpoint Angle Radians",
+    // feedback.getSetpoint().position);
+    // SmartDashboard.putNumber(
+    //     "Coral Wrist/Setpoint Angular Velocity RPS", feedback.getSetpoint().velocity);
+    // SmartDashboard.putNumber("Coral Wrist/Applied Duty Cycle", motor.getAppliedOutput());
+    // SmartDashboard.putNumber("Coral Wrist/Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Coral Wrist/At Goal", feedback.atGoal());
   }
 

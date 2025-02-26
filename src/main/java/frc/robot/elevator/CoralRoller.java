@@ -32,6 +32,10 @@ public class CoralRoller extends SubsystemBase {
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
+    config.signals
+        .absoluteEncoderPositionPeriodMs(100)
+        .outputCurrentPeriodMs(100);
+
     config.encoder
         .velocityConversionFactor(CoralRollerConstants.kVelocityConversionFactor)
         .positionConversionFactor(CoralRollerConstants.kPositionConversionFactor);
@@ -45,8 +49,8 @@ public class CoralRoller extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Coral Roller/Velocity", encoder.getVelocity());
-    SmartDashboard.putNumber("Coral Roller/Applied Duty Cycle", motor.getAppliedOutput());
-    SmartDashboard.putNumber("Coral Roller/Current", motor.getOutputCurrent());
+    // SmartDashboard.putNumber("Coral Roller/Applied Duty Cycle", motor.getAppliedOutput());
+    // SmartDashboard.putNumber("Coral Roller/Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
   }
 

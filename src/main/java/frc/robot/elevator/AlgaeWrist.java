@@ -60,6 +60,10 @@ public class AlgaeWrist extends SubsystemBase {
         .zeroOffset(AlgaeWristConstants.kZeroOffset.in(Rotations))
         .positionConversionFactor(AlgaeWristConstants.kPositionConversionFactor.in(Radians))
         .velocityConversionFactor(AlgaeWristConstants.kVelocityConversionFactor.in(RadiansPerSecond));
+
+    config.signals
+        .primaryEncoderVelocityPeriodMs(100)
+        .outputCurrentPeriodMs(100);
     
     config.softLimit
         .reverseSoftLimit(AlgaeWristState.Min.angle.in(Radians))
@@ -81,15 +85,16 @@ public class AlgaeWrist extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Algae Wrist/Current Angle Degrees", getCurrentAngle().in(Degrees));
-    SmartDashboard.putNumber("Algae Wrist/Current Angle Radians", encoder.getPosition());
-    SmartDashboard.putNumber("Algae Wrist/Current Angular Velocity RPS", encoder.getVelocity());
+    // SmartDashboard.putNumber("Algae Wrist/Current Angle Radians", encoder.getPosition());
+    // SmartDashboard.putNumber("Algae Wrist/Current Angular Velocity RPS", encoder.getVelocity());
     SmartDashboard.putString("Algae Wrist/Target State", getTargetState().name());
     SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Degrees", getSetpointAngle().in(Degrees));
-    SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Radians", feedback.getSetpoint().position);
-    SmartDashboard.putNumber(
-        "Algae Wrist/Setpoint Angular Velocity RPS", feedback.getSetpoint().velocity);
-    SmartDashboard.putNumber("Algae Wrist/Applied Duty Cycle", motor.getAppliedOutput());
-    SmartDashboard.putNumber("Algae Wrist/Current", motor.getOutputCurrent());
+    // SmartDashboard.putNumber("Algae Wrist/Setpoint Angle Radians",
+    // feedback.getSetpoint().position);
+    // SmartDashboard.putNumber(
+    //     "Algae Wrist/Setpoint Angular Velocity RPS", feedback.getSetpoint().velocity);
+    // SmartDashboard.putNumber("Algae Wrist/Applied Duty Cycle", motor.getAppliedOutput());
+    // SmartDashboard.putNumber("Algae Wrist/Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Algae Wrist/At Goal", feedback.atGoal());
   }
 
