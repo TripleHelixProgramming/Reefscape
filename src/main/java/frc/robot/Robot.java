@@ -202,8 +202,10 @@ public class Robot extends TimedRobot {
 
     // Reset heading
     driver.DIn()
-        .onTrue(new InstantCommand(() -> swerve.setHeadingOffset())
-        .ignoringDisable(true));
+        .onTrue(new InstantCommand(() -> {
+          swerve.setHeadingOffset();
+          swerve.initializeRelativeTurningEncoder();
+        }).ignoringDisable(true));
 
     // Drive to nearest pose
     driver.AIn()

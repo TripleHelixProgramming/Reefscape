@@ -158,6 +158,12 @@ public class Drivetrain extends SubsystemBase {
     poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
+  public void initializeRelativeTurningEncoder() {
+    for (SwerveModule module : SwerveModule.values()) {
+      module.initializeRelativeTurningEncoder();
+    }
+  }
+
   public Rotation2d getHeadingOffset() {
     return headingOffset;
   }
