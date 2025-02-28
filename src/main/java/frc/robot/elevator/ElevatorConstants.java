@@ -31,7 +31,7 @@ public class ElevatorConstants {
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
-    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(15.0);
+    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(30.0);
     public static final LinearAccelerationUnit inchesPerSecondPerSecond =
         InchesPerSecond.per(Second);
     public static final LinearAcceleration kRapidAcceleration = inchesPerSecondPerSecond.of(1000);
@@ -212,13 +212,13 @@ public class ElevatorConstants {
 
     public static enum AlgaeWristState {
       Unknown(90),
-      Floor(-10),
-      Min(-20),
+      Floor(0),
+      Min(-10),
       Max(95),
       Processor(0),
-      L2(-10),
-      L3(-10),
-      Barge(80),
+      L2(-0),
+      L3(-0),
+      Barge(60),
       CoralMode(90);
 
       public Angle angle;
