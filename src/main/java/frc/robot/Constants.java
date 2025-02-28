@@ -170,7 +170,7 @@ public final class Constants {
     }
 
     public static final class TurningControllerGains {
-      public static final double kP = 10.0; // 1.5;
+      public static final double kP = 1.5; // 1.5;
       public static final double kI = 0.0; // 2023 Competition Robot
       public static final double kD = 0.0; // 2023 Competition Robot
     }
@@ -282,13 +282,13 @@ public final class Constants {
     // Convert to inches per second at the winch
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final double kMaxVelocityInchesPerSecond = 10.0;
+    public static final double kMaxVelocityInchesPerSecond = 5.0;
 
     public static final double kMaxVelocityRPM =
         kMaxVelocityInchesPerSecond / kVelocityConversionFactor;
     public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
 
-    public static final double kDeployPosition = 12.0; // inches
+    public static final double kDeployPosition = 7.0; // inches
   }
 
   public static final class LedConstants {

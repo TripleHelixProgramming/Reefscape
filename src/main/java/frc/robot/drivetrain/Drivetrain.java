@@ -89,6 +89,8 @@ public class Drivetrain extends SubsystemBase {
     m_visionPosePublisher.set(poseEstimator.getEstimatedPosition());
 
     for (SwerveModule module : SwerveModule.values()) {
+      module.refreshRelativeTurningEncoder();
+
       SmartDashboard.putNumber(
           module.getName() + "/RelativeTurningPosition",
           module.getRelativeTurningPosition().getDegrees());
@@ -156,6 +158,12 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+  }
+
+  public void initializeRelativeTurningEncoder() {
+    for (SwerveModule module : SwerveModule.values()) {
+      module.initializeRelativeTurningEncoder();
+    }
   }
 
   public Rotation2d getHeadingOffset() {

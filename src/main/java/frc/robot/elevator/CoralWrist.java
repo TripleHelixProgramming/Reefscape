@@ -75,7 +75,7 @@ public class CoralWrist extends SubsystemBase {
         // .forwardSoftLimitEnabled(false);
     // spotless:on
 
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configureAsync(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     feedback.setTolerance(CoralWristConstants.kAllowableError.in(Radians));
     feedback.setIZone(CoralWristConstants.kIZone.in(Radians));

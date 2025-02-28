@@ -104,9 +104,9 @@ public enum SwerveModule {
         .primaryEncoderVelocityPeriodMs(100);
     // spotless:on
 
-    m_driveMotor.configure(
+    m_driveMotor.configureAsync(
         m_driveMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    m_turningMotor.configure(
+    m_turningMotor.configureAsync(
         m_turningMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     m_driveController = m_driveMotor.getClosedLoopController();
@@ -198,6 +198,10 @@ public enum SwerveModule {
    */
   public void initializeRelativeTurningEncoder() {
     m_turningRelativeEncoder.setPosition(getAbsTurningPosition(0.25).getRotations());
+  }
+
+  public void refreshRelativeTurningEncoder() {
+    m_turningRelativeEncoder.setPosition(getAbsTurningPosition(0.0).getRotations());
   }
 
   /** Initializes the magnetic offset of the absolute turning encoder */

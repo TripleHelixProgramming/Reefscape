@@ -30,7 +30,7 @@ public class CoralRoller extends SubsystemBase {
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
-        .inverted(false);
+        .inverted(true);
 
     config.signals
         .absoluteEncoderPositionPeriodMs(100)
@@ -41,7 +41,7 @@ public class CoralRoller extends SubsystemBase {
         .positionConversionFactor(CoralRollerConstants.kPositionConversionFactor);
     // spotless:on
 
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configureAsync(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     setDefaultCommand(createStopCommand());
   }
