@@ -204,7 +204,7 @@ public class Robot extends TimedRobot {
     driver.DIn()
         .onTrue(new InstantCommand(() -> {
           swerve.setHeadingOffset();
-          swerve.initializeRelativeTurningEncoder();
+          // swerve.initializeRelativeTurningEncoder();
         }).ignoringDisable(true));
 
     // Drive to nearest pose

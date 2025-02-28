@@ -200,6 +200,10 @@ public enum SwerveModule {
     m_turningRelativeEncoder.setPosition(getAbsTurningPosition(0.25).getRotations());
   }
 
+  public void refreshRelativeTurningEncoder() {
+    m_turningRelativeEncoder.setPosition(getAbsTurningPosition(0.0).getRotations());
+  }
+
   /** Initializes the magnetic offset of the absolute turning encoder */
   public void initializeAbsoluteTurningEncoder() {
     double magnetOffsetFromCANCoder = getAbsTurningEncoderOffset().getRotations();
