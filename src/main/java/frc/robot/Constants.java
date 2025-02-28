@@ -170,7 +170,7 @@ public final class Constants {
     }
 
     public static final class TurningControllerGains {
-      public static final double kP = 10.0; // 1.5;
+      public static final double kP = 1.5; // 1.5;
       public static final double kI = 0.0; // 2023 Competition Robot
       public static final double kD = 0.0; // 2023 Competition Robot
     }
