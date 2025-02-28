@@ -49,7 +49,8 @@ public class AlgaeRoller extends SubsystemBase {
         .follow(leaderMotor, true);
     // spotless:on
 
-    leaderMotor.configureAsync(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    leaderMotor.configureAsync(
+        config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     followerMotor.configureAsync(
         followerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 

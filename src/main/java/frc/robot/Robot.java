@@ -41,7 +41,6 @@ import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;

@@ -60,7 +60,8 @@ public class Climber extends SubsystemBase {
         .reverseSoftLimitEnabled(true);
     // spotless:on
 
-    motor.configureAsync(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motor.configureAsync(
+        motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     encoder = motor.getEncoder();
     controller = motor.getClosedLoopController();
