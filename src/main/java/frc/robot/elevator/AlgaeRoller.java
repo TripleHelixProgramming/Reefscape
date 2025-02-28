@@ -33,7 +33,7 @@ public class AlgaeRoller extends SubsystemBase {
     // spotless:off
     config
         .voltageCompensation(RobotConstants.kNominalVoltage)
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
 
