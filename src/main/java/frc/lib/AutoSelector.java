@@ -66,7 +66,7 @@ public class AutoSelector {
     int sum = 0;
     for (int i = 0; i < switchPositions.length; i++) {
       if (!switchPositions[i].get()) {
-        sum += 2 ^ i;
+        sum += (1 << (i));
       }
     }
     return sum;
@@ -112,6 +112,10 @@ public class AutoSelector {
   public void disabledPeriodic() {
     eventLoop.poll();
     SmartDashboard.putNumber("AutoSelectorSwitchPosition", getBinarySwitchPosition());
+    
+    SmartDashboard.putBoolean("AutoSelectorDIOPort0", !switchPositions[0].get());
+    SmartDashboard.putBoolean("AutoSelectorDIOPort1", !switchPositions[1].get());
+    SmartDashboard.putBoolean("AutoSelectorDIOPort2", !switchPositions[2].get());
 
     currentAutoOption.ifPresentOrElse(
         ao -> {
