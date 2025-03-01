@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LedConstants;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -21,7 +20,8 @@ import java.util.function.Supplier;
 public class LEDs extends SubsystemBase {
 
   private final AddressableLED led = new AddressableLED(LedConstants.kLedPort);
-  private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LedConstants.kLedBufferLength);
+  private final AddressableLEDBuffer ledBuffer =
+      new AddressableLEDBuffer(LedConstants.kLedBufferLength);
   private final AddressableLEDBufferView leftStrip = ledBuffer.createView(20, 39).reversed();
   private final AddressableLEDBufferView rightStrip = ledBuffer.createView(0, 19);
 
@@ -41,12 +41,10 @@ public class LEDs extends SubsystemBase {
     }
   }
 
-
   private void setBoth(int index, Color color) {
     leftStrip.setLED(index, color);
     rightStrip.setLED(index, color);
   }
-
 
   private void autoColor(Alliance alliance, int autoMode) {
     clearBuffer();
@@ -93,7 +91,6 @@ public class LEDs extends SubsystemBase {
    */
   public void indicatePoseSeek(Pose2d currentPose, Pose2d targetPose) {
     var delta = targetPose.minus(currentPose);
-    
   }
 
   public Command createPoseSeekingCommand(
