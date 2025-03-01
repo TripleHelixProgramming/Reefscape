@@ -234,10 +234,10 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final int kAllianceColorSelectorPort = 10;
+    public static final int kAllianceColorSelectorPort = 3;
 
     // max length is 8
-    public static final int[] kAutonomousModeSelectorPorts = {11, 12, 13, 18, 19};
+    public static final int[] kAutonomousModeSelectorPorts = {0, 1, 3};
 
     // public static final double kMaxSpeedMetersPerSecond = 3.0;
     // public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
