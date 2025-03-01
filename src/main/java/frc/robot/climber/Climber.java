@@ -31,48 +31,55 @@ public class Climber extends SubsystemBase {
   private final DigitalInput cageSensor = new DigitalInput(ClimberConstants.kCageSensorPort);
 
   public Climber() {
+    // spotless:off
     motorConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .inverted(false)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ClimberConstants.kClimberCurrentLimit);
 
-    motorConfig
-        .closedLoop
+    motorConfig.closedLoop
         .p(ClimberConstants.kP)
         .i(ClimberConstants.kI)
         .d(ClimberConstants.kD)
         .outputRange(-1, 1);
 
-    motorConfig
-        .encoder
+    motorConfig.encoder
         .positionConversionFactor(ClimberConstants.kPositionConversionFactor)
         .velocityConversionFactor(ClimberConstants.kVelocityConversionFactor);
 
-    motorConfig
-        .closedLoop
-        .maxMotion
-        .maxAcceleration(ClimberConstants.kMaxAcceleration)
-        .maxVelocity(ClimberConstants.kMaxVelocityFactor);
+    motorConfig.closedLoop.maxMotion
+        .maxVelocity(ClimberConstants.kMaxVelocityRPM)
+        .maxAcceleration(ClimberConstants.kMaxAccelerationRPMPerSecond);
 
-    motorConfig.softLimit.reverseSoftLimit(0.0).reverseSoftLimitEnabled(true);
+    motorConfig.signals
+        .outputCurrentPeriodMs(100);
 
-    motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motorConfig.softLimit
+        .reverseSoftLimit(0.0)
+        .reverseSoftLimitEnabled(true);
+    // spotless:on
+
+    motor.configureAsync(
+        motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     encoder = motor.getEncoder();
     controller = motor.getClosedLoopController();
+
+    setDefaultCommand(createDefaultClimberCommand());
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Climber Position", getPosition());
-    SmartDashboard.putBoolean("Cage Sensor", cageSensor.get());
+    SmartDashboard.putNumber("Climber/Position", getPosition());
+    SmartDashboard.putBoolean("Climber/Cage Sensor", cageSensor.get());
 
-    SmartDashboard.putNumber("Servo", servo.get());
+    SmartDashboard.putNumber("Climber/Servo", servo.get());
 
-    SmartDashboard.putNumber("Climber Motor Current", motor.getOutputCurrent());
-    SmartDashboard.putBoolean("isfinished for Command", createDeployCommand().isFinished());
-    SmartDashboard.putNumber("Output Voltage Climber", motor.get());
+    // SmartDashboard.putNumber("Climber/Motor Current", motor.getOutputCurrent());
+    SmartDashboard.putBoolean(
+        "Climber/Deploy Command is Finished", createDeployCommand().isFinished());
+    // SmartDashboard.putNumber("Climber/Applied Duty Cycle", motor.getAppliedOutput());
   }
 
   public void resetEncoder() {

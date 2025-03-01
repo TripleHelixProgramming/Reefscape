@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,11 +28,21 @@ import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
+import frc.robot.auto.BlueL4AlgaeAuto;
+import frc.robot.auto.BlueNoProcess3PieceAuto;
 import frc.robot.auto.ExampleAuto;
+import frc.robot.auto.RedL4AlgaeAuto;
 import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
+import frc.robot.elevator.AlgaeRoller;
+import frc.robot.elevator.AlgaeWrist;
+import frc.robot.elevator.CoralRoller;
+import frc.robot.elevator.CoralWrist;
+import frc.robot.elevator.Elevator;
+import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
+import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,10 +54,20 @@ public class Robot extends TimedRobot {
   private final AutoSelector autoSelector =
       new AutoSelector(
           AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
-  private final Drivetrain swerve = new Drivetrain(allianceSelector::fieldRotated);
+
+  private final Elevator elevator = new Elevator();
+  private final Lifter lifter = elevator.getLifter();
+  private final CoralRoller coralRoller = elevator.getCoralRoller();
+  private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
+  private final CoralWrist coralWrist = elevator.getCoralWrist();
+  private final AlgaeWrist algaeWrist = elevator.getAlgaeWrist();
+
+  private final Drivetrain swerve =
+      new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
   private final Climber climber = new Climber();
   private final LEDs leds = new LEDs();
   private final Vision vision = new Vision();
+
   private CommandZorroController driver;
   private CommandXboxController operator;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
@@ -71,15 +92,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    // Starts recording to data log
+    // Start recording to data log
     // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html#logging-joystick-data
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
 
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
-
-    climber.setDefaultCommand(climber.createDefaultClimberCommand());
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -129,6 +148,7 @@ public class Robot extends TimedRobot {
     autoSelector.scheduleAuto();
     leds.setDefaultCommand(leds.createEnabledCommand());
     climber.lockRatchet();
+    lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
   }
 
   @Override
@@ -141,6 +161,12 @@ public class Robot extends TimedRobot {
     swerve.resetHeadingOffset();
     climber.resetEncoder();
     climber.lockRatchet();
+    elevator.resetPositionControllers();
+    lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+
+    // Test wrist feedforwards
+    // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
+    // coralWrist.setDefaultCommand(coralWrist.createJoystickControlCommand(operator.getHID()));
   }
 
   @Override
@@ -175,38 +201,91 @@ public class Robot extends TimedRobot {
 
     // Reset heading
     driver.DIn()
-        .onTrue(new InstantCommand(() -> swerve.setHeadingOffset())
-        .ignoringDisable(true));
+        .onTrue(new InstantCommand(() -> {
+          swerve.setHeadingOffset();
+          // swerve.initializeRelativeTurningEncoder();
+        }).ignoringDisable(true));
 
+    // Drive to nearest pose
     driver.AIn()
         .whileTrue(new DriveToPoseCommand(swerve, vision, () -> swerve.getNearestPose()));
 
+    // Outtake grippers
+    driver.HIn()
+        .whileTrue(coralRoller.createOuttakeCommand()
+        .alongWith(algaeRoller.createOuttakeCommand()));
+
   }
-  // spotless:on
 
   private void configureOperatorButtonBindings() {
-    Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
-    climbTrigger.onTrue(
-        climber
-            .createDeployCommand()
-            .andThen(
-                climber.createClimbByControllerCommand(
-                    operator.getHID(), -ClimberConstants.kMaxVelocity)));
 
-    operator
-        .back()
-        .whileTrue(new InstantCommand(climber::unlockRatchet))
-        .whileFalse(new InstantCommand(climber::lockRatchet));
+    Trigger algaeMode = operator.leftBumper();
+
+    // Test wrist motion
+    // operator.back()
+    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode)
+    //     .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor)));
+    // operator.start()
+    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.L4)
+    //     .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode)));
+
+    // Test algae roller motion
+    // operator.back().whileTrue(algaeRoller.createIntakeCommand());
+    // operator.start().whileTrue(algaeRoller.createOuttakeCommand());
+
+    // Test coral roller motion
+    // operator.back().whileTrue(coralRoller.createIntakeCommand());
+    // operator.start().whileTrue(coralRoller.createOuttakeCommand());
+
+    // Configure to either score coral on L1 or score algae in processor
+    operator.a().whileTrue(new ConditionalCommand(
+        elevator.algaeProcessorPositionCG(), elevator.coralL1PositionCG(), algaeMode));
+
+    // Configure to either score coral on L2 or intake algae from L2
+    operator.b().whileTrue(new ConditionalCommand(
+        elevator.algaeL2IntakeCG(), elevator.coralL2PositionCG(), algaeMode));
+
+    // Configure to either score coral on L3 or intake algae from L3
+    operator.x().whileTrue(new ConditionalCommand(
+        elevator.algaeL3IntakeCG(), elevator.coralL3PositionCG(), algaeMode));
+
+    // Configure to either score coral on L4 or score algae in barge
+    operator.y().whileTrue(new ConditionalCommand(
+        elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
+
+    // Configure to either intake coral from source or intake algae from floor
+    operator.start().whileTrue(new ConditionalCommand(
+        elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
+
+    // Intake either coral or algae
+    operator.rightBumper().whileTrue(new ConditionalCommand(
+        algaeRoller.createIntakeCommand(), coralRoller.createIntakeCommand(), algaeMode));
+
+    // Force joystick operation of the elevator
+    Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
+    Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
+    elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
+
+    // Actuate climber winch
+    Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
+    climbTrigger.onTrue(climber.createDeployCommand()
+        .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
   }
 
   private void configureEventBindings() {
-    autoSelector.getChangedAutoSelection().onTrue(leds.createChangeAutoAnimationCommand());
+    autoSelector.getChangedAutoSelection()
+        .onTrue(leds.createChangeAutoAnimationCommand());
+    lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
+        .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
+  // spotless:on
 
   private void configureAutoOptions() {
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 4));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new ExampleAuto(swerve)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2));
+    autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4AlgaeAuto(swerve, elevator)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4AlgaeAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 3, new ExampleAuto(swerve)));
   }
 
   /**

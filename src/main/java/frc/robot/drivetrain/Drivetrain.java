@@ -1,5 +1,7 @@
 package frc.robot.drivetrain;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import choreo.trajectory.SwerveSample;
 import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 import edu.wpi.first.math.Matrix;
@@ -16,10 +18,10 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants.RotationControllerGains;
 import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
@@ -27,14 +29,17 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.VisionConstants;
 import java.util.Arrays;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** Constructs a swerve drive style drivetrain. */
 public class Drivetrain extends SubsystemBase {
 
-  private BooleanSupplier m_fieldRotatedSupplier;
+  private BooleanSupplier fieldRotatedSupplier;
+  private Supplier<Dimensionless> elevatorHeightSupplier;
 
-  static LinearVelocity kMaxSpeed = Constants.DriveConstants.kMaxTranslationalVelocity;
-  static AngularVelocity kMaxAngularSpeed = Constants.DriveConstants.kMaxRotationalVelocity;
+  static LinearVelocity kMaxSpeed = DriveConstants.kMaxTranslationalVelocity;
+  static LinearVelocity kMinSpeed = DriveConstants.kMinTranslationVelocity;
+  static AngularVelocity kMaxAngularSpeed = DriveConstants.kMaxRotationalVelocity;
 
   private final SwerveDriveKinematics m_kinematics = DriveConstants.kDriveKinematics;
 
@@ -42,18 +47,11 @@ public class Drivetrain extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator;
 
   private final PIDController xController =
-      new PIDController(
-          TranslationControllerGains.kP,
-          TranslationControllerGains.kI,
-          TranslationControllerGains.kD);
+      new PIDController(TranslationControllerGains.kP, 0.0, 0.0);
   private final PIDController yController =
-      new PIDController(
-          TranslationControllerGains.kP,
-          TranslationControllerGains.kI,
-          TranslationControllerGains.kD);
+      new PIDController(TranslationControllerGains.kP, 0.0, 0.0);
   private final PIDController thetaController =
-      new PIDController(
-          RotationControllerGains.kP, RotationControllerGains.kI, RotationControllerGains.kD);
+      new PIDController(RotationControllerGains.kP, 0.0, 0.0);
 
   private final Canandgyro canandgyro = new Canandgyro(0);
   private Rotation2d headingOffset = new Rotation2d();
@@ -61,9 +59,9 @@ public class Drivetrain extends SubsystemBase {
   private StructPublisher<Pose2d> m_visionPosePublisher =
       NetworkTableInstance.getDefault().getStructTopic("Vision", Pose2d.struct).publish();
 
-  public Drivetrain(BooleanSupplier fieldRotatedSupplier) {
-
-    this.m_fieldRotatedSupplier = fieldRotatedSupplier;
+  public Drivetrain(BooleanSupplier fieldRotated, Supplier<Dimensionless> elevatorHeight) {
+    this.fieldRotatedSupplier = fieldRotated;
+    this.elevatorHeightSupplier = elevatorHeight;
 
     canandgyro.setYaw(0);
 
@@ -91,22 +89,24 @@ public class Drivetrain extends SubsystemBase {
     m_visionPosePublisher.set(poseEstimator.getEstimatedPosition());
 
     for (SwerveModule module : SwerveModule.values()) {
+      module.refreshRelativeTurningEncoder();
+
       SmartDashboard.putNumber(
-          module.getName() + "RelativeTurningPosition",
+          module.getName() + "/RelativeTurningPosition",
           module.getRelativeTurningPosition().getDegrees());
 
       SmartDashboard.putNumber(
-          module.getName() + "AbsoluteTurningPosition",
+          module.getName() + "/AbsoluteTurningPosition",
           module.getAbsTurningPosition(0.0).getDegrees());
 
       SmartDashboard.putNumber(
-          module.getName() + "RelativeDrivePosition", module.getRelativeDrivePosition());
+          module.getName() + "/RelativeDrivePosition", module.getRelativeDrivePosition());
 
       SmartDashboard.putNumber(
-          module.getName() + "AbsoluteMagnetOffset",
+          module.getName() + "/AbsoluteMagnetOffset",
           module.getAbsTurningEncoderOffset().getDegrees());
 
-      SmartDashboard.putNumber(module.getName() + "OutputCurrent", module.getDriveMotorCurrent());
+      SmartDashboard.putNumber(module.getName() + "/OutputCurrent", module.getDriveMotorCurrent());
     }
 
     SmartDashboard.putNumber("Heading", getHeading().getDegrees());
@@ -127,8 +127,9 @@ public class Drivetrain extends SubsystemBase {
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds, SwerveDriveKinematics kinematics) {
     var swerveModuleStates =
         kinematics.toSwerveModuleStates(
-            ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod));
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
+            ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod.in(Seconds)));
+    LinearVelocity speedPenalty = (kMaxSpeed.minus(kMinSpeed)).times(elevatorHeightSupplier.get());
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed.minus(speedPenalty));
     for (SwerveModule module : SwerveModule.values()) {
       module.setDesiredState(swerveModuleStates[module.ordinal()]);
     }
@@ -159,6 +160,12 @@ public class Drivetrain extends SubsystemBase {
     poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
+  public void initializeRelativeTurningEncoder() {
+    for (SwerveModule module : SwerveModule.values()) {
+      module.initializeRelativeTurningEncoder();
+    }
+  }
+
   public Rotation2d getHeadingOffset() {
     return headingOffset;
   }
@@ -169,7 +176,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void setHeadingOffset() {
     headingOffset =
-        m_fieldRotatedSupplier.getAsBoolean()
+        fieldRotatedSupplier.getAsBoolean()
             ? getHeading().rotateBy(new Rotation2d(Math.PI))
             : getHeading();
   }
@@ -216,7 +223,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public BooleanSupplier fieldRotatedSupplier() {
-    return this.m_fieldRotatedSupplier;
+    return this.fieldRotatedSupplier;
   }
 
   /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)}. */
