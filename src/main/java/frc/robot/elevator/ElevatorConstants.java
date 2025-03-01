@@ -31,7 +31,7 @@ public class ElevatorConstants {
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
-    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(30.0);
+    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(45.0);
     public static final LinearAccelerationUnit inchesPerSecondPerSecond =
         InchesPerSecond.per(Second);
     public static final LinearAcceleration kRapidAcceleration = inchesPerSecondPerSecond.of(1000);
@@ -56,8 +56,8 @@ public class ElevatorConstants {
       CoralL4(60.75),
       CoralIntake(9.7),
       AlgaeProcessor(12.0),
-      AlgaeL2(30),
-      AlgaeL3(46.5),
+      AlgaeL2(29),
+      AlgaeL3(45.5),
       Max(67.8);
 
       public Distance height;
@@ -70,7 +70,6 @@ public class ElevatorConstants {
 
   public static final class CoralRollerConstants {
     public static final int kMotorPort = 23;
-    public static final int kCoralSensorPort = 5;
 
     public static final double kGearRatio = 5.0;
     public static final double kRollerDiameter = 2.0; // inches
@@ -83,7 +82,7 @@ public class ElevatorConstants {
     // Convert to inches per second at the wheel
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
-    public static final Voltage kIntakeVoltage = Volts.of(5.0);
+    public static final Voltage kIntakeVoltage = Volts.of(3.0);
     public static final Voltage kOuttakeVoltage = kIntakeVoltage.unaryMinus();
   }
 
@@ -151,7 +150,6 @@ public class ElevatorConstants {
   public static final class AlgaeRollerConstants {
     public static final int kLeaderMotorPort = 15;
     public static final int kFollowerMotorPort = 16;
-    public static final int kSensorPort = 4;
 
     public static final double kGearRatio = 5.0;
     public static final double kRollerDiameter = 4.0; // inches
