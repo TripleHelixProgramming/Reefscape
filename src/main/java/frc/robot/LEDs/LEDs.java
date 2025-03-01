@@ -3,9 +3,11 @@ package frc.robot.LEDs;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -24,6 +26,8 @@ public class LEDs extends SubsystemBase {
 
   private final AddressableLED led = new AddressableLED(LedConstants.kLedPort);
   private final AddressableLEDBuffer ledBuffer =
+  private final AddressableLED led = new AddressableLED(LedConstants.kLedPort);
+  private final AddressableLEDBuffer ledBuffer =
       new AddressableLEDBuffer(LedConstants.kLedBufferLength);
   private final AddressableLEDBufferView leftStrip = ledBuffer.createView(20, 39).reversed();
   private final AddressableLEDBufferView leftStripTop = ledBuffer.createView(20, 28).reversed();
@@ -37,10 +41,13 @@ public class LEDs extends SubsystemBase {
   public LEDs() {
     led.setLength(ledBuffer.getLength());
     led.start();
+    led.setLength(ledBuffer.getLength());
+    led.start();
   }
 
   @Override
   public void periodic() {
+    led.setData(ledBuffer);
     led.setData(ledBuffer);
   }
 
@@ -65,14 +72,17 @@ public class LEDs extends SubsystemBase {
     if (1 > autoMode) { // 0 indicates no auto selected.
       for (var led = 0; led < LedConstants.kLEDsPerBlock; led++) {
         setBoth(led, Color.kYellow);
+        setBoth(led, Color.kYellow);
       }
     } else {
       for (var mode = 0; mode < autoMode; mode++) {
         for (var i = 0; i < LedConstants.kLEDsPerBlock; i++) {
           setBoth(i + (mode * block), alliance == Alliance.Red ? Color.kRed : Color.kBlue);
+          setBoth(i + (mode * block), alliance == Alliance.Red ? Color.kRed : Color.kBlue);
         }
       }
     }
+    led.setData(ledBuffer);
     led.setData(ledBuffer);
   }
 
