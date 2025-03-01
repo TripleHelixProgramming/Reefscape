@@ -9,10 +9,14 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.LEDReader;
+import edu.wpi.first.wpilibj.LEDWriter;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.LedConstants;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -21,8 +25,8 @@ public class LEDs extends SubsystemBase {
 
   private final AddressableLED led = new AddressableLED(LedConstants.kLedPort);
   private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LedConstants.kLedBufferLength);
-  private final AddressableLEDBufferView rightStrip = ledBuffer.createView(0, 19);
   private final AddressableLEDBufferView leftStrip = ledBuffer.createView(20, 39).reversed();
+  private final AddressableLEDBufferView rightStrip = ledBuffer.createView(0, 19);
 
   public LEDs() {
     led.setLength(ledBuffer.getLength());
