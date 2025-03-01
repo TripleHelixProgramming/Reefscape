@@ -88,6 +88,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(
         "Align Encoders",
         new InstantCommand(() -> swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
+
+    addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), 0.1);
   }
 
   @Override
