@@ -272,7 +272,7 @@ public class Robot extends TimedRobot {
     climbTrigger.onTrue(climber.createDeployCommand()
         .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
 
-    // leds.createDefaultCommand(algaeMode);
+    leds.createDefaultCommand(algaeMode);
   }
 
   private void configureEventBindings() {
