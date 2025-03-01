@@ -12,7 +12,10 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LedConstants;
+
+import java.time.Duration;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -23,7 +26,13 @@ public class LEDs extends SubsystemBase {
   private final AddressableLEDBuffer ledBuffer =
       new AddressableLEDBuffer(LedConstants.kLedBufferLength);
   private final AddressableLEDBufferView leftStrip = ledBuffer.createView(20, 39).reversed();
+  private final AddressableLEDBufferView leftStripTop = ledBuffer.createView(20, 28).reversed();
+  private final AddressableLEDBufferView leftStripBottom = ledBuffer.createView(31, 39).reversed();
   private final AddressableLEDBufferView rightStrip = ledBuffer.createView(0, 19);
+  private final AddressableLEDBufferView rightStripTop = ledBuffer.createView(11, 19);
+  private final AddressableLEDBufferView rightStripBottom = ledBuffer.createView(0, 8);
+  private final AddressableLEDBufferView leftStripMiddle = ledBuffer.createView(29, 30).reversed();
+  private final AddressableLEDBufferView rightStripMiddle = ledBuffer.createView(9, 10);
 
   public LEDs() {
     led.setLength(ledBuffer.getLength());
@@ -36,9 +45,13 @@ public class LEDs extends SubsystemBase {
   }
 
   private void clearBuffer() {
-    for (var i = 0; i < ledBuffer.getLength(); i++) {
-      ledBuffer.setRGB(i, 0, 0, 0);
-    }
+   setAllLights(Color.kBlack);
+  }
+
+  private void setMiddle(Color color) {
+    LEDPattern solid = LEDPattern.solid(color);
+    solid.applyTo(leftStripMiddle);
+    solid.applyTo(rightStripMiddle);
   }
 
   private void setBoth(int index, Color color) {
@@ -93,6 +106,10 @@ public class LEDs extends SubsystemBase {
     var delta = targetPose.minus(currentPose);
   }
 
+  public void createDefaultCommand(Trigger algaeMode) {
+    setDefaultCommand(this.run(() -> setMiddle(algaeMode.getAsBoolean()? Color.kGreen : Color.kPink)));
+  }
+
   public Command createPoseSeekingCommand(
       Supplier<Pose2d> targetPoseSupplier, Supplier<Pose2d> currentPoseSupplier) {
     return this.run(() -> indicatePoseSeek(currentPoseSupplier.get(), targetPoseSupplier.get()))
@@ -123,5 +140,24 @@ public class LEDs extends SubsystemBase {
             })
         .withTimeout(duration)
         .ignoringDisable(true);
+  }
+
+  public void setAllLights(Color color){
+    for (var i = 0; i < ledBuffer.getLength(); i++) {
+      ledBuffer.setLED(i, color);
+    }
+  }
+
+  public Command createSolidColorCommand(final Color color){
+    return this.run( () -> { setAllLights(color); });
+  }
+
+  
+
+  public void biScroll(Color color, boolean ifInward, Time duration){
+    LEDPattern solid = LEDPattern.solid(color);
+    var scroll = solid.scrollAtRelativeSpeed(duration.asFrequency());
+    
+    
   }
 }

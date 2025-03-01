@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -270,6 +271,8 @@ public class Robot extends TimedRobot {
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
     climbTrigger.onTrue(climber.createDeployCommand()
         .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
+
+    leds.createDefaultCommand(algaeMode);
   }
 
   private void configureEventBindings() {
@@ -277,6 +280,8 @@ public class Robot extends TimedRobot {
         .onTrue(leds.createChangeAutoAnimationCommand());
     lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
         .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+    algaeRoller.hasAlage.whileTrue(leds.createSolidColorCommand(Color.kGreen));
+    coralRoller.hasCoral.whileTrue(leds.createSolidColorCommand(Color.kPink));  
   }
   // spotless:on
 
