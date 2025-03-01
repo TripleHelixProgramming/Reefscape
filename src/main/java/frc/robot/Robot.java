@@ -32,7 +32,6 @@ import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;
 import frc.robot.auto.BlueNoProcess3PieceAuto;
 import frc.robot.auto.BlueProcess3PieceAuto;
-import frc.robot.auto.ExampleAuto;
 import frc.robot.auto.RedL4AlgaeAuto;
 import frc.robot.auto.RedNoProcess3PieceAuto;
 import frc.robot.auto.RedProcess3PieceAuto;

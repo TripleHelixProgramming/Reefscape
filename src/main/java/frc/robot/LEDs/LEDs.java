@@ -3,11 +3,9 @@ package frc.robot.LEDs;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -17,15 +15,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LedConstants;
 
-import java.time.Duration;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 public class LEDs extends SubsystemBase {
 
-  private final AddressableLED led = new AddressableLED(LedConstants.kLedPort);
-  private final AddressableLEDBuffer ledBuffer =
   private final AddressableLED led = new AddressableLED(LedConstants.kLedPort);
   private final AddressableLEDBuffer ledBuffer =
       new AddressableLEDBuffer(LedConstants.kLedBufferLength);
