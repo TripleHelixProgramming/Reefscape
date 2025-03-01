@@ -31,7 +31,6 @@ import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;
 import frc.robot.auto.BlueNoProcess3PieceAuto;
 import frc.robot.auto.BlueProcess3PieceAuto;
-import frc.robot.auto.ExampleAuto;
 import frc.robot.auto.RedL4AlgaeAuto;
 import frc.robot.auto.RedNoProcess3PieceAuto;
 import frc.robot.auto.RedProcess3PieceAuto;
@@ -288,10 +287,14 @@ public class Robot extends TimedRobot {
   private void configureAutoOptions() {
     autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4AlgaeAuto(swerve, elevator)));
     autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4AlgaeAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 2, new RedNoProcess3PieceAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 2, new RedNoProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
   }
 
   /**
