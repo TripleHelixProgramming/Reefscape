@@ -234,10 +234,10 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final int kAllianceColorSelectorPort = 10;
+    public static final int kAllianceColorSelectorPort = 3;
 
     // max length is 8
-    public static final int[] kAutonomousModeSelectorPorts = {11, 12, 13, 18, 19};
+    public static final int[] kAutonomousModeSelectorPorts = {0, 1, 2};
 
     // public static final double kMaxSpeedMetersPerSecond = 3.0;
     // public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
@@ -266,7 +266,7 @@ public final class Constants {
     public static final double kEngagedPosition = 600.0 / 1024.0;
     public static final double kDisengedPosition = 475.0 / 1024.0;
 
-    public static final int kCageSensorPort = 1;
+    public static final int kCageSensorPort = 6;
 
     public static final double kP = 0.1;
     public static final double kI = 0;

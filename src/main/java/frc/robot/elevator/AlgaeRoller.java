@@ -4,6 +4,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -27,7 +28,7 @@ public class AlgaeRoller extends SubsystemBase {
   private final SparkMaxConfig followerConfig = new SparkMaxConfig();
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
-  private final DigitalInput algaeSensor = new DigitalInput(AlgaeRollerConstants.kSensorPort);
+  private final SparkLimitSwitch algaeSensor = leaderMotor.getForwardLimitSwitch();
 
   public AlgaeRoller() {
     // spotless:off
@@ -36,6 +37,10 @@ public class AlgaeRoller extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(false);
+
+    config.limitSwitch
+        .forwardLimitSwitchEnabled(false)
+        .reverseLimitSwitchEnabled(false);
 
     config.encoder
         .velocityConversionFactor(AlgaeRollerConstants.kVelocityConversionFactor)
@@ -62,14 +67,14 @@ public class AlgaeRoller extends SubsystemBase {
     SmartDashboard.putNumber("Algae Roller/Velocity", encoder.getVelocity());
     // SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
     // SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
-    SmartDashboard.putBoolean("Algae Sensor", algaeSensor.get());
+    SmartDashboard.putBoolean("Algae Sensor", algaeSensor.isPressed());
   }
 
   private void setVoltage(Voltage voltage) {
     leaderMotor.setVoltage(voltage);
   }
 
-  public Trigger hasAlage = new Trigger(() -> algaeSensor.get());
+  public Trigger hasAlage = new Trigger(() -> algaeSensor.isPressed());
 
   public Command createStopCommand() {
     return this.startEnd(() -> leaderMotor.set(0.0), () -> {});

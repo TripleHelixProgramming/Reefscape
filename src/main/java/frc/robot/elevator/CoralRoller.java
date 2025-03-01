@@ -4,6 +4,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -22,7 +23,7 @@ public class CoralRoller extends SubsystemBase {
       new SparkMax(CoralRollerConstants.kMotorPort, MotorType.kBrushless);
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final RelativeEncoder encoder = motor.getEncoder();
-  private final DigitalInput coralSensor = new DigitalInput(CoralRollerConstants.kCoralSensorPort);
+  private final SparkLimitSwitch coralSensor = motor.getForwardLimitSwitch();
 
   public CoralRoller() {
     // spotless:off
@@ -31,6 +32,10 @@ public class CoralRoller extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
         .inverted(true);
+
+    config.limitSwitch
+        .forwardLimitSwitchEnabled(false)
+        .reverseLimitSwitchEnabled(false);
 
     config.signals
         .absoluteEncoderPositionPeriodMs(100)
@@ -51,14 +56,14 @@ public class CoralRoller extends SubsystemBase {
     SmartDashboard.putNumber("Coral Roller/Velocity", encoder.getVelocity());
     // SmartDashboard.putNumber("Coral Roller/Applied Duty Cycle", motor.getAppliedOutput());
     // SmartDashboard.putNumber("Coral Roller/Current", motor.getOutputCurrent());
-    SmartDashboard.putBoolean("Coral Sensor", coralSensor.get());
+    SmartDashboard.putBoolean("Coral Sensor", coralSensor.isPressed());
   }
 
   private void setVoltage(Voltage voltage) {
     motor.setVoltage(voltage);
   }
 
-  public Trigger hasCoral = new Trigger(() -> coralSensor.get());
+  public Trigger hasCoral = new Trigger(() -> coralSensor.isPressed());
 
   public Command createStopCommand() {
     return this.startEnd(() -> motor.set(0.0), () -> {});

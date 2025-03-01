@@ -70,7 +70,6 @@ public class ElevatorConstants {
 
   public static final class CoralRollerConstants {
     public static final int kMotorPort = 23;
-    public static final int kCoralSensorPort = 3;
 
     public static final double kGearRatio = 5.0;
     public static final double kRollerDiameter = 2.0; // inches
@@ -151,7 +150,6 @@ public class ElevatorConstants {
   public static final class AlgaeRollerConstants {
     public static final int kLeaderMotorPort = 15;
     public static final int kFollowerMotorPort = 16;
-    public static final int kSensorPort = 4;
 
     public static final double kGearRatio = 5.0;
     public static final double kRollerDiameter = 4.0; // inches
