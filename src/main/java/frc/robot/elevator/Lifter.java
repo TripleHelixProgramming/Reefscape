@@ -43,7 +43,7 @@ public class Lifter extends SubsystemBase {
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
 
   private final ProfiledPIDController controller =
-      new ProfiledPIDController(LifterController.kP, 0.0, 0.0, LifterController.kConstraints);
+      new ProfiledPIDController(LifterController.kP, LifterController.kI, LifterController.kD, LifterController.kConstraints);
 
   private final EventLoop loop = new EventLoop();
   private LifterState targetState = LifterState.Unknown;
