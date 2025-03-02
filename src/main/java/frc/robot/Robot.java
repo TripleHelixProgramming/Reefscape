@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -47,8 +46,11 @@ import frc.robot.elevator.Elevator;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
+import frc.util.Gamepiece;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class Robot extends TimedRobot {
   private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
@@ -68,14 +70,16 @@ public class Robot extends TimedRobot {
   private final Drivetrain swerve =
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
   private final Climber climber = new Climber();
-  private final LEDs leds = new LEDs();
+  private final LEDs leds = LEDs.getInstance();
   private final Vision vision = new Vision();
+  private final EventLoop loop = new EventLoop();
 
   private CommandZorroController driver;
   private CommandXboxController operator;
+  private BooleanSupplier algaeModeSupplier;
+  private Supplier<Gamepiece> gamepieceSupplier;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
-  private final EventLoop loop = new EventLoop();
 
   private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
@@ -83,6 +87,14 @@ public class Robot extends TimedRobot {
           .publish();
 
   public Robot() {
+    gamepieceSupplier =
+        new Supplier<Gamepiece>() {
+          @Override
+          public Gamepiece get() {
+            return getLoadedGamepiece();
+          }
+        };
+
     configureButtonBindings();
     configureEventBindings();
     configureAutoOptions();
@@ -151,9 +163,9 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     autoSelector.scheduleAuto();
-    leds.setDefaultCommand(leds.createEnabledCommand());
     climber.lockRatchet();
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
+    // leds.setDefaultCommand(leds.createEnabledCommand(algaeRoller.hasAlage.));
   }
 
   @Override
@@ -162,12 +174,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     autoSelector.cancelAuto();
-    leds.setDefaultCommand(leds.createEnabledCommand());
     swerve.resetHeadingOffset();
     climber.resetEncoder();
     climber.lockRatchet();
     elevator.resetPositionControllers();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+
+    leds.setDefaultCommand(leds.createEnabledCommand(algaeModeSupplier, gamepieceSupplier));
 
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
@@ -184,6 +197,15 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {}
+
+  Gamepiece getLoadedGamepiece() {
+    if (algaeRoller.hasAlage.getAsBoolean()) {
+      return Gamepiece.ALGAE;
+    } else if (coralRoller.hasCoral.getAsBoolean()) {
+      return Gamepiece.CORAL;
+    }
+    return null;
+  }
 
   public void configureButtonBindings() {
 
@@ -224,7 +246,13 @@ public class Robot extends TimedRobot {
 
   private void configureOperatorButtonBindings() {
 
-    Trigger algaeMode = operator.leftBumper();
+    var algaeMode = operator.leftBumper();
+    algaeModeSupplier = new BooleanSupplier() {
+      @Override
+      public boolean getAsBoolean() {
+        return algaeMode.getAsBoolean();
+      }
+    };
 
     // Test wrist motion
     // operator.back()
@@ -276,7 +304,6 @@ public class Robot extends TimedRobot {
     climbTrigger.onTrue(climber.createDeployCommand()
         .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
 
-    leds.createDefaultCommand(algaeMode);
   }
 
   private void configureEventBindings() {
@@ -284,18 +311,20 @@ public class Robot extends TimedRobot {
         .onTrue(leds.createChangeAutoAnimationCommand());
     lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
         .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
-    algaeRoller.hasAlage.whileTrue(leds.createSolidColorCommand(Color.kGreen));
-    coralRoller.hasCoral.whileTrue(leds.createSolidColorCommand(Color.kPink));  
   }
   // spotless:on
 
   private void configureAutoOptions() {
     autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4AlgaeAuto(swerve, elevator)));
     autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4AlgaeAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 2, new RedNoProcess3PieceAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 2, new RedNoProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
   }
 
   /**

@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.util.Color;
 
 public final class Constants {
 
@@ -293,9 +294,12 @@ public final class Constants {
 
   public static final class LedConstants {
     public static final int kLedPort = 9;
-    public static final int kLedBufferLength = 40;
+    public static final int kLedPixelCount = 40;
 
     public static final int kLEDsPerBlock = 2;
     public static final int kLEDsBetweenBlocks = 1;
+
+    public static final Color algaeColor = Color.kGreen;
+    public static final Color coralColor = Color.kCoral;
   }
 }

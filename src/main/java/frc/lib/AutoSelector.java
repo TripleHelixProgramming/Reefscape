@@ -112,7 +112,7 @@ public class AutoSelector {
   public void disabledPeriodic() {
     eventLoop.poll();
     SmartDashboard.putNumber("AutoSelectorSwitchPosition", getBinarySwitchPosition());
-    
+
     SmartDashboard.putBoolean("AutoSelectorDIOPort0", !switchPositions[0].get());
     SmartDashboard.putBoolean("AutoSelectorDIOPort1", !switchPositions[1].get());
     SmartDashboard.putBoolean("AutoSelectorDIOPort2", !switchPositions[2].get());

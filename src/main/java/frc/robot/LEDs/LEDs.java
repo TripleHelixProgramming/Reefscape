@@ -9,115 +9,211 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.LEDReader;
+import edu.wpi.first.wpilibj.LEDWriter;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LedConstants;
-
+import frc.util.Gamepiece;
+import frc.util.Util;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 public class LEDs extends SubsystemBase {
 
-  private final AddressableLED led = new AddressableLED(LedConstants.kLedPort);
-  private final AddressableLEDBuffer ledBuffer =
-      new AddressableLEDBuffer(LedConstants.kLedBufferLength);
-  private final AddressableLEDBufferView leftStrip = ledBuffer.createView(20, 39).reversed();
-  private final AddressableLEDBufferView leftStripTop = ledBuffer.createView(20, 28).reversed();
-  private final AddressableLEDBufferView leftStripBottom = ledBuffer.createView(31, 39).reversed();
-  private final AddressableLEDBufferView rightStrip = ledBuffer.createView(0, 19);
-  private final AddressableLEDBufferView rightStripTop = ledBuffer.createView(11, 19);
-  private final AddressableLEDBufferView rightStripBottom = ledBuffer.createView(0, 8);
-  private final AddressableLEDBufferView leftStripMiddle = ledBuffer.createView(29, 30).reversed();
-  private final AddressableLEDBufferView rightStripMiddle = ledBuffer.createView(9, 10);
+  private static LEDs instance;
+  private static final AddressableLED mainLed = new AddressableLED(LedConstants.kLedPort);
+  private static final AddressableLEDBuffer mainLedBuffer =
+      new AddressableLEDBuffer(LedConstants.kLedPixelCount);
+  private static final AddressableLEDBufferView leftStrip = mainLedBuffer.createView(0, 19);
+  private static final AddressableLEDBufferView rightStrip = mainLedBuffer.createView(20, 39);
 
-  public LEDs() {
-    led.setLength(ledBuffer.getLength());
-    led.start();
-    led.setLength(ledBuffer.getLength());
-    led.start();
+  enum Segments implements LEDReader, LEDWriter {
+    rightBottom(mainLed, mainLedBuffer, 0, 8, false),
+    rightMiddle(mainLed, mainLedBuffer, 9, 10, false),
+    rightTop(mainLed, mainLedBuffer, 11, 19, false),
+    leftTop(mainLed, mainLedBuffer, 20, 28, true),
+    leftMiddle(mainLed, mainLedBuffer, 29, 30, true),
+    leftBottom(mainLed, mainLedBuffer, 31, 39, true);
+
+    public static final Segments[] ALL = values();
+    public static final Segments[] LEFT = {leftTop, leftMiddle, leftBottom};
+    public static final Segments[] RIGHT = {rightTop, rightMiddle, rightBottom};
+    public static final Segments[] TOP = {leftTop, rightTop};
+    public static final Segments[] MIDDLE = {leftMiddle, rightMiddle};
+    public static final Segments[] BOTTOM = {leftBottom, rightBottom};
+
+    public final AddressableLED led;
+    public final AddressableLEDBuffer buffer;
+    public final AddressableLEDBufferView bufferView;
+    public final int start;
+    public final int end;
+
+    Segments(
+        AddressableLED led, AddressableLEDBuffer ledBuffer, int start, int end, boolean reversed) {
+      this.led = led;
+      this.buffer = ledBuffer;
+      this.start = start;
+      this.end = end;
+      if (reversed) {
+        this.bufferView = ledBuffer.createView(start, end).reversed();
+      } else {
+        this.bufferView = ledBuffer.createView(start, end);
+      }
+    }
+
+    @Override
+    public void setRGB(int index, int r, int g, int b) {
+      buffer.setRGB(index, r, g, b);
+    }
+
+    @Override
+    public int getLength() {
+      return buffer.getLength();
+    }
+
+    @Override
+    public int getRed(int index) {
+      return buffer.getRed(index);
+    }
+
+    @Override
+    public int getGreen(int index) {
+      return buffer.getGreen(index);
+    }
+
+    @Override
+    public int getBlue(int index) {
+      return buffer.getBlue(index);
+    }
+  }
+
+  public static synchronized LEDs getInstance() {
+    if (instance == null) {
+      mainLed.setLength(mainLedBuffer.getLength());
+      mainLed.start();
+      instance = new LEDs();
+    }
+    return instance;
+  }
+
+  private LEDs() {}
+
+  public void update() {
+    mainLed.setData(mainLedBuffer);
   }
 
   @Override
   public void periodic() {
-    led.setData(ledBuffer);
-    led.setData(ledBuffer);
+    update();
   }
 
-  private void clearBuffer() {
-   setAllLights(Color.kBlack);
+  public void setPixel(int index, Color color, LEDWriter... writers) {
+    Arrays.stream(writers).forEach(writer -> writer.setLED(index, color));
   }
 
-  private void setMiddle(Color color) {
-    LEDPattern solid = LEDPattern.solid(color);
-    solid.applyTo(leftStripMiddle);
-    solid.applyTo(rightStripMiddle);
-  }
-
-  private void setBoth(int index, Color color) {
-    leftStrip.setLED(index, color);
-    rightStrip.setLED(index, color);
-  }
-
-  private void autoColor(Alliance alliance, int autoMode) {
-    clearBuffer();
-    int block = LedConstants.kLEDsPerBlock + LedConstants.kLEDsBetweenBlocks;
-    if (1 > autoMode) { // 0 indicates no auto selected.
-      for (var led = 0; led < LedConstants.kLEDsPerBlock; led++) {
-        setBoth(led, Color.kYellow);
-        setBoth(led, Color.kYellow);
-      }
-    } else {
-      for (var mode = 0; mode < autoMode; mode++) {
-        for (var i = 0; i < LedConstants.kLEDsPerBlock; i++) {
-          setBoth(i + (mode * block), alliance == Alliance.Red ? Color.kRed : Color.kBlue);
-          setBoth(i + (mode * block), alliance == Alliance.Red ? Color.kRed : Color.kBlue);
-        }
-      }
+  public void setPixels(int start, int len, Color color, LEDWriter... writers) {
+    while (len-- > 0) {
+      setPixel(start++, color, writers);
     }
-    led.setData(ledBuffer);
-    led.setData(ledBuffer);
   }
 
-  public Command createEnabledCommand() {
-    return this.run(
-        () -> {
-          // TODO: Display visual feedback about the state of the robot in enabled modes
-        });
+  public void applyPattern(LEDPattern pattern, AddressableLEDBuffer... buffers) {
+    Arrays.stream(buffers).forEach(buffer -> pattern.applyTo(buffer));
+  }
+
+  public void applyPattern(LEDPattern pattern, AddressableLEDBufferView... bufferViews) {
+    Arrays.stream(bufferViews).forEach(bufferView -> pattern.applyTo(bufferView));
+  }
+
+  public void applyPattern(LEDPattern pattern, Segments... segments) {
+    Arrays.stream(segments).forEach(segment -> pattern.applyTo(segment.bufferView));
+  }
+
+  public void fill(Color color, Segments... segments) {
+    applyPattern(LEDPattern.solid(color), segments);
+  }
+
+  public void clear(Segments... segments) {
+    fill(Color.kBlack, segments);
+  }
+
+  public void stackBlocks(
+      Color color, int numBlocks, int blockSize, int blockSpace, LEDWriter... writers) {
+    for (int i = 0; i < numBlocks * (blockSize + blockSpace); i += blockSize + blockSpace) {
+      setPixels(i, blockSize, color, writers);
+      setPixels(i + blockSize, blockSpace, Color.kBlack, writers);
+    }
+  }
+
+  public void displayAutoSelection(Alliance alliance, int autoMode, boolean agreement) {
+    clear(Segments.ALL);
+    if (autoMode > 0) {
+      stackBlocks(
+          Util.allianceToColor(alliance),
+          autoMode,
+          LedConstants.kLEDsPerBlock,
+          LedConstants.kLEDsBetweenBlocks,
+          leftStrip,
+          rightStrip);
+    } else { // No auto selected.
+      setPixels(0, LedConstants.kLEDsPerBlock, Color.kYellow, leftStrip, rightStrip);
+    }
+    /*
+     * If there's disagreement about the alliance inputs, light two yellow pixels
+     * at the top of either strip.
+     */
+    if (!agreement) {
+      setPixels(0, 2, Color.kYellow, leftStrip.reversed(), rightStrip.reversed());
+    }
+    update();
+  }
+
+  public void displayDefaultInfo(boolean isAlgaeMode, Optional<Gamepiece> gamepiece) {
+    // Middle LEDs indicate control mode
+    fill(isAlgaeMode ? LedConstants.algaeColor : LedConstants.coralColor, Segments.MIDDLE);
+    // Top and Bottom LEDs indicate gamepiece possession
+    var pieceColor = gamepiece.isPresent() ? gamepiece.get().color : Color.kBlack;
+    fill(pieceColor, Segments.TOP);
+    fill(pieceColor, Segments.BOTTOM);
+    update();
   }
 
   /*
-   * Use LEDs to indicate how to move the robot from the current pose
-   * to the target pose.  The directions must indicate:
+   * Use LEDs to indicate how to move the robot relative to its current
+   * position to reach the target pose.  The directions must indicate:
    *
    * (1) Heading - how to face the robot in the correct direction
-   *   - Use outer pixels to indicate heading: Both green indicates
-   *     proper heading.  Red on one side means rotate away from that
-   *     side.
+   *   - Use middle segments: Both white indicates proper heading.
+   *     Both blue means rotate clockwise, both magenta means counter.
    *
-   * (2) Distance - how far from target
-   *   - Some portion of interior pixels light up.  More pixels
-   *     means more distance.  Red means backwards, relative to
-   *     the robot; green means forward, yellow means sideways.
+   * (2) X
+   *   - Use top segments: Green means move forward, red means backwards.
    *
-   * (3) Direction - which angle to move the robot
-   *   - Offset of pixel block indicates which angle: close to center
-   *     means pretty much straight, close to edge means diagonal.
+   * (3) Y
+   *   - Use bottom segments: Illuminate the corresponding side.
    *
+   * (4) Magnitude of change:
+   *   - Use gradients for colors: brighter means more change.
    */
-  public void indicatePoseSeek(Pose2d currentPose, Pose2d targetPose) {
+  public void displayPoseSeek(Pose2d currentPose, Pose2d targetPose) {
     var delta = targetPose.minus(currentPose);
   }
 
-  public void createDefaultCommand(Trigger algaeMode) {
-    setDefaultCommand(this.run(() -> setMiddle(algaeMode.getAsBoolean()? Color.kGreen : Color.kPink)));
+  public Command createEnabledCommand(BooleanSupplier isAlgeMode, Supplier<Gamepiece> gamepiece) {
+    return this.run(
+        () -> {
+          displayDefaultInfo(isAlgeMode.getAsBoolean(), Optional.ofNullable(gamepiece.get()));
+        });
   }
 
   public Command createPoseSeekingCommand(
       Supplier<Pose2d> targetPoseSupplier, Supplier<Pose2d> currentPoseSupplier) {
-    return this.run(() -> indicatePoseSeek(currentPoseSupplier.get(), targetPoseSupplier.get()))
+    return this.run(() -> displayPoseSeek(currentPoseSupplier.get(), targetPoseSupplier.get()))
         .ignoringDisable(true);
   }
 
@@ -126,11 +222,11 @@ public class LEDs extends SubsystemBase {
       Supplier<Alliance> allianceColorSupplier,
       BooleanSupplier agreementInAllianceInputs) {
     return this.run(
-            () -> {
-              // TODO: Change the basic disabled pattern (e.g. blink or pulse the LED strip) if the
-              // selected alliance color does not match the value from FMS
-              autoColor(allianceColorSupplier.get(), autoSwitchPositionSupplier.getAsInt());
-            })
+            () ->
+                displayAutoSelection(
+                    allianceColorSupplier.get(),
+                    autoSwitchPositionSupplier.getAsInt(),
+                    agreementInAllianceInputs.getAsBoolean()))
         .ignoringDisable(true);
   }
 
@@ -138,31 +234,32 @@ public class LEDs extends SubsystemBase {
     Time duration = Seconds.of(0.5);
     LEDPattern rainbow = LEDPattern.rainbow(255, 255);
     LEDPattern scrollingRainbow = rainbow.scrollAtRelativeSpeed(duration.asFrequency());
-    return this.run(
-            () -> {
-              scrollingRainbow.applyTo(leftStrip);
-              scrollingRainbow.applyTo(rightStrip);
-            })
+    return this.run(() -> applyPattern(scrollingRainbow, leftStrip, rightStrip))
         .withTimeout(duration)
         .ignoringDisable(true);
   }
 
-  public void setAllLights(Color color){
-    for (var i = 0; i < ledBuffer.getLength(); i++) {
-      ledBuffer.setLED(i, color);
-    }
-  }
+  public static AddressableLEDBufferView[] intakeBuffers = {
+    Segments.leftTop.bufferView.reversed(),
+    Segments.rightTop.bufferView.reversed(),
+    Segments.leftBottom.bufferView,
+    Segments.rightBottom.bufferView
+  };
 
-  public Command createSolidColorCommand(final Color color){
-    return this.run( () -> { setAllLights(color); });
-  }
+  public static AddressableLEDBufferView[] outtakeBuffers = {
+    Segments.leftTop.bufferView,
+    Segments.rightTop.bufferView,
+    Segments.leftBottom.bufferView.reversed(),
+    Segments.rightBottom.bufferView.reversed()
+  };
 
-  
+  public Command createRollerAnimationCommand(boolean isIntake) {
+    Time duration = Seconds.of(0.5);
+    LEDPattern rainbow = LEDPattern.rainbow(255, 255);
+    LEDPattern scrollingRainbow = rainbow.scrollAtRelativeSpeed(duration.asFrequency());
 
-  public void biScroll(Color color, boolean ifInward, Time duration){
-    LEDPattern solid = LEDPattern.solid(color);
-    var scroll = solid.scrollAtRelativeSpeed(duration.asFrequency());
-    
-    
+    return this.run(() -> applyPattern(scrollingRainbow, isIntake ? intakeBuffers : outtakeBuffers))
+        .withTimeout(duration)
+        .ignoringDisable(true);
   }
 }
