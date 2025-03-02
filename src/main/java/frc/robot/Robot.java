@@ -179,6 +179,7 @@ public class Robot extends TimedRobot {
     climber.lockRatchet();
     elevator.resetPositionControllers();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+    // lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
 
     leds.setDefaultCommand(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 

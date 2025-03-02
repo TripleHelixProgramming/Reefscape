@@ -1,6 +1,8 @@
 package frc.robot.elevator;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -10,6 +12,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
@@ -42,8 +45,10 @@ public class Lifter extends SubsystemBase {
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
 
-  private final ProfiledPIDController controller =
+  private final ProfiledPIDController feedback =
       new ProfiledPIDController(LifterController.kP, LifterController.kI, LifterController.kD, LifterController.kConstraints);
+
+  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(LifterController.kS, LifterController.kG, LifterController.kV);
 
   private final EventLoop loop = new EventLoop();
   private LifterState targetState = LifterState.Unknown;
@@ -64,13 +69,13 @@ public class Lifter extends SubsystemBase {
         .follow(leaderMotor, true);
 
     leaderConfig.encoder
-        .positionConversionFactor(LifterConstants.kPositionConversionFactor)
-        .velocityConversionFactor(LifterConstants.kVelocityConversionFactor);
+        .positionConversionFactor(LifterConstants.kPositionConversionFactor.in(Meters))
+        .velocityConversionFactor(LifterConstants.kVelocityConversionFactor.in(MetersPerSecond));
 
     leaderConfig.softLimit
-        .reverseSoftLimit(LifterState.Min.height.in(Inches))
+        .reverseSoftLimit(LifterState.Min.height.in(Meters))
         .reverseSoftLimitEnabled(true)
-        .forwardSoftLimit(LifterState.Max.height.in(Inches))
+        .forwardSoftLimit(LifterState.Max.height.in(Meters))
         .forwardSoftLimitEnabled(true);
 
     leaderConfig.signals
@@ -85,8 +90,8 @@ public class Lifter extends SubsystemBase {
     BooleanEvent atLowerLimit = new BooleanEvent(loop, () -> !lowerLimitSwitch.get());
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
-    controller.setTolerance(LifterConstants.kAllowableHeightError.in(Inches));
-    // controller.setIZone();
+    feedback.setTolerance(LifterConstants.kAllowableHeightError.in(Meters));
+    feedback.setIZone(LifterController.kIzone.in(Inches));
     // controller.setIntegratorRange();
     resetController();
   }
@@ -99,7 +104,7 @@ public class Lifter extends SubsystemBase {
     // SmartDashboard.putNumber("Lifter/Velocity", encoder.getVelocity());
 
     SmartDashboard.putString("Lifter/Target State", getTargetState().name());
-    SmartDashboard.putNumber("Lifter/Target Height", controller.getGoal().position);
+    SmartDashboard.putNumber("Lifter/Target Height", feedback.getGoal().position);
 
     // SmartDashboard.putNumber("Lifter/Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
     // SmartDashboard.putNumber(
@@ -108,24 +113,30 @@ public class Lifter extends SubsystemBase {
     // SmartDashboard.putNumber("Lifter/Follower Current", followerMotor.getOutputCurrent());
 
     SmartDashboard.putBoolean("Lifter/Lower Limit Switch", !lowerLimitSwitch.get());
-    SmartDashboard.putBoolean("Lifter/At Target Height", controller.atGoal());
+    SmartDashboard.putBoolean("Lifter/At Target Height", feedback.atGoal());
   }
 
-  public Distance getHeight() {
-    return Inches.of(encoder.getPosition());
+  public Distance getCurrentHeight() {
+    return Meters.of(encoder.getPosition());
+  }
+
+  private Distance getSetPointHeight() {
+    return Meters.of(feedback.getSetpoint().position);
   }
 
   public Dimensionless getProportionOfMaxHeight() {
-    return getHeight().div(LifterState.Max.height);
+    return getCurrentHeight().div(LifterState.Max.height);
   }
 
   public void resetController() {
-    controller.reset(encoder.getPosition());
-    controller.setGoal(encoder.getPosition());
+    feedback.reset(encoder.getPosition());
+    feedback.setGoal(encoder.getPosition());
   }
 
   public void control() {
-    leaderMotor.set(controller.calculate(encoder.getPosition()));
+    double currentPosition = encoder.getPosition();
+    double currentVelocitySetpoint = feedback.getSetpoint().velocity;
+    leaderMotor.setVoltage(feedforward.calculate(currentVelocitySetpoint) + feedback.calculate(currentPosition) + (LifterController.kG * encoder.getPosition()));
   }
 
   public LifterState getTargetState() {
@@ -138,10 +149,10 @@ public class Lifter extends SubsystemBase {
 
   public Trigger atIntakingHeight = new Trigger(() -> inState(LifterState.CoralIntake));
   public Trigger tooHighForCoralWrist =
-      new Trigger(() -> getHeight().gt(LifterState.CoralL3.height.plus(Inches.of(2.0))));
+      new Trigger(() -> getCurrentHeight().gt(LifterState.CoralL3.height.plus(Inches.of(2.0))));
 
   private void resetEncoder() {
-    encoder.setPosition(LifterState.EncoderReset.height.in(Inches));
+    encoder.setPosition(LifterState.EncoderReset.height.in(Meters));
   }
 
   public Command createSetHeightCommand(LifterState state) {
@@ -149,14 +160,14 @@ public class Lifter extends SubsystemBase {
         // initialize
         () -> {
           targetState = state;
-          controller.setGoal(targetState.height.in(Inches));
+          feedback.setGoal(targetState.height.in(Meters));
         },
         // execute
         () -> control(),
         // end
         interrupted -> {},
         // isFinished
-        () -> controller.atGoal(),
+        () -> feedback.atGoal(),
         // requirements
         this);
   }
@@ -165,7 +176,7 @@ public class Lifter extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == LifterState.Unknown) controller.setGoal(encoder.getPosition());
+          if (targetState == LifterState.Unknown) feedback.setGoal(encoder.getPosition());
         },
         // execute
         () -> control(),
@@ -186,15 +197,23 @@ public class Lifter extends SubsystemBase {
   public Command createJoystickControlCommand(XboxController gamepad) {
     return this.run(
         () -> {
-          Distance targetPosition = Inches.of(controller.getGoal().position);
+          Distance targetPosition = Meters.of(feedback.getGoal().position);
 
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
           Distance adder =
               LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
           targetPosition = targetPosition.plus(adder);
 
-          if (isInRange(targetPosition)) controller.setGoal(targetPosition.in(Inches));
+          if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
           control();
+        });
+  }
+
+  public Command createJoystickVoltageCommand(XboxController gamepad) {
+    return this.run(
+        () -> {
+          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+          leaderMotor.setVoltage(joystickInput * 2.0);
         });
   }
 }
