@@ -259,7 +259,10 @@ public class Robot extends TimedRobot {
         elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
 
     // Configure to either intake coral from source or intake algae from floor
-    operator.start().whileTrue(new ConditionalCommand(
+    // operator.start().whileTrue(new ConditionalCommand(
+    //     elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
+
+    operator.rightTrigger().whileTrue(new ConditionalCommand(
         elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     // Intake either coral or algae
@@ -278,6 +281,11 @@ public class Robot extends TimedRobot {
 
     // Auto climbe to position
     operator.back().onTrue(climber.createRetractCommand());
+
+    // unlocks servo
+    operator.povUp().onTrue(climber.createUnlockCommand());
+    // locks servo
+    operator.povDown().onTrue(climber.createLockCommand());
   }
 
   private void configureEventBindings() {

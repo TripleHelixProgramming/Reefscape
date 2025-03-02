@@ -58,7 +58,7 @@ public class CoralWrist extends SubsystemBase {
     config.absoluteEncoder
         .inverted(false) // TODO: determine if has any effect
         .zeroCentered(false)
-        .zeroOffset(CoralWristConstants.kZeroOffset.in(Rotations))
+        .zeroOffset(CoralWristConstants.kZeroOffset.in(Rotations) )
         .positionConversionFactor(CoralWristConstants.kPositionConversionFactor.in(Radians))
         .velocityConversionFactor(CoralWristConstants.kVelocityConversionFactor.in(RadiansPerSecond));
 
