@@ -133,10 +133,11 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     leds.setDefaultCommand(
-        leds.createDisabledCommand(
+        leds.createDisplayAutoSelectionCommand(
             autoSelector::getBinarySwitchPosition,
             allianceSelector::getAllianceColor,
-            allianceSelector::agreementInAllianceInputs));
+            allianceSelector::agreementInAllianceInputs)
+            .ignoringDisable(true));
   }
 
   @Override
@@ -180,7 +181,7 @@ public class Robot extends TimedRobot {
     elevator.resetPositionControllers();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
 
-    leds.setDefaultCommand(leds.createEnabledCommand(algaeModeSupplier, gamepieceSupplier));
+    leds.setDefaultCommand(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
@@ -308,7 +309,7 @@ public class Robot extends TimedRobot {
 
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection()
-        .onTrue(leds.createChangeAutoAnimationCommand());
+        .onTrue(leds.createScrollingRainbowCommand().ignoringDisable(true));
     lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
         .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
