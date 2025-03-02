@@ -33,7 +33,7 @@ public class ElevatorConstants {
     public static final LinearVelocity kVelocityConversionFactor = kPositionConversionFactor.per(Minutes);
 
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
-    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(15.0);
+    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(60.0);
     public static final LinearAccelerationUnit inchesPerSecondPerSecond =
         InchesPerSecond.per(Second);
     public static final LinearAcceleration kRapidAcceleration = inchesPerSecondPerSecond.of(1000);
@@ -45,10 +45,12 @@ public class ElevatorConstants {
       public static final double kG = 0.194; // Found empirically 2/22/2025
       public static final double kV = (12.0 - kS) / maxTheoreticalVelocity.in(MetersPerSecond);
 
-      public static final double kP = 0.1;
+      public static final double kP = 40.0;
+      public static final double kI = 0.0;
       public static final Constraints kConstraints =
           new Constraints(
               kRapidVelocity.in(MetersPerSecond), kRapidAcceleration.in(MetersPerSecondPerSecond));
+      public static final Distance kIzone = Inches.of(2);
     }
 
     public static enum LifterState {

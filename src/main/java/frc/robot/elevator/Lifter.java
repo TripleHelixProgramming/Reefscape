@@ -46,9 +46,9 @@ public class Lifter extends SubsystemBase {
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
 
   private final ProfiledPIDController feedback =
-      new ProfiledPIDController(LifterController.kP, 0.0, 0.0, LifterController.kConstraints);
+      new ProfiledPIDController(LifterController.kP, LifterController.kI, 0.0, LifterController.kConstraints);
 
-  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(LifterController.kS, 0.0, LifterController.kV);
+  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(LifterController.kS, LifterController.kG, LifterController.kV);
 
   private final EventLoop loop = new EventLoop();
   private LifterState targetState = LifterState.Unknown;
@@ -88,7 +88,7 @@ public class Lifter extends SubsystemBase {
     atLowerLimit.rising().ifHigh(() -> resetEncoder());
 
     feedback.setTolerance(LifterConstants.kAllowableHeightError.in(Meters));
-    // controller.setIZone();
+    feedback.setIZone(LifterController.kIzone.in(Inches));
     // controller.setIntegratorRange();
     resetController();
   }
