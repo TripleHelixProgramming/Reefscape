@@ -274,6 +274,9 @@ public class Robot extends TimedRobot {
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
     climbTrigger.onTrue(climber.createDeployCommand()
         .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
+
+    // Auto climbe to position
+    operator.back().onTrue(climber.createRetractCommand());
   }
 
   private void configureEventBindings() {

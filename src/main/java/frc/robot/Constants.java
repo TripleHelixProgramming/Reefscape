@@ -289,6 +289,7 @@ public final class Constants {
     public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
 
     public static final double kDeployPosition = 12.0; // inches
+    public static final double kRetractPosition = 0.0; // inches
   }
 
   public static final class LedConstants {
