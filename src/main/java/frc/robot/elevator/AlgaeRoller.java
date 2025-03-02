@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeRollerConstants;
+import frc.util.Util;
 
 public class AlgaeRoller extends SubsystemBase {
 
@@ -74,6 +75,11 @@ public class AlgaeRoller extends SubsystemBase {
   }
 
   public Trigger hasAlage = new Trigger(() -> algaeSensor.isPressed());
+  public final Trigger isRolling = new Trigger(() -> !Util.nearlyEqual(encoder.getVelocity(), 0));
+
+  public double getRollerVelocity() {
+    return encoder.getVelocity();
+  }
 
   public Command createStopCommand() {
     return this.startEnd(() -> leaderMotor.set(0.0), () -> {});

@@ -26,11 +26,13 @@ public class ElevatorConstants {
     public static final Distance kPositionConversionFactor =
         sprocketPitchDiameter.times(Math.PI).times(gearRatioMotorToMechanism);
     private static final double maxMotorVelocityRadPerSec = RPM.of(5676).in(RadiansPerSecond);
-    private static final LinearVelocity maxTheoreticalVelocity = InchesPerSecond.of(maxMotorVelocityRadPerSec * kPositionConversionFactor.in(Inches));
+    private static final LinearVelocity maxTheoreticalVelocity =
+        InchesPerSecond.of(maxMotorVelocityRadPerSec * kPositionConversionFactor.in(Inches));
 
     // By default, the encoder in velocity mode measures RPM at the motor
     // Convert to inches per second at the final stage
-    public static final LinearVelocity kVelocityConversionFactor = kPositionConversionFactor.per(Minutes);
+    public static final LinearVelocity kVelocityConversionFactor =
+        kPositionConversionFactor.per(Minutes);
 
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
     public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(60.0);

@@ -48,6 +48,7 @@ import frc.robot.vision.Vision;
 import frc.util.Gamepiece;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -133,9 +134,9 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     leds.setDefaultCommand(
         leds.createDisplayAutoSelectionCommand(
-            autoSelector::getBinarySwitchPosition,
-            allianceSelector::getAllianceColor,
-            allianceSelector::agreementInAllianceInputs)
+                autoSelector::getBinarySwitchPosition,
+                allianceSelector::getAllianceColor,
+                allianceSelector::agreementInAllianceInputs)
             .ignoringDisable(true));
   }
 
@@ -144,8 +145,10 @@ public class Robot extends TimedRobot {
     // Scan the USB devices. If they change, remap the buttons.
 
     /*
-     * Only check if controllers changed every kUSBCheckNumLoops loops of disablePeriodic().
-     * This prevents us from hammering on some routines that cause the RIO to lock up.
+     * Only check if controllers changed every kUSBCheckNumLoops loops of
+     * disablePeriodic().
+     * This prevents us from hammering on some routines that cause the RIO to lock
+     * up.
      */
     usbCheckDelay--;
     if (0 >= usbCheckDelay) {
@@ -189,7 +192,10 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    leds.displayDefaultInfo(
+        algaeModeSupplier.getAsBoolean(), Optional.ofNullable(gamepieceSupplier.get()));
+  }
 
   @Override
   public void testInit() {
@@ -241,7 +247,7 @@ public class Robot extends TimedRobot {
     // Outtake grippers
     driver.HIn()
         .whileTrue(coralRoller.createOuttakeCommand()
-        .alongWith(algaeRoller.createOuttakeCommand()));
+            .alongWith(algaeRoller.createOuttakeCommand()));
 
   }
 
@@ -257,11 +263,11 @@ public class Robot extends TimedRobot {
 
     // Test wrist motion
     // operator.back()
-    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode)
-    //     .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor)));
+    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode)
+    // .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor)));
     // operator.start()
-    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.L4)
-    //     .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode)));
+    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.L4)
+    // .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode)));
 
     // Test algae roller motion
     // operator.back().whileTrue(algaeRoller.createIntakeCommand());
@@ -303,7 +309,8 @@ public class Robot extends TimedRobot {
     // Actuate climber winch
     Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
     climbTrigger.onTrue(climber.createDeployCommand()
-        .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
+        .andThen(
+            climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
 
     // Auto climbe to position
     operator.back().onTrue(climber.createRetractCommand());
@@ -312,8 +319,10 @@ public class Robot extends TimedRobot {
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection()
         .onTrue(leds.createScrollingRainbowCommand().ignoringDisable(true));
+    coralRoller.isRolling.whileTrue(leds.createRollerAnimationCommand(coralRoller.getRollerVelocity() > 0));
+    algaeRoller.isRolling.whileTrue(leds.createRollerAnimationCommand(algaeRoller.getRollerVelocity() > 0));
     // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
-    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
   // spotless:on
 

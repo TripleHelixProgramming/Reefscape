@@ -5,7 +5,6 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -16,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.CoralRollerConstants;
+import frc.util.Util;
 
 public class CoralRoller extends SubsystemBase {
 
@@ -24,6 +24,8 @@ public class CoralRoller extends SubsystemBase {
   private final SparkMaxConfig config = new SparkMaxConfig();
   private final RelativeEncoder encoder = motor.getEncoder();
   private final SparkLimitSwitch coralSensor = motor.getForwardLimitSwitch();
+  public final Trigger hasCoral = new Trigger(() -> coralSensor.isPressed());
+  public final Trigger isRolling = new Trigger(() -> !Util.nearlyEqual(encoder.getVelocity(), 0));
 
   public CoralRoller() {
     // spotless:off
@@ -63,7 +65,9 @@ public class CoralRoller extends SubsystemBase {
     motor.setVoltage(voltage);
   }
 
-  public Trigger hasCoral = new Trigger(() -> coralSensor.isPressed());
+  public double getRollerVelocity() {
+    return encoder.getVelocity();
+  }
 
   public Command createStopCommand() {
     return this.startEnd(() -> motor.set(0.0), () -> {});
