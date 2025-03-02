@@ -305,13 +305,15 @@ public class Robot extends TimedRobot {
     climbTrigger.onTrue(climber.createDeployCommand()
         .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
 
+    // Auto climbe to position
+    operator.back().onTrue(climber.createRetractCommand());
   }
 
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection()
         .onTrue(leds.createScrollingRainbowCommand().ignoringDisable(true));
-    lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
-        .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+    // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
+    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
   // spotless:on
 

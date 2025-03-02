@@ -31,7 +31,7 @@ public class ElevatorConstants {
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
-    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(30.0);
+    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(45.0);
     public static final LinearAccelerationUnit inchesPerSecondPerSecond =
         InchesPerSecond.per(Second);
     public static final LinearAcceleration kRapidAcceleration = inchesPerSecondPerSecond.of(1000);
@@ -40,6 +40,8 @@ public class ElevatorConstants {
 
     public final class LifterController {
       public static final double kP = 0.1;
+      public static final double kI = 0.0;
+      public static final double kD = 0.001;
       public static final Constraints kConstraints =
           new Constraints(
               kRapidVelocity.in(InchesPerSecond), kRapidAcceleration.in(inchesPerSecondPerSecond));
@@ -50,14 +52,14 @@ public class ElevatorConstants {
       Min(0.0),
       AlgaeIntakeFloor(1.0),
       EncoderReset(0.36),
-      CoralL1(3.0),
+      CoralL1(2.0),
       CoralL2(13.8),
       CoralL3(30.0),
       CoralL4(60.75),
-      CoralIntake(9.7),
+      CoralIntake(11.7),
       AlgaeProcessor(12.0),
-      AlgaeL2(30),
-      AlgaeL3(46.5),
+      AlgaeL2(29),
+      AlgaeL3(45.5),
       Max(67.8);
 
       public Distance height;
@@ -70,7 +72,6 @@ public class ElevatorConstants {
 
   public static final class CoralRollerConstants {
     public static final int kMotorPort = 23;
-    public static final int kCoralSensorPort = 5;
 
     public static final double kGearRatio = 5.0;
     public static final double kRollerDiameter = 2.0; // inches
@@ -124,18 +125,18 @@ public class ElevatorConstants {
     public static final double kS = 0.3; // Found empirically 2/22/2025
     public static final double kV = (12.0 - kS) / maxArmVelocityTheoretical.in(RadiansPerSecond);
 
-    public static final double kP = 4.0;
+    public static final double kP = 5.0;
     public static final double kI = 3.0;
-    public static final double kD = 0.03;
+    public static final double kD = 0.06;
     public static final Angle kIZone = Degrees.of(30.0);
 
     public static enum CoralWristState {
       Unknown(90),
       Min(15),
       Max(135),
-      L1(90),
-      L2(55),
-      L3(55),
+      L1(125),
+      L2(65),
+      L3(65),
       L4(25),
       Intake(125),
       AlgaeMode(90);
@@ -204,7 +205,7 @@ public class ElevatorConstants {
     public static final double kS = 0.15; // Found empirically 2/22/2025
     public static final double kV = (12.0 - kS) / maxArmVelocityTheoretical.in(RadiansPerSecond);
 
-    public static final double kP = 1.0;
+    public static final double kP = 1.5;
     public static final double kI = 1.0;
     public static final double kD = 0.1;
     public static final Angle kIZone = Degrees.of(30.0);
@@ -218,7 +219,7 @@ public class ElevatorConstants {
       L2(-0),
       L3(-0),
       Barge(60),
-      CoralMode(90);
+      CoralMode(80);
 
       public Angle angle;
 

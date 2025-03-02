@@ -123,8 +123,15 @@ public class Climber extends SubsystemBase {
     return (Math.abs(encoder.getPosition() - ClimberConstants.kDeployPosition) < 0.1);
   }
 
+  private Boolean isRetracted() {
+    return (Math.abs(encoder.getPosition() - ClimberConstants.kRetractPosition) < 0.1);
+  }
+
   public Command createDefaultClimberCommand() {
-    return this.run(() -> motor.set(0.0));
+    return this.run(() -> {
+      motor.set(0.0);
+      lockRatchet();
+    });
   }
 
   /**
@@ -148,5 +155,22 @@ public class Climber extends SubsystemBase {
         () -> isDeployed(),
         // requirements
         this);
+  }
+
+  public Command createRetractCommand() {
+    return new FunctionalCommand(
+      // initialze
+      () -> {
+        setPosition(ClimberConstants.kRetractPosition);
+        lockRatchet();
+      },
+      // execute
+      () -> {},
+      // end
+      interrupted -> {},
+      // isFinished
+      () -> isRetracted(),
+      // requirements
+      this);
   }
 }
