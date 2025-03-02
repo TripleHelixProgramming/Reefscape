@@ -104,7 +104,7 @@ public class Lifter extends SubsystemBase {
     // SmartDashboard.putNumber("Lifter/Velocity", encoder.getVelocity());
 
     SmartDashboard.putString("Lifter/Target State", getTargetState().name());
-    SmartDashboard.putNumber("Lifter/Target Height", controller.getGoal().position);
+    SmartDashboard.putNumber("Lifter/Target Height", feedback.getGoal().position);
 
     // SmartDashboard.putNumber("Lifter/Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
     // SmartDashboard.putNumber(
