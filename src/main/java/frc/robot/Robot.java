@@ -199,10 +199,7 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-    leds.displayDefaultInfo(
-        algaeModeSupplier.getAsBoolean(), Optional.ofNullable(gamepieceSupplier.get()));
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {
