@@ -330,6 +330,7 @@ public class LEDs extends SubsystemBase {
       fill(Color.kWhite, Segments.BOTTOM);
     } else {
       fill(Color.kMagenta, y > 0 ? Segments.rightBottom : Segments.leftBottom);
+      fill(Color.kBlack, y > 0 ? Segments.leftBottom : Segments.rightBottom);
     }
   }
 
