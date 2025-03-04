@@ -303,16 +303,14 @@ public class LEDs extends SubsystemBase {
    *       </ul>
    *   <li><b>X</b> Use top segments:
    *       <ul>
+   *         <li>White means no change.
    *         <li>Green means move forward.
    *         <li>Red means move backward.
    *       </ul>
    *   <li><b>Y</b> Use bottom segments:
    *       <ul>
-   *         <li>Illuminate the corresponding side.
-   *       </ul>
-   *   <li><b>Magnitude of change</b>:
-   *       <ul>
-   *         <li>Use gradients for colors: brighter means more change.
+   *         <li>White means no change.
+   *         <li>Magenta on one side means move that direction.
    *       </ul>
    * </ul>
    *
@@ -321,6 +319,19 @@ public class LEDs extends SubsystemBase {
    */
   public void displayPoseSeek(Pose2d currentPose, Pose2d targetPose) {
     var delta = targetPose.minus(currentPose);
+    var theta = delta.getRotation().getDegrees();
+    fill(theta == 0? Color.kWhite : theta <= 180? Color.kBlue : Color.kMagenta, Segments.MIDDLE);
+
+    var x = delta.getTranslation().getX();
+    fill(Util.nearlyEqual(x, 0)? Color.kWhite : x > 0? Color.kGreen : Color.kRed, Segments.TOP);
+
+    var y = delta.getTranslation().getY();
+    if (Util.nearlyEqual(y, 0)) {
+      fill(Color.kWhite, Segments.BOTTOM);
+    }
+    else {
+      fill(Color.kMagenta, y > 0? Segments.rightBottom : Segments.leftBottom);
+    }
   }
 
   /**
