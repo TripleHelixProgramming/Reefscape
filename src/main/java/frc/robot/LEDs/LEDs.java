@@ -320,17 +320,16 @@ public class LEDs extends SubsystemBase {
   public void displayPoseSeek(Pose2d currentPose, Pose2d targetPose) {
     var delta = targetPose.minus(currentPose);
     var theta = delta.getRotation().getDegrees();
-    fill(theta == 0? Color.kWhite : theta <= 180? Color.kBlue : Color.kMagenta, Segments.MIDDLE);
+    fill(theta == 0 ? Color.kWhite : theta <= 180 ? Color.kBlue : Color.kMagenta, Segments.MIDDLE);
 
     var x = delta.getTranslation().getX();
-    fill(Util.nearlyEqual(x, 0)? Color.kWhite : x > 0? Color.kGreen : Color.kRed, Segments.TOP);
+    fill(Util.nearlyEqual(x, 0) ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
 
     var y = delta.getTranslation().getY();
     if (Util.nearlyEqual(y, 0)) {
       fill(Color.kWhite, Segments.BOTTOM);
-    }
-    else {
-      fill(Color.kMagenta, y > 0? Segments.rightBottom : Segments.leftBottom);
+    } else {
+      fill(Color.kMagenta, y > 0 ? Segments.rightBottom : Segments.leftBottom);
     }
   }
 

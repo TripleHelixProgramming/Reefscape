@@ -51,7 +51,6 @@ import frc.robot.vision.Vision;
 import frc.util.Gamepiece;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
