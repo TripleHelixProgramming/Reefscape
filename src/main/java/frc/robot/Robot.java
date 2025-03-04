@@ -132,7 +132,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    leds.getCurrentCommand().cancel();
+    if (leds.getCurrentCommand() != null) leds.getCurrentCommand().cancel();
     leds.setDefaultCommand(
         leds.createDisplayAutoSelectionCommand(
                 autoSelector::getBinarySwitchPosition,
@@ -169,7 +169,7 @@ public class Robot extends TimedRobot {
     autoSelector.scheduleAuto();
     climber.lockRatchet();
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
-    leds.getCurrentCommand().cancel();
+    if (leds.getCurrentCommand() != null) leds.getCurrentCommand().cancel();
     leds.setDefaultCommand(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
   }
 
@@ -187,7 +187,7 @@ public class Robot extends TimedRobot {
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     // lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
 
-    leds.getCurrentCommand().cancel();
+    if (leds.getCurrentCommand() != null) leds.getCurrentCommand().cancel();
     leds.setDefaultCommand(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
     // Test wrist feedforwards
