@@ -383,6 +383,18 @@ public class LEDs extends SubsystemBase {
   }
 
   /**
+   * Create a command to run scrolling blocks on the left and right strips.
+   *
+   * @return a command to run scrolling blocks
+   */
+  public LEDPattern stackedBlocksPattern(Color color, int blockSize, int blockSpace) {
+    return (reader, writer) -> {
+      stackBlocks(
+          color, reader.getLength() / (blockSize + blockSpace), blockSize, blockSpace, writer);
+    };
+  }
+
+  /**
    * Create a command to run a scrolling rainbow on the left and right strips.
    *
    * @return a command to run a scrolling rainbow
@@ -410,19 +422,20 @@ public class LEDs extends SubsystemBase {
   };
 
   /**
-   * Create a command that runs a roller animation. Rainbows will scroll toward the center for
-   * intake, and away from the center for outtake.
+   * Create a command that runs a roller animation. Blocks will scroll toward the center for intake,
+   * and away from the center for outtake.
    *
    * @param isIntake whether the rollers are intaking
+   * @param color the color of the roller animation
    * @return a command to run a roller animation
    */
-  public Command createRollerAnimationCommand(boolean isIntake) {
+  public Command createRollerAnimationCommand(boolean isIntake, Color color) {
     Time duration = Seconds.of(0.5);
-    LEDPattern rainbow = LEDPattern.rainbow(255, 255);
-    LEDPattern scrollingRainbow = rainbow.scrollAtRelativeSpeed(duration.asFrequency());
+    var blocks = stackedBlocksPattern(color, 2, 2);
+    var scrollingBlocks = blocks.scrollAtRelativeSpeed(duration.asFrequency());
 
     return newCommand(
-            () -> applyPattern(scrollingRainbow, isIntake ? intakeBuffers : outtakeBuffers))
+            () -> applyPattern(scrollingBlocks, isIntake ? intakeBuffers : outtakeBuffers))
         .withTimeout(duration);
   }
 }

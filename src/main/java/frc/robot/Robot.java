@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -26,6 +28,7 @@ import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.LedConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4AlgaeAuto;
@@ -319,8 +322,8 @@ public class Robot extends TimedRobot {
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection()
         .onTrue(leds.createScrollingRainbowCommand().ignoringDisable(true));
-    coralRoller.isRolling.whileTrue(leds.createRollerAnimationCommand(coralRoller.getRollerVelocity() > 0));
-    algaeRoller.isRolling.whileTrue(leds.createRollerAnimationCommand(algaeRoller.getRollerVelocity() > 0));
+
+    coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
     // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
     // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
@@ -368,5 +371,37 @@ public class Robot extends TimedRobot {
                   est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
               getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
             });
+  }
+
+  /**
+   * Create a command that animates the rollers based on their current state.
+   *
+   * <p>If both rollers are running we assume it's an outtake and use the color of the current
+   * gamepiece (yellow if none). If only one roller is running, we assume its an intake and use the
+   * color of piece associated with that roller.
+   *
+   * <p>After working out the logic, the command is created by the LED subsystem.
+   *
+   * @return An LED subsystem command that animates the rollers.
+   */
+  protected Command createRollerAnimationCommand() {
+    var color = Color.kRed;
+    var intake = true;
+
+    /*
+     * If both are rolling, that implies we are doing an outtake.  We decide color
+     * based on the current gamepiece.
+     */
+    if (algaeRoller.isRolling.getAsBoolean() && coralRoller.isRolling.getAsBoolean()) {
+      var gamepiece = getLoadedGamepiece();
+      color = gamepiece == null ? Color.kYellow : gamepiece.color;
+      intake = false;
+    } else if (algaeRoller.isRolling.getAsBoolean()) {
+      color = LedConstants.algaeColor;
+    } else if (coralRoller.isRolling.getAsBoolean()) {
+      color = LedConstants.coralColor;
+    }
+
+    return leds.createRollerAnimationCommand(intake, color);
   }
 }
