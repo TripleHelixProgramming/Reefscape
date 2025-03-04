@@ -111,18 +111,23 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("HeadingOffset", headingOffset.getDegrees());
   }
 
+  public void setFieldRelativeChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    Rotation2d offsetHeading = getHeading().minus(getHeadingOffset());
+    setRobotRelativeChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, offsetHeading));
+  }
+
   /**
    * @param chassisSpeeds Robot-relative chassis speeds (x, y, theta)
    */
-  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-    setChassisSpeeds(chassisSpeeds, DriveConstants.kDriveKinematics);
+  public void setRobotRelativeChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    setRobotRelativeChassisSpeeds(chassisSpeeds, DriveConstants.kDriveKinematics);
   }
 
   /**
    * @param chassisSpeeds Robot-relative chassis speeds (x, y, theta)
    * @param kinematics Kinematics of the robot chassis
    */
-  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds, SwerveDriveKinematics kinematics) {
+  public void setRobotRelativeChassisSpeeds(ChassisSpeeds chassisSpeeds, SwerveDriveKinematics kinematics) {
     var swerveModuleStates =
         kinematics.toSwerveModuleStates(
             ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod.in(Seconds)));
@@ -210,22 +215,6 @@ public class Drivetrain extends SubsystemBase {
     return m_kinematics.toChassisSpeeds(getModuleStates());
   }
 
-  /**
-   * @param curPose The robot's current pose
-   * @param sample A sample of the trajectory being followed
-   */
-  public void choreoController(Pose2d curPose, SwerveSample sample) {
-    ChassisSpeeds speeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            new ChassisSpeeds(
-                xController.calculate(curPose.getX(), sample.x) + sample.vx,
-                yController.calculate(curPose.getY(), sample.y) + sample.vy,
-                thetaController.calculate(curPose.getRotation().getRadians(), sample.heading)
-                    + sample.omega),
-            curPose.getRotation());
-    this.setChassisSpeeds(speeds);
-  }
-
   public BooleanSupplier fieldRotatedSupplier() {
     return this.fieldRotatedSupplier;
   }
@@ -262,7 +251,7 @@ public class Drivetrain extends SubsystemBase {
             sample.omega
                 + thetaController.calculate(pose.getRotation().getRadians(), sample.heading));
 
-    setChassisSpeeds(speeds);
+    setFieldRelativeChassisSpeeds(speeds);
   }
 
   public Pose2d getNearestPose() {
