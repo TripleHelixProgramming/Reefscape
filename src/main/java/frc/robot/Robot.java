@@ -282,11 +282,6 @@ public class Robot extends TimedRobot {
 
     // Auto climbe to position
     operator.back().onTrue(climber.createRetractCommand());
-
-    // unlocks servo
-    operator.povUp().onTrue(climber.createUnlockCommand());
-    // locks servo
-    operator.povDown().onTrue(climber.createLockCommand());
   }
 
   private void configureEventBindings() {
@@ -294,6 +289,8 @@ public class Robot extends TimedRobot {
         .onTrue(leds.createChangeAutoAnimationCommand());
     // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
     //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+
+    algaeRoller.hasAlgae.onTrue(algaeRoller.createHoldAlgaeCommand());
   }
   // spotless:on
 

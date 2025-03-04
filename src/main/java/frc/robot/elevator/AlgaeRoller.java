@@ -73,7 +73,7 @@ public class AlgaeRoller extends SubsystemBase {
     leaderMotor.setVoltage(voltage);
   }
 
-  public Trigger hasAlage = new Trigger(() -> algaeSensor.isPressed());
+  public Trigger hasAlgae = new Trigger(() -> algaeSensor.isPressed());
 
   public Command createStopCommand() {
     return this.startEnd(() -> leaderMotor.set(0.0), () -> {});
@@ -85,5 +85,9 @@ public class AlgaeRoller extends SubsystemBase {
 
   public Command createOuttakeCommand() {
     return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeVoltage));
+  }
+
+  public Command createHoldAlgaeCommand() {
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kHoldVoltage));
   }
 }
