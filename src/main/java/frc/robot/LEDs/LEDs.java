@@ -56,9 +56,9 @@ public class LEDs extends SubsystemBase {
    * segments.
    */
   enum Segments implements LEDReader, LEDWriter {
-    rightBottom(mainLed, mainLedBuffer, 0, 8, true),
-    rightMiddle(mainLed, mainLedBuffer, 9, 10, true),
-    rightTop(mainLed, mainLedBuffer, 11, 19, true),
+    rightBottom(mainLed, mainLedBuffer, 0, 7, true),
+    rightMiddle(mainLed, mainLedBuffer, 8, 11, true),
+    rightTop(mainLed, mainLedBuffer, 12, 19, true),
     leftTop(mainLed, mainLedBuffer, 20, 28, false),
     leftMiddle(mainLed, mainLedBuffer, 29, 30, false),
     leftBottom(mainLed, mainLedBuffer, 31, 39, false);
@@ -357,7 +357,7 @@ public class LEDs extends SubsystemBase {
    */
   public Command createStandardDisplayCommand(
       BooleanSupplier isAlgeMode, Supplier<Gamepiece> gamepiece) {
-    return newCommand(
+        return newCommand(
         () -> displayDefaultInfo(isAlgeMode.getAsBoolean(), Optional.ofNullable(gamepiece.get())));
   }
 
@@ -441,12 +441,11 @@ public class LEDs extends SubsystemBase {
    * @return a command to run a roller animation
    */
   public Command createRollerAnimationCommand(boolean isIntake, Color color) {
-    Time duration = Seconds.of(0.5);
+    System.err.printf("createRollerAnimationCommand: isIntake=%b, color=%s%n", isIntake, color);
     var blocks = stackedBlocksPattern(color, 2, 2);
-    var scrollingBlocks = blocks.scrollAtRelativeSpeed(duration.asFrequency());
+    var scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(0.5).asFrequency());
 
     return newCommand(
-            () -> applyPattern(scrollingBlocks, isIntake ? intakeBuffers : outtakeBuffers))
-        .withTimeout(duration);
+            () -> applyPattern(scrollingBlocks, isIntake ? intakeBuffers : outtakeBuffers));
   }
 }

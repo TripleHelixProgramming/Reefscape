@@ -58,7 +58,7 @@ public class CoralRoller extends SubsystemBase {
     SmartDashboard.putNumber("Coral Roller/Velocity", encoder.getVelocity());
     // SmartDashboard.putNumber("Coral Roller/Applied Duty Cycle", motor.getAppliedOutput());
     // SmartDashboard.putNumber("Coral Roller/Current", motor.getOutputCurrent());
-    SmartDashboard.putBoolean("Coral Sensor", coralSensor.isPressed());
+    SmartDashboard.putBoolean("Coral Loaded", hasCoral.getAsBoolean());
   }
 
   private void setVoltage(Voltage voltage) {

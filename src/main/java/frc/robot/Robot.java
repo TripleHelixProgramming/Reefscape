@@ -130,6 +130,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Driver Controller", driver.getHID());
     SmartDashboard.putData("Operator Controller", operator.getHID());
     SmartDashboard.putData(powerDistribution);
+    SmartDashboard.putString("Gamepiece", getLoadedGamepiece() == null ? "None" : getLoadedGamepiece().toString());
   }
 
   @Override
