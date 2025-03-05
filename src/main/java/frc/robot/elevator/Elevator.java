@@ -74,8 +74,7 @@ public class Elevator {
     return Commands.parallel(
         lifter.createSetHeightCommand(LifterState.CoralIntake),
         coralWrist.createSetAngleCommand(CoralWristState.Intake),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode),
-        coralRoller.createIntakeCommand().until(coralRoller.hasCoral));
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public Command algaeBargePositionCG() {

@@ -60,8 +60,8 @@ public class ElevatorConstants {
       AlgaeIntakeFloor(1.0),
       EncoderReset(0.36),
       CoralL1(2.0),
-      CoralL2(13.8),
-      CoralL3(30.0),
+      CoralL2(12.8),
+      CoralL3(28.0),
       CoralL4(60.25),
       CoralIntake(11.7),
       AlgaeProcessor(12.0),
@@ -144,7 +144,7 @@ public class ElevatorConstants {
       L1(125),
       L2(65),
       L3(65),
-      L4(30),
+      L4(28),
       Intake(125),
       AlgaeMode(90);
 

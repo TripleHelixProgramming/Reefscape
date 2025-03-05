@@ -58,6 +58,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
         Commands.sequence(
             Commands.waitSeconds(0.1),
             coralRoller.createOuttakeCommand().withTimeout(0.2),
+            Commands.waitSeconds(0.2),
             blueL4GBack.cmd()));
 
     blueL4GBack.done().onTrue(

@@ -276,12 +276,14 @@ public class Robot extends TimedRobot {
     elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
 
     // Actuate climber winch
-    Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
-    climbTrigger.onTrue(climber.createDeployCommand()
-        .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
+    // Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
+    // climbTrigger.onTrue(climber.createDeployCommand()
+    //     .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
+
+    operator.leftTrigger().onTrue(climber.createDeployCommand());
 
     // Auto climbe to position
-    operator.back().onTrue(climber.createRetractCommand());
+    operator.povUp().onTrue(climber.createRetractCommand());
   }
 
   private void configureEventBindings() {
