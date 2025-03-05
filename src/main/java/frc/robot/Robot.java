@@ -66,8 +66,6 @@ public class Robot extends TimedRobot {
   private final Lifter lifter = elevator.getLifter();
   private final CoralRoller coralRoller = elevator.getCoralRoller();
   private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
-  private final CoralWrist coralWrist = elevator.getCoralWrist();
-  private final AlgaeWrist algaeWrist = elevator.getAlgaeWrist();
 
   private final Drivetrain swerve =
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
