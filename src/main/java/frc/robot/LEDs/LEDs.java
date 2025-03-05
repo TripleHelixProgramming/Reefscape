@@ -1,5 +1,6 @@
 package frc.robot.LEDs;
 
+import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -323,10 +324,10 @@ public class LEDs extends SubsystemBase {
     fill(theta == 0 ? Color.kWhite : theta <= 180 ? Color.kMagenta : Color.kBlue, Segments.MIDDLE);
 
     var x = delta.getTranslation().getX();
-    fill(Util.nearlyEqual(x, 0) ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
+    fill((Centimeters.of(x)).baseUnitMagnitude() < 1 ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
 
     var y = delta.getTranslation().getY();
-    if (Util.nearlyEqual(y, 0)) {
+    if (Centimeters.of(y).baseUnitMagnitude() < 1) {
       fill(Color.kWhite, Segments.BOTTOM);
     } else {
       fill(Color.kMagenta, y > 0 ? Segments.rightBottom : Segments.leftBottom);
