@@ -130,7 +130,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Driver Controller", driver.getHID());
     SmartDashboard.putData("Operator Controller", operator.getHID());
     SmartDashboard.putData(powerDistribution);
-    SmartDashboard.putString("Gamepiece", getLoadedGamepiece() == null ? "None" : getLoadedGamepiece().toString());
+    SmartDashboard.putString(
+        "Gamepiece", getLoadedGamepiece() == null ? "None" : getLoadedGamepiece().toString());
   }
 
   @Override
@@ -171,7 +172,8 @@ public class Robot extends TimedRobot {
     autoSelector.scheduleAuto();
     climber.lockRatchet();
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
-    leds.replaceDefaultCommandImmediately(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
+    leds.replaceDefaultCommandImmediately(
+        leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
   }
 
   @Override
@@ -188,7 +190,8 @@ public class Robot extends TimedRobot {
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     // lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
 
-    leds.replaceDefaultCommandImmediately(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
+    leds.replaceDefaultCommandImmediately(
+        leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));

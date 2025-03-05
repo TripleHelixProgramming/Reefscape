@@ -140,6 +140,11 @@ public class LEDs extends SubsystemBase {
     mainLed.setData(mainLedBuffer);
   }
 
+  /**
+   * Updates the LED with the current buffer.
+   *
+   * <p>{@inheritDoc}}
+   */
   @Override
   public void periodic() {
     update();
@@ -324,7 +329,11 @@ public class LEDs extends SubsystemBase {
     fill(theta == 0 ? Color.kWhite : theta <= 180 ? Color.kMagenta : Color.kBlue, Segments.MIDDLE);
 
     var x = delta.getTranslation().getX();
-    fill((Centimeters.of(x)).baseUnitMagnitude() < 1 ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
+    fill(
+        (Centimeters.of(x)).baseUnitMagnitude() < 1
+            ? Color.kWhite
+            : x > 0 ? Color.kGreen : Color.kRed,
+        Segments.TOP);
 
     var y = delta.getTranslation().getY();
     if (Centimeters.of(y).baseUnitMagnitude() < 1) {
@@ -365,7 +374,7 @@ public class LEDs extends SubsystemBase {
    */
   public Command createStandardDisplayCommand(
       BooleanSupplier isAlgeMode, Supplier<Gamepiece> gamepiece) {
-        return newCommand(
+    return newCommand(
         () -> displayDefaultInfo(isAlgeMode.getAsBoolean(), Optional.ofNullable(gamepiece.get())));
   }
 
@@ -454,6 +463,6 @@ public class LEDs extends SubsystemBase {
     var scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(0.5).asFrequency());
 
     return newCommand(
-            () -> applyPattern(scrollingBlocks, isIntake ? intakeBuffers : outtakeBuffers));
+        () -> applyPattern(scrollingBlocks, isIntake ? intakeBuffers : outtakeBuffers));
   }
 }
