@@ -304,7 +304,7 @@ public class LEDs extends SubsystemBase {
    *       <ul>
    *         <li>Use middle segments:
    *         <li>Both white indicates proper heading.
-   *         <li>Both blue means rotate clockwise.
+   *         <li>Both cyan means rotate clockwise.
    *         <li>Both magenta means rotate counter-clockwise.
    *       </ul>
    *   <li><b>X</b> Use top segments:
@@ -316,7 +316,7 @@ public class LEDs extends SubsystemBase {
    *   <li><b>Y</b> Use bottom segments:
    *       <ul>
    *         <li>White means no change.
-   *         <li>Magenta on one side means move that direction.
+   *         <li>Green on one side means move that direction.
    *       </ul>
    * </ul>
    *
@@ -326,7 +326,7 @@ public class LEDs extends SubsystemBase {
   public void displayPoseSeek(Pose2d currentPose, Pose2d targetPose) {
     var delta = targetPose.minus(currentPose);
     var theta = delta.getRotation().getDegrees();
-    fill(theta == 0 ? Color.kWhite : theta <= 180 ? Color.kMagenta : Color.kBlue, Segments.MIDDLE);
+    fill(theta == 0 ? Color.kWhite : theta <= 180 ? Color.kMagenta : Color.kCyan, Segments.MIDDLE);
 
     var x = delta.getTranslation().getX();
     fill(
@@ -339,7 +339,7 @@ public class LEDs extends SubsystemBase {
     if (Centimeters.of(y).baseUnitMagnitude() < 1) {
       fill(Color.kWhite, Segments.BOTTOM);
     } else {
-      fill(Color.kMagenta, y > 0 ? Segments.rightBottom : Segments.leftBottom);
+      fill(Color.kGreen, y > 0 ? Segments.rightBottom : Segments.leftBottom);
       fill(Color.kBlack, y > 0 ? Segments.leftBottom : Segments.rightBottom);
     }
   }

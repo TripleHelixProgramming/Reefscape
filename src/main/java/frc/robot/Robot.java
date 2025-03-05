@@ -49,6 +49,7 @@ import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import frc.util.Gamepiece;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -322,7 +323,10 @@ public class Robot extends TimedRobot {
 
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection()
-        .onTrue(leds.createScrollingRainbowCommand().ignoringDisable(true));
+        .onTrue(leds.createScrollingRainbowCommand()
+        .ignoringDisable(true)
+        .withTimeout(3))
+        ;
 
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
     // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
