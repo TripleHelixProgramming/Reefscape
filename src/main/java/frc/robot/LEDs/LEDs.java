@@ -335,6 +335,13 @@ public class LEDs extends SubsystemBase {
     }
   }
 
+  public void replaceDefaultCommandImmediately(Command command) {
+    if (getDefaultCommand() != null) {
+      getDefaultCommand().cancel();
+    }
+    setDefaultCommand(command);
+  }
+
   /**
    * Creates a {@link Command} to run the provided {@link Runnable} action.
    *

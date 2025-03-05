@@ -135,8 +135,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    if (leds.getCurrentCommand() != null) leds.getCurrentCommand().cancel();
-    leds.setDefaultCommand(
+    leds.replaceDefaultCommandImmediately(
         leds.createDisplayAutoSelectionCommand(
                 autoSelector::getBinarySwitchPosition,
                 allianceSelector::getAllianceColor,
@@ -172,8 +171,7 @@ public class Robot extends TimedRobot {
     autoSelector.scheduleAuto();
     climber.lockRatchet();
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
-    if (leds.getCurrentCommand() != null) leds.getCurrentCommand().cancel();
-    leds.setDefaultCommand(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
+    leds.replaceDefaultCommandImmediately(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
   }
 
   @Override
@@ -190,8 +188,7 @@ public class Robot extends TimedRobot {
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     // lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
 
-    if (leds.getCurrentCommand() != null) leds.getCurrentCommand().cancel();
-    leds.setDefaultCommand(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
+    leds.replaceDefaultCommandImmediately(leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
