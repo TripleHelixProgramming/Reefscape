@@ -60,9 +60,9 @@ public class LEDs extends SubsystemBase {
     rightBottom(mainLed, mainLedBuffer, 0, 7, true),
     rightMiddle(mainLed, mainLedBuffer, 8, 11, true),
     rightTop(mainLed, mainLedBuffer, 12, 19, true),
-    leftTop(mainLed, mainLedBuffer, 20, 28, false),
-    leftMiddle(mainLed, mainLedBuffer, 29, 30, false),
-    leftBottom(mainLed, mainLedBuffer, 31, 39, false);
+    leftTop(mainLed, mainLedBuffer, 20, 27, false),
+    leftMiddle(mainLed, mainLedBuffer, 28, 31, false),
+    leftBottom(mainLed, mainLedBuffer, 32, 39, false);
 
     public static final Segments[] ALL = values();
     public static final Segments[] LEFT = {leftTop, leftMiddle, leftBottom};
@@ -287,7 +287,7 @@ public class LEDs extends SubsystemBase {
    * @param gamepiece gamepiece currently possessed by the robot
    */
   public void displayDefaultInfo(boolean isAlgaeMode, Optional<Gamepiece> gamepiece) {
-    System.err.printf("displayDefaultInfo: isAlgaeMode=%b, gamepiece=%s%n", isAlgaeMode, gamepiece);
+    // System.err.printf("displayDefaultInfo: isAlgaeMode=%b, gamepiece=%s%n", isAlgaeMode, gamepiece);
     var modeColor = isAlgaeMode ? LedConstants.algaeColor : LedConstants.coralColor;
     fill(modeColor, Segments.MIDDLE);
     var pieceColor = gamepiece.isPresent() ? gamepiece.get().color : Color.kBlack;
@@ -436,6 +436,8 @@ public class LEDs extends SubsystemBase {
   }
 
   public static AddressableLEDBufferView[] intakeBuffers = {
+    // leftStrip,
+    // rightStrip
     Segments.leftTop.bufferView.reversed(),
     Segments.rightTop.bufferView.reversed(),
     Segments.leftBottom.bufferView,
@@ -443,6 +445,8 @@ public class LEDs extends SubsystemBase {
   };
 
   public static AddressableLEDBufferView[] outtakeBuffers = {
+    // leftStrip.reversed(),
+    // rightStrip.reversed()
     Segments.leftTop.bufferView,
     Segments.rightTop.bufferView,
     Segments.leftBottom.bufferView.reversed(),
@@ -460,7 +464,7 @@ public class LEDs extends SubsystemBase {
   public Command createRollerAnimationCommand(boolean isIntake, Color color) {
     System.err.printf("createRollerAnimationCommand: isIntake=%b, color=%s%n", isIntake, color);
     var blocks = stackedBlocksPattern(color, 2, 2);
-    var scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(0.5).asFrequency());
+    var scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(1).asFrequency());
 
     return newCommand(
         () -> applyPattern(scrollingBlocks, isIntake ? intakeBuffers : outtakeBuffers));

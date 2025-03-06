@@ -25,7 +25,7 @@ public class CoralRoller extends SubsystemBase {
   private final RelativeEncoder encoder = motor.getEncoder();
   private final SparkLimitSwitch coralSensor = motor.getForwardLimitSwitch();
   public final Trigger hasCoral = new Trigger(() -> coralSensor.isPressed());
-  public final Trigger isRolling = new Trigger(() -> !Util.nearlyEqual(encoder.getVelocity(), 0));
+  public final Trigger isRolling = new Trigger(() -> Math.abs(encoder.getVelocity()) > 80);
 
   public CoralRoller() {
     // spotless:off
@@ -59,6 +59,7 @@ public class CoralRoller extends SubsystemBase {
     // SmartDashboard.putNumber("Coral Roller/Applied Duty Cycle", motor.getAppliedOutput());
     // SmartDashboard.putNumber("Coral Roller/Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Coral Loaded", hasCoral.getAsBoolean());
+    SmartDashboard.putBoolean("Coral isRolling", isRolling.getAsBoolean());
   }
 
   private void setVoltage(Voltage voltage) {

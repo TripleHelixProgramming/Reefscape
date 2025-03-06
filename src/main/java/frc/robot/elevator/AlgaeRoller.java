@@ -29,6 +29,9 @@ public class AlgaeRoller extends SubsystemBase {
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
   private final SparkLimitSwitch algaeSensor = leaderMotor.getForwardLimitSwitch();
+  public Trigger hasAlage = new Trigger(() -> algaeSensor.isPressed());
+  public final Trigger isRolling = new Trigger(() -> Math.abs(encoder.getVelocity()) > 80);
+
 
   public AlgaeRoller() {
     // spotless:off
@@ -68,14 +71,12 @@ public class AlgaeRoller extends SubsystemBase {
     // SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
     // SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putBoolean("Algae Loaded", hasAlage.getAsBoolean());
+    SmartDashboard.putBoolean("Coral isRolling", isRolling.getAsBoolean());
   }
 
   private void setVoltage(Voltage voltage) {
     leaderMotor.setVoltage(voltage);
   }
-
-  public Trigger hasAlage = new Trigger(() -> algaeSensor.isPressed());
-  public final Trigger isRolling = new Trigger(() -> !Util.nearlyEqual(encoder.getVelocity(), 0));
 
   public double getRollerVelocity() {
     return encoder.getVelocity();
