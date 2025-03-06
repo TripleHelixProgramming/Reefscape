@@ -33,19 +33,14 @@ public class ExampleAuto extends AutoMode {
   public AutoRoutine getAutoRoutine() {
 
     // spotless:off
-    exampleRoutine.active().onTrue(
-      Commands.sequence(
-        exampleTrajectory.resetOdometry(),
-        exampleTrajectory.cmd()
-      )
-    );
+    exampleRoutine.active().onTrue(exampleTrajectory.cmd());
 
-    exampleTrajectory.done().onTrue(
-      Commands.sequence(
-        new WaitCommand(0.5),
-        exampleTrajectory2.cmd()
-      )
-    );
+    // exampleTrajectory.done().onTrue(
+    //   Commands.sequence(
+    //     new WaitCommand(0.5),
+    //     exampleTrajectory2.cmd()
+    //   )
+    // );
     // spotless:on
 
     return exampleRoutine;

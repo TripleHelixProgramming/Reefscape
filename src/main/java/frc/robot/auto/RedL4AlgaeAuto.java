@@ -49,15 +49,15 @@ public class RedL4AlgaeAuto extends AutoMode {
   public AutoRoutine getAutoRoutine() {
 
     // spotless:off
-    redL4AlgAutoRoutine.active().onTrue(
-        Commands.parallel(
-            redCenterToL4G.cmd(),
-            elevator.coralL4PositionCG()));
+    redL4AlgAutoRoutine.active().onTrue(redCenterToL4G.cmd());
 
     redCenterToL4G.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
+            elevator.coralL4PositionCG(),
+            Commands.waitSeconds(0.1),
             coralRoller.createOuttakeCommand().withTimeout(0.2),
+            Commands.waitSeconds(0.2),
             redL4GBack.cmd()));
 
     redL4GBack.done().onTrue(

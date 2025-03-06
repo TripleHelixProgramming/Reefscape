@@ -43,43 +43,47 @@ public class BlueProcess3PieceAuto extends AutoMode {
   public AutoRoutine getAutoRoutine() {
 
     // spotless:off
-    blueProcess3PieceRoutine.active().onTrue(
-        Commands.parallel(
-            blueCenterToL4F.cmd(),
-            elevator.coralL4PositionCG()));
+    blueProcess3PieceRoutine.active().onTrue(blueCenterToL4F.cmd());
 
     blueCenterToL4F.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
+            elevator.coralL4PositionCG(),
+            Commands.waitSeconds(0.1),
             coralRoller.createOuttakeCommand().withTimeout(0.2),
             Commands.parallel(
                 blueL4FToSource.cmd(),
-                elevator.coralIntakeCG())));
+                Commands.sequence(
+                    Commands.waitSeconds(0.1),
+                    elevator.coralIntakeCG()))));
 
     blueL4FToSource.done().onTrue(
         Commands.sequence(
-            Commands.waitSeconds(0.2),
-            Commands.parallel(
-                blueSourceToL4D.cmd(),
-                elevator.coralL4PositionCG())));
+            coralRoller.createIntakeCommand().withTimeout(0.2),
+            blueSourceToL4D.cmd()));
 
     blueSourceToL4D.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
+            elevator.coralL4PositionCG(),
+            Commands.waitSeconds(0.1),
             coralRoller.createOuttakeCommand().withTimeout(0.2),
             Commands.parallel(
-                elevator.coralIntakeCG(),
-                blueL4DToSource.cmd())));
+                blueL4DToSource.cmd(),
+                Commands.sequence(
+                    Commands.waitSeconds(0.1),
+                    elevator.coralIntakeCG()
+                ))));
 
     blueL4DToSource.done().onTrue(
         Commands.sequence(
-            Commands.waitSeconds(0.2),
-            Commands.parallel(
-                elevator.coralL4PositionCG(),
-                blueSourceToL4C.cmd())));
+            coralRoller.createIntakeCommand().withTimeout(0.2),
+            elevator.coralL4PositionCG()));
 
     blueSourceToL4C.done().onTrue(
         Commands.sequence(
+            Commands.waitSeconds(0.1),
+            elevator.coralL4PositionCG(),
             Commands.waitSeconds(0.1),
             coralRoller.createOuttakeCommand()));
     // spotless:on

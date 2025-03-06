@@ -50,9 +50,11 @@ public class BlueL4AlgaeAuto extends AutoMode {
 
     // spotless:off
     blueL4AlgAutoRoutine.active().onTrue(
-        Commands.parallel(
-            blueCenterToL4G.cmd(),
-            elevator.coralL4PositionCG()));
+      Commands.parallel(
+        blueCenterToL4G.cmd(),
+        Commands.sequence(
+          Commands.waitSeconds(1.0),
+          elevator.coralL4PositionCG())));
 
     blueCenterToL4G.done().onTrue(
         Commands.sequence(
