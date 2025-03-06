@@ -460,14 +460,36 @@ public class LEDs extends SubsystemBase {
    * @param color the color of the roller animation
    * @return a command to run a roller animation
    */
-  public Command createRollerAnimationCommand(BooleanSupplier isIntake, Supplier<Color> color) {
-    System.err.printf("createRollerAnimationCommand: isIntake=%b, color=%s%n", isIntake, color);
-    var blocks = stackedBlocksPattern(color.get(), 2, 2);
-    var scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(1).asFrequency());
+  public Command createRollerAnimationCommand(
+      BooleanSupplier isIntakeSupplier, Supplier<Color> colorSupplier) {
+    /**
+     * A command that captures the color and appropriate buffers to animate when initialized by the
+     * scheduler.
+     */
+    return new Command() {
+      LEDPattern scrollingBlocks;
+      AddressableLEDBufferView[] buffers;
 
-    return newCommand(
-        () ->
-            applyPattern(
-                scrollingBlocks, isIntake.getAsBoolean() ? intakeBuffers : outtakeBuffers));
+      {
+        addRequirements(LEDs.getInstance());
+        setName("Roller Animation");
+      }
+
+      @Override
+      public void initialize() {
+        var blocks = stackedBlocksPattern(colorSupplier.get(), 2, 2);
+        scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(1).asFrequency());
+        buffers = isIntakeSupplier.getAsBoolean() ? intakeBuffers : outtakeBuffers;
+        setName(
+            String.format(
+                "%s: %s %s",
+                getName(), buffers == intakeBuffers ? "Intake" : "Outtake", colorSupplier.get()));
+      }
+
+      @Override
+      public void execute() {
+        applyPattern(scrollingBlocks, buffers);
+      }
+    };
   }
 }
