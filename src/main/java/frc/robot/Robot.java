@@ -131,12 +131,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    leds.replaceDefaultCommandImmediately(
-        leds.createDisplayAutoSelectionCommand(
-                autoSelector::getBinarySwitchPosition,
-                allianceSelector::getAllianceColor,
-                allianceSelector::agreementInAllianceInputs)
-            .ignoringDisable(true));
+    leds.replaceDefaultCommandImmediately(createAutoOptionDisplayCommand().ignoringDisable(true));
   }
 
   @Override
@@ -370,6 +365,11 @@ public class Robot extends TimedRobot {
                   est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
               getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
             });
+  }
+
+  protected Command createAutoOptionDisplayCommand() {
+    return leds.createAutoOptionDisplayCommand(
+        autoSelector, () -> swerve.getPose(), allianceSelector.getAgreementInAllianceColor());
   }
 
   /**

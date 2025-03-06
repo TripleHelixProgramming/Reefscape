@@ -8,20 +8,18 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.LEDReader;
 import edu.wpi.first.wpilibj.LEDWriter;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.AutoOption;
 import frc.robot.Constants.LedConstants;
 import frc.util.Gamepiece;
-import frc.util.Util;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -235,10 +233,17 @@ public class LEDs extends SubsystemBase {
    * @param writers LEDWriters to write to
    */
   public void stackBlocks(
-      Color color, int numBlocks, int blockSize, int blockSpace, LEDWriter... writers) {
+      Color color,
+      int numBlocks,
+      int blockSize,
+      int blockSpace,
+      Optional<Color> blockSpaceColor,
+      LEDWriter... writers) {
     for (int i = 0; i < numBlocks * (blockSize + blockSpace); i += blockSize + blockSpace) {
       setPixels(i, blockSize, color, writers);
-      setPixels(i + blockSize, blockSpace, Color.kBlack, writers);
+      if (blockSpaceColor.isPresent()) {
+        setPixels(i + blockSize, blockSpace, blockSpaceColor.get(), writers);
+      }
     }
   }
 
@@ -247,28 +252,19 @@ public class LEDs extends SubsystemBase {
    * right strips, where <i>n</i> corresponds to the auto mode selected. If no auto is selected, two
    * yellow pixels are lit at the bottom of each strip, and if the alliance inputs disagree, two
    * yellow pixels are lit at the top of each strip.
-   *
-   * @param alliance current alliance
-   * @param autoMode auto mode selected
-   * @param agreement whether the alliance inputs agree
    */
-  public void displayAutoSelection(Alliance alliance, int autoMode, boolean agreement) {
-    clear(Segments.ALL);
-    if (autoMode > 0) {
-      stackBlocks(
-          Util.allianceToColor(alliance),
-          autoMode,
-          LedConstants.kLEDsPerBlock,
-          LedConstants.kLEDsBetweenBlocks,
-          leftStrip,
-          rightStrip);
-    } else { // No auto selected.
-      setPixels(0, LedConstants.kLEDsPerBlock, Color.kYellow, leftStrip, rightStrip);
+  public void displayAutoSelection(Color color, int numBlocks, boolean agreement, boolean overlay) {
+    if (!overlay) {
+      clear(Segments.ALL);
     }
-    /*
-     * If there's disagreement about the alliance inputs, light two yellow pixels
-     * at the top of either strip.
-     */
+    stackBlocks(
+        color,
+        numBlocks,
+        LedConstants.kLEDsPerBlock,
+        LedConstants.kLEDsBetweenBlocks,
+        Optional.of(overlay ? null : Color.kBlack),
+        leftStrip,
+        rightStrip);
     if (!agreement) {
       setPixels(0, 2, Color.kYellow, leftStrip.reversed(), rightStrip.reversed());
     }
@@ -390,23 +386,21 @@ public class LEDs extends SubsystemBase {
   }
 
   /**
-   * Create a command to display the auto selection on the LEDs.
+   * Create a pattern to display stacked blocks on the left and right strips.
    *
-   * @param autoSwitchPositionSupplier provides the auto switch position
-   * @param allianceColorSupplier provides the alliance color
-   * @param agreementInAllianceInputs provides whether the alliance inputs agree
-   * @return a command to display the auto selection
+   * @return a command to display stacked blocks
    */
-  public Command createDisplayAutoSelectionCommand(
-      IntSupplier autoSwitchPositionSupplier,
-      Supplier<Alliance> allianceColorSupplier,
-      BooleanSupplier agreementInAllianceInputs) {
-    return newCommand(
-        () ->
-            displayAutoSelection(
-                allianceColorSupplier.get(),
-                autoSwitchPositionSupplier.getAsInt(),
-                agreementInAllianceInputs.getAsBoolean()));
+  public LEDPattern stackedBlocksPattern(
+      Color color, int blockSize, int blockSpace, Optional<Color> blockSpaceColor) {
+    return (reader, writer) -> {
+      stackBlocks(
+          color,
+          reader.getLength() / (blockSize + blockSpace),
+          blockSize,
+          blockSpace,
+          blockSpaceColor,
+          writer);
+    };
   }
 
   /**
@@ -415,10 +409,57 @@ public class LEDs extends SubsystemBase {
    * @return a command to run scrolling blocks
    */
   public LEDPattern stackedBlocksPattern(Color color, int blockSize, int blockSpace) {
-    return (reader, writer) -> {
-      stackBlocks(
-          color, reader.getLength() / (blockSize + blockSpace), blockSize, blockSpace, writer);
-    };
+    return stackedBlocksPattern(color, blockSize, blockSpace, Optional.of(Color.kBlack));
+  }
+
+  /**
+   * Displays several bits of information:
+   *
+   * <ul>
+   *   <li>The number of the selected auto and its alliance color. The number and color of the
+   *       blocks displayed is determined by the number and alliance color of the selected auto.
+   *   <li>Pose-seek info if a pose is provided by the selected auto
+   *   <li>A yellow block at the bottom of the strips if no auto is selected
+   *   <li>A yellow block at the top of the strips if the configured alliance and the one provided
+   *       by the FMS disagree
+   * </ul>
+   *
+   * @param autoOption selected auto
+   * @param currentPose current pose of the robot
+   * @param agreement whether the configured alliance and the one provided by the FMS agree
+   */
+  public void displayAutoMode(
+      Optional<AutoOption> autoOption, Pose2d currentPose, boolean agreement) {
+    /*
+     * If we have an auto selected, we need to display its info.  This will
+     * be overlaid on top of pose-seek display if its has an
+     * initial pose, otherwise, it will overwrite all segments.
+     *
+     * If no auto is selected we create a display with one yellow block illuminated at
+     * the bottom.
+     *
+     * In either case, the top two pixels on either side will be illuminated
+     * yellow is there is disagreement between the configured alliance and
+     * the one provided by the FMS.
+     */
+    autoOption.ifPresentOrElse(
+        /*
+         * We have an auto
+         */
+        auto -> {
+          var hasInitialPose = auto.getInitialPose().isPresent();
+          if (hasInitialPose) {
+            displayPoseSeek(currentPose, auto.getInitialPose().get());
+          }
+          displayAutoSelection(
+              auto.getAllianceColor(), auto.getOptionNumber(), agreement, hasInitialPose);
+        },
+        /*
+         * We do not have an auto
+         */
+        () -> {
+          displayAutoSelection(Color.kYellow, 1, agreement, false);
+        });
   }
 
   /**
@@ -432,6 +473,35 @@ public class LEDs extends SubsystemBase {
     LEDPattern scrollingRainbow = rainbow.scrollAtRelativeSpeed(duration.asFrequency());
     return newCommand(() -> applyPattern(scrollingRainbow, leftStrip, rightStrip))
         .withTimeout(duration);
+  }
+
+  /**
+   * Create a command to display the selected auto option on the LEDs.
+   *
+   * @param autoSupplier provides the selected auto option
+   * @param currentPoseSupplier provides the current pose of the robot
+   * @param allianceAgreementSupplier provides whether the configured alliance and the one provided
+   *     by the FMS agree
+   * @return a command to display the selected auto info
+   */
+  public Command createAutoOptionDisplayCommand(
+      Supplier<Optional<AutoOption>> autoSupplier,
+      Supplier<Pose2d> currentPoseSupplier,
+      BooleanSupplier allianceAgreementSupplier) {
+    return new Command() {
+      {
+        addRequirements(LEDs.this);
+        setName("Auto Mode Display");
+      }
+
+      @Override
+      public void execute() {
+        displayAutoMode(
+            autoSupplier.get(),
+            currentPoseSupplier.get(),
+            allianceAgreementSupplier.getAsBoolean());
+      }
+    };
   }
 
   public static AddressableLEDBufferView[] intakeBuffers = {
@@ -456,8 +526,8 @@ public class LEDs extends SubsystemBase {
    * Create a command that runs a roller animation. Blocks will scroll toward the center for intake,
    * and away from the center for outtake.
    *
-   * @param isIntake whether the rollers are intaking
-   * @param color the color of the roller animation
+   * @param isIntakeSupplier whether the rollers are intaking
+   * @param colorSupplier the color of the roller animation
    * @return a command to run a roller animation
    */
   public Command createRollerAnimationCommand(
@@ -471,13 +541,13 @@ public class LEDs extends SubsystemBase {
       AddressableLEDBufferView[] buffers;
 
       {
-        addRequirements(LEDs.getInstance());
+        addRequirements(LEDs.this);
         setName("Roller Animation");
       }
 
       @Override
       public void initialize() {
-        var blocks = stackedBlocksPattern(colorSupplier.get(), 2, 2);
+        var blocks = stackedBlocksPattern(colorSupplier.get(), 3, 2);
         scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(1).asFrequency());
         buffers = isIntakeSupplier.getAsBoolean() ? intakeBuffers : outtakeBuffers;
         setName(
