@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeRollerConstants;
-import frc.util.Util;
 
 public class AlgaeRoller extends SubsystemBase {
 
@@ -31,7 +30,6 @@ public class AlgaeRoller extends SubsystemBase {
   private final SparkLimitSwitch algaeSensor = leaderMotor.getForwardLimitSwitch();
   public Trigger hasAlage = new Trigger(() -> algaeSensor.isPressed());
   public final Trigger isRolling = new Trigger(() -> Math.abs(encoder.getVelocity()) > 80);
-
 
   public AlgaeRoller() {
     // spotless:off

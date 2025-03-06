@@ -385,23 +385,42 @@ public class Robot extends TimedRobot {
    * @return An LED subsystem command that animates the rollers.
    */
   protected Command createRollerAnimationCommand() {
-    var color = Color.kRed;
-    var intake = true;
+    /*
+     * On intake, one and only one is rolling
+     */
+    BooleanSupplier intakeSupplier =
+        () -> {
+          return coralRoller.isRolling.getAsBoolean() ^ algaeRoller.isRolling.getAsBoolean();
+        };
 
     /*
-     * If both are rolling, that implies we are doing an outtake.  We decide color
-     * based on the current gamepiece.
+     * Use currently held gamepiece to color outtake animation, yellow if none.
+     * On intake, use the color associated with the gripper's gamepiece.  On
+     * some weird logic error, use red.
      */
-    if (algaeRoller.isRolling.getAsBoolean() && coralRoller.isRolling.getAsBoolean()) {
-      var gamepiece = getLoadedGamepiece();
-      color = gamepiece == null ? Color.kYellow : gamepiece.color;
-      intake = false;
-    } else if (algaeRoller.isRolling.getAsBoolean()) {
-      color = LedConstants.algaeColor;
-    } else if (coralRoller.isRolling.getAsBoolean()) {
-      color = LedConstants.coralColor;
-    }
+    Supplier<Color> colorSupplier =
+        () -> {
+          /*
+           * On outtake, use the color of the currently held game piece, yellow if none.
+           */
+          if (!intakeSupplier.getAsBoolean()) {
+            var gamepiece = getLoadedGamepiece();
+            return gamepiece == null ? Color.kYellow : gamepiece.color;
+          }
+          /*
+           * Otherwise, use the color associated with the gripper's target piece.
+           */
+          else if (algaeRoller.isRolling.getAsBoolean()) {
+            return Gamepiece.ALGAE.color;
+          } else if (coralRoller.isRolling.getAsBoolean()) {
+            return Gamepiece.CORAL.color;
+          }
+          /*
+           * On some weird logic error, use red.
+           */
+          return Color.kRed;
+        };
 
-    return leds.createRollerAnimationCommand(intake, color);
+    return leds.createRollerAnimationCommand(intakeSupplier, colorSupplier);
   }
 }

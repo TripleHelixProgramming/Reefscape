@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.CoralRollerConstants;
-import frc.util.Util;
 
 public class CoralRoller extends SubsystemBase {
 

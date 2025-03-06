@@ -287,7 +287,6 @@ public class LEDs extends SubsystemBase {
    * @param gamepiece gamepiece currently possessed by the robot
    */
   public void displayDefaultInfo(boolean isAlgaeMode, Optional<Gamepiece> gamepiece) {
-    // System.err.printf("displayDefaultInfo: isAlgaeMode=%b, gamepiece=%s%n", isAlgaeMode, gamepiece);
     var modeColor = isAlgaeMode ? LedConstants.algaeColor : LedConstants.coralColor;
     fill(modeColor, Segments.MIDDLE);
     var pieceColor = gamepiece.isPresent() ? gamepiece.get().color : Color.kBlack;
@@ -461,12 +460,14 @@ public class LEDs extends SubsystemBase {
    * @param color the color of the roller animation
    * @return a command to run a roller animation
    */
-  public Command createRollerAnimationCommand(boolean isIntake, Color color) {
+  public Command createRollerAnimationCommand(BooleanSupplier isIntake, Supplier<Color> color) {
     System.err.printf("createRollerAnimationCommand: isIntake=%b, color=%s%n", isIntake, color);
-    var blocks = stackedBlocksPattern(color, 2, 2);
+    var blocks = stackedBlocksPattern(color.get(), 2, 2);
     var scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(1).asFrequency());
 
     return newCommand(
-        () -> applyPattern(scrollingBlocks, isIntake ? intakeBuffers : outtakeBuffers));
+        () ->
+            applyPattern(
+                scrollingBlocks, isIntake.getAsBoolean() ? intakeBuffers : outtakeBuffers));
   }
 }
