@@ -562,4 +562,10 @@ public class LEDs extends SubsystemBase {
       }
     };
   }
+
+  public Command createAutoSelectionEffectCommand() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException(
+        "Unimplemented method 'createAutoSelectionEffectCommand'");
+  }
 }
