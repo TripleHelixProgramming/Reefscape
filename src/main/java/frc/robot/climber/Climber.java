@@ -128,9 +128,10 @@ public class Climber extends SubsystemBase {
   }
 
   public Command createDefaultClimberCommand() {
-    return this.run(() -> {
-      motor.set(0.0);
-    });
+    return this.run(
+        () -> {
+          motor.set(0.0);
+        });
   }
 
   public Command createUnlockCommand() {
@@ -166,18 +167,18 @@ public class Climber extends SubsystemBase {
 
   public Command createRetractCommand() {
     return new FunctionalCommand(
-      // initialze
-      () -> {
-        lockRatchet();
-        setPosition(ClimberConstants.kRetractPosition);
-      },
-      // execute
-      () -> {},
-      // end
-      interrupted -> {},
-      // isFinished
-      () -> isRetracted(),
-      // requirements
-      this);
+        // initialze
+        () -> {
+          lockRatchet();
+          setPosition(ClimberConstants.kRetractPosition);
+        },
+        // execute
+        () -> {},
+        // end
+        interrupted -> {},
+        // isFinished
+        () -> isRetracted(),
+        // requirements
+        this);
   }
 }

@@ -113,7 +113,8 @@ public class Drivetrain extends SubsystemBase {
 
   public void setFieldRelativeChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     Rotation2d offsetHeading = getHeading().minus(getHeadingOffset());
-    setRobotRelativeChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, offsetHeading));
+    setRobotRelativeChassisSpeeds(
+        ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, offsetHeading));
   }
 
   /**
@@ -127,7 +128,8 @@ public class Drivetrain extends SubsystemBase {
    * @param chassisSpeeds Robot-relative chassis speeds (x, y, theta)
    * @param kinematics Kinematics of the robot chassis
    */
-  public void setRobotRelativeChassisSpeeds(ChassisSpeeds chassisSpeeds, SwerveDriveKinematics kinematics) {
+  public void setRobotRelativeChassisSpeeds(
+      ChassisSpeeds chassisSpeeds, SwerveDriveKinematics kinematics) {
     var swerveModuleStates =
         kinematics.toSwerveModuleStates(
             ChassisSpeeds.discretize(chassisSpeeds, RobotConstants.kPeriod.in(Seconds)));

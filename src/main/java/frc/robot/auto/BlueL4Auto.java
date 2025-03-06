@@ -8,18 +8,17 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 import frc.robot.elevator.Lifter;
 import java.util.Optional;
 
-public class BlueL4AlgaeAuto extends AutoMode {
+public class BlueL4Auto extends AutoMode {
 
   Lifter lifter;
   CoralRoller coralRoller;
   AlgaeRoller algaeRoller;
   Elevator elevator;
 
-  public BlueL4AlgaeAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
+  public BlueL4Auto(Drivetrain drivetrain, Elevator elevatorSystem) {
     super(drivetrain);
     elevator = elevatorSystem;
     lifter = elevator.getLifter();
@@ -27,17 +26,14 @@ public class BlueL4AlgaeAuto extends AutoMode {
     algaeRoller = elevator.getAlgaeRoller();
   }
 
-  AutoRoutine blueL4AlgAutoRoutine = super.getAutoFactory().newRoutine("BlueL4AlgaeRoutine");
+  AutoRoutine blueL4AutoRoutine = super.getAutoFactory().newRoutine("BlueL4Routine");
 
-  AutoTrajectory blueCenterToL4G = blueL4AlgAutoRoutine.trajectory("blueCenterToL4G");
-  // AutoTrajectory blueL4GToAlgae = blueL4AlgAutoRoutine.trajectory("L4GToAlgae");
-  // AutoTrajectory blueAlgaeToProcess = blueL4AlgAutoRoutine.trajectory("AlgaeToProcess");
-  // AutoTrajectory blueProcessToSource = blueL4AlgAutoRoutine.trajectory("ProcessToSource");
-  AutoTrajectory blueL4GBack = blueL4AlgAutoRoutine.trajectory("blueL4GBack");
+  AutoTrajectory blueCenterToL4G = blueL4AutoRoutine.trajectory("blueCenterToL4G");
+  AutoTrajectory blueL4GBack = blueL4AutoRoutine.trajectory("blueL4GBack");
 
   @Override
   public String getName() {
-    return "BlueL4AlgaeAuto";
+    return "BlueL4Auto";
   }
 
   @Override
@@ -49,7 +45,7 @@ public class BlueL4AlgaeAuto extends AutoMode {
   public AutoRoutine getAutoRoutine() {
 
     // spotless:off
-    blueL4AlgAutoRoutine.active().onTrue(
+    blueL4AutoRoutine.active().onTrue(
       Commands.parallel(
         blueCenterToL4G.cmd(),
         Commands.sequence(
@@ -65,22 +61,8 @@ public class BlueL4AlgaeAuto extends AutoMode {
 
     blueL4GBack.done().onTrue(
         elevator.coralIntakeCG());
-
-    // blueL4GToAlgae.done().onTrue(
-    //     Commands.sequence(
-    //         elevator.algaeL3IntakeCG().withTimeout(0.2),
-    //         Commands.parallel(
-    //             blueAlgaeToProcess.cmd(),
-    //             elevator.algaeProcessorPositionCG())));
-
-    // blueAlgaeToProcess.done().onTrue(
-    //     Commands.sequence(
-    //         algaeRoller.createOuttakeCommand().withTimeout(0.2),
-    //         Commands.parallel(
-    //             blueProcessToSource.cmd(),
-    //             lifter.createSetHeightCommand(LifterState.CoralIntake))));
     // spotless:on
 
-    return blueL4AlgAutoRoutine;
+    return blueL4AutoRoutine;
   }
 }

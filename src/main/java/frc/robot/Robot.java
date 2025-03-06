@@ -24,15 +24,15 @@ import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
-import frc.robot.auto.BlueL4AlgaeAuto;
+import frc.robot.auto.BlueL4Auto;
+import frc.robot.auto.BlueMoveAuto;
 import frc.robot.auto.BlueNoProcess3PieceAuto;
 import frc.robot.auto.BlueProcess3PieceAuto;
-import frc.robot.auto.ExampleAuto;
-import frc.robot.auto.RedL4AlgaeAuto;
+import frc.robot.auto.RedL4Auto;
+import frc.robot.auto.RedMoveAuto;
 import frc.robot.auto.RedNoProcess3PieceAuto;
 import frc.robot.auto.RedProcess3PieceAuto;
 import frc.robot.climber.Climber;
@@ -44,7 +44,6 @@ import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import java.util.HashMap;
@@ -297,8 +296,8 @@ public class Robot extends TimedRobot {
   // spotless:on
 
   private void configureAutoOptions() {
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4AlgaeAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4AlgaeAuto(swerve, elevator)));
+    autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4Auto(swerve, elevator)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4Auto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Red, 2, new RedNoProcess3PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
@@ -307,8 +306,8 @@ public class Robot extends TimedRobot {
         new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
-    autoSelector.addAuto(
-        new AutoOption(Alliance.Blue, 4, new ExampleAuto(swerve)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
+    autoSelector.addAuto(new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
   }
 
   /**
