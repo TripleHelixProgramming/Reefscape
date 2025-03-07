@@ -74,8 +74,7 @@ public class Elevator {
     return Commands.parallel(
         lifter.createSetHeightCommand(LifterState.CoralIntake),
         coralWrist.createSetAngleCommand(CoralWristState.Intake),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode),
-        coralRoller.createIntakeCommand().until(coralRoller.hasCoral));
+        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
   }
 
   public Command algaeBargePositionCG() {
@@ -90,7 +89,7 @@ public class Elevator {
         lifter.createSetHeightCommand(LifterState.AlgaeL3),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.L3),
-        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlage));
+        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae));
   }
 
   public Command algaeL2IntakeCG() {
@@ -98,7 +97,7 @@ public class Elevator {
         lifter.createSetHeightCommand(LifterState.AlgaeL2),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.L2),
-        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlage));
+        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae));
   }
 
   public Command algaeProcessorPositionCG() {
@@ -113,6 +112,6 @@ public class Elevator {
         lifter.createSetHeightCommand(LifterState.AlgaeIntakeFloor),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Floor),
-        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlage));
+        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae));
   }
 }

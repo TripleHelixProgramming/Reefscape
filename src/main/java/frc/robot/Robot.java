@@ -24,14 +24,15 @@ import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
-import frc.robot.auto.BlueL4AlgaeAuto;
+import frc.robot.auto.BlueL4Auto;
+import frc.robot.auto.BlueMoveAuto;
 import frc.robot.auto.BlueNoProcess3PieceAuto;
 import frc.robot.auto.BlueProcess3PieceAuto;
-import frc.robot.auto.RedL4AlgaeAuto;
+import frc.robot.auto.RedL4Auto;
+import frc.robot.auto.RedMoveAuto;
 import frc.robot.auto.RedNoProcess3PieceAuto;
 import frc.robot.auto.RedProcess3PieceAuto;
 import frc.robot.climber.Climber;
@@ -43,7 +44,6 @@ import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import java.util.HashMap;
@@ -167,6 +167,7 @@ public class Robot extends TimedRobot {
     climber.lockRatchet();
     elevator.resetPositionControllers();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+    // lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
 
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
@@ -258,7 +259,10 @@ public class Robot extends TimedRobot {
         elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
 
     // Configure to either intake coral from source or intake algae from floor
-    operator.start().whileTrue(new ConditionalCommand(
+    // operator.start().whileTrue(new ConditionalCommand(
+    //     elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
+
+    operator.rightTrigger().whileTrue(new ConditionalCommand(
         elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     // Intake either coral or algae
@@ -271,22 +275,29 @@ public class Robot extends TimedRobot {
     elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
 
     // Actuate climber winch
-    Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
-    climbTrigger.onTrue(climber.createDeployCommand()
-        .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
+    // Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
+    // climbTrigger.onTrue(climber.createDeployCommand()
+    //     .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
+
+    operator.leftTrigger().onTrue(climber.createDeployCommand());
+
+    // Auto climbe to position
+    operator.povUp().onTrue(climber.createRetractCommand());
   }
 
   private void configureEventBindings() {
     autoSelector.getChangedAutoSelection()
         .onTrue(leds.createChangeAutoAnimationCommand());
-    lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
-        .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+    // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
+    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+
+    algaeRoller.hasAlgae.onTrue(algaeRoller.createHoldAlgaeCommand());
   }
   // spotless:on
 
   private void configureAutoOptions() {
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4AlgaeAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4AlgaeAuto(swerve, elevator)));
+    autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4Auto(swerve, elevator)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4Auto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Red, 2, new RedNoProcess3PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
@@ -295,6 +306,8 @@ public class Robot extends TimedRobot {
         new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
+    autoSelector.addAuto(new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
   }
 
   /**

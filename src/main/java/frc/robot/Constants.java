@@ -263,8 +263,8 @@ public final class Constants {
     public static final int kClimberCurrentLimit = 80;
 
     public static final int kRatchetServoPort = 1;
-    public static final double kEngagedPosition = 600.0 / 1024.0;
-    public static final double kDisengedPosition = 475.0 / 1024.0;
+    public static final double kEngagedPosition = 0 / 1024.0;
+    public static final double kDisengedPosition = 1024.0 / 1024.0;
 
     public static final int kCageSensorPort = 6;
 
@@ -288,7 +288,8 @@ public final class Constants {
         kMaxVelocityInchesPerSecond / kVelocityConversionFactor;
     public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
 
-    public static final double kDeployPosition = 10.0; // inches
+    public static final double kDeployPosition = 8.0; // inches
+    public static final double kRetractPosition = 2.5; // inches
   }
 
   public static final class LedConstants {
