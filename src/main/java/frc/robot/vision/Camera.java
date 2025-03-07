@@ -42,13 +42,15 @@ public enum Camera {
     this.transform = new Transform3d(translation, rotation);
     this.device = new PhotonCamera(name);
 
-    AprilTagFieldLayout tagLayout;
-    try {
-      tagLayout = new AprilTagFieldLayout(VisionConstants.kAprilTagLayoutPath);
-    } catch (IOException e) {
-      System.err.println("Error loading custom AprilTag layout: " + e.getMessage());
-      tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    }
+    // AprilTagFieldLayout tagLayout;
+    // try {
+    //   tagLayout = new AprilTagFieldLayout(VisionConstants.kAprilTagLayoutPath);
+    // } catch (IOException e) {
+    //   System.err.println("Error loading custom AprilTag layout: " + e.getMessage());
+    //   tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    // }
+
+    AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     this.pose =
         new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, transform);
