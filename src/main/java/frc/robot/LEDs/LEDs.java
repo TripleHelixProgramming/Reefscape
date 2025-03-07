@@ -262,7 +262,7 @@ public class LEDs extends SubsystemBase {
         numBlocks,
         LedConstants.kLEDsPerBlock,
         LedConstants.kLEDsBetweenBlocks,
-        Optional.of(overlay ? null : Color.kBlack),
+        Optional.ofNullable(overlay ? null : Color.kBlack),
         leftStrip,
         rightStrip);
     if (!agreement) {
@@ -462,18 +462,18 @@ public class LEDs extends SubsystemBase {
         });
   }
 
-  /**
-   * Create a command to run a scrolling rainbow on the left and right strips.
-   *
-   * @return a command to run a scrolling rainbow
-   */
-  public Command createScrollingRainbowCommand() {
-    Time duration = Seconds.of(0.5);
-    LEDPattern rainbow = LEDPattern.rainbow(255, 255);
-    LEDPattern scrollingRainbow = rainbow.scrollAtRelativeSpeed(duration.asFrequency());
-    return newCommand(() -> applyPattern(scrollingRainbow, leftStrip, rightStrip))
-        .withTimeout(duration);
-  }
+  // /**
+  //  * Create a command to run a scrolling rainbow on the left and right strips.
+  //  *
+  //  * @return a command to run a scrolling rainbow
+  //  */
+  // public Command createScrollingRainbowCommand() {
+  //   Time duration = Seconds.of(0.5);
+  //   LEDPattern rainbow = LEDPattern.rainbow(255, 255);
+  //   LEDPattern scrollingRainbow = rainbow.scrollAtRelativeSpeed(duration.asFrequency());
+  //   return newCommand(() -> applyPattern(scrollingRainbow, leftStrip, rightStrip))
+  //       .withTimeout(duration);
+  // }
 
   /**
    * Create a command to display the selected auto option on the LEDs.

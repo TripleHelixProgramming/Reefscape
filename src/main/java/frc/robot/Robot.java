@@ -318,11 +318,11 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
-    autoSelector.getChangedAutoSelection()
-        .onTrue(leds.createScrollingRainbowCommand()
-        .ignoringDisable(true)
-        .withTimeout(3))
-        ;
+    // autoSelector.getChangedAutoSelection()
+    //     .onTrue(leds.createScrollingRainbowCommand()
+    //     .ignoringDisable(true)
+    //     .withTimeout(3))
+    //     ;
 
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
     // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
