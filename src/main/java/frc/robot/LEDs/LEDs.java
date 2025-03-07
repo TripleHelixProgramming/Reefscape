@@ -3,6 +3,7 @@ package frc.robot.LEDs;
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Seconds;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -319,18 +320,16 @@ public class LEDs extends SubsystemBase {
    */
   public void displayPoseSeek(Pose2d currentPose, Pose2d targetPose) {
     var delta = targetPose.minus(currentPose);
-    var theta = delta.getRotation().getDegrees();
-    fill(theta == 0 ? Color.kWhite : theta <= 180 ? Color.kMagenta : Color.kCyan, Segments.MIDDLE);
-
-    var x = delta.getTranslation().getX();
+    var theta = MathUtil.inputModulus(delta.getRotation().getDegrees(), -180, 180);
     fill(
-        (Centimeters.of(x)).baseUnitMagnitude() < 1
-            ? Color.kWhite
-            : x > 0 ? Color.kGreen : Color.kRed,
-        Segments.TOP);
+        Math.abs(theta) < 3 ? Color.kWhite : theta > 0 ? Color.kMagenta : Color.kCyan,
+        Segments.MIDDLE);
 
-    var y = delta.getTranslation().getY();
-    if (Centimeters.of(y).baseUnitMagnitude() < 1) {
+    var x = delta.getTranslation().getMeasureX().in(Centimeters);
+    fill(Math.abs(x) < 3 ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
+
+    var y = delta.getTranslation().getMeasureX().in(Centimeters);
+    if (Math.abs(y) < 3) {
       fill(Color.kWhite, Segments.BOTTOM);
     } else {
       fill(Color.kGreen, y > 0 ? Segments.rightBottom : Segments.leftBottom);
