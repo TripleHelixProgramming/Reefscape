@@ -4,6 +4,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLimitSwitch;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -90,5 +91,9 @@ public class AlgaeRoller extends SubsystemBase {
 
   public Command createOuttakeCommand() {
     return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeVoltage));
+  }
+
+  public Command createHoldAlgaeCommand() {
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kHoldVoltage));
   }
 }

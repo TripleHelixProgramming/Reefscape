@@ -62,13 +62,13 @@ public class ElevatorConstants {
       AlgaeIntakeFloor(1.0),
       EncoderReset(0.36),
       CoralL1(2.0),
-      CoralL2(13.8),
-      CoralL3(30.0),
-      CoralL4(60.75),
+      CoralL2(12.8),
+      CoralL3(28.0),
+      CoralL4(60.25),
       CoralIntake(11.7),
       AlgaeProcessor(12.0),
-      AlgaeL2(29),
-      AlgaeL3(45.5),
+      AlgaeL2(28),
+      AlgaeL3(44.5),
       Max(67.8);
 
       public Distance height;
@@ -134,8 +134,8 @@ public class ElevatorConstants {
     public static final double kS = 0.3; // Found empirically 2/22/2025
     public static final double kV = (12.0 - kS) / maxArmVelocityTheoretical.in(RadiansPerSecond);
 
-    public static final double kP = 5.0;
-    public static final double kI = 3.0;
+    public static final double kP = 6.0;
+    public static final double kI = 5.0;
     public static final double kD = 0.06;
     public static final Angle kIZone = Degrees.of(30.0);
 
@@ -146,7 +146,7 @@ public class ElevatorConstants {
       L1(125),
       L2(65),
       L3(65),
-      L4(25),
+      L4(28),
       Intake(125),
       AlgaeMode(90);
 
@@ -174,6 +174,7 @@ public class ElevatorConstants {
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
+    public static final Voltage kHoldVoltage = Volts.of(1.0);
     public static final Voltage kOuttakeVoltage = kIntakeVoltage.unaryMinus();
   }
 

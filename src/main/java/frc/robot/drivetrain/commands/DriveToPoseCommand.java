@@ -70,7 +70,7 @@ public class DriveToPoseCommand extends Command {
                     currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians())),
             swerve.getHeading());
 
-    swerve.setChassisSpeeds(speeds);
+    swerve.setRobotRelativeChassisSpeeds(speeds);
   }
 
   @Override
