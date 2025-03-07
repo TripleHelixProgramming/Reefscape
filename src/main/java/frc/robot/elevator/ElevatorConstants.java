@@ -136,7 +136,7 @@ public class ElevatorConstants {
 
     public static final double kP = 6.0;
     public static final double kI = 5.0;
-    public static final double kD = 0.03;
+    public static final double kD = 0.0;
     public static final Angle kIZone = Degrees.of(30.0);
 
     public static enum CoralWristState {
