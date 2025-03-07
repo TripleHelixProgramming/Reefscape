@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -40,14 +42,15 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
-import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
-import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
+import frc.util.Gamepiece;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class Robot extends TimedRobot {
   private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
@@ -61,20 +64,20 @@ public class Robot extends TimedRobot {
   private final Lifter lifter = elevator.getLifter();
   private final CoralRoller coralRoller = elevator.getCoralRoller();
   private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
-  private final CoralWrist coralWrist = elevator.getCoralWrist();
-  private final AlgaeWrist algaeWrist = elevator.getAlgaeWrist();
 
   private final Drivetrain swerve =
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
   private final Climber climber = new Climber();
-  private final LEDs leds = new LEDs();
+  private final LEDs leds = LEDs.getInstance();
   private final Vision vision = new Vision();
+  private final EventLoop loop = new EventLoop();
 
   private CommandZorroController driver;
   private CommandXboxController operator;
+  private BooleanSupplier algaeModeSupplier;
+  private Supplier<Gamepiece> gamepieceSupplier;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
-  private final EventLoop loop = new EventLoop();
 
   private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
@@ -82,6 +85,14 @@ public class Robot extends TimedRobot {
           .publish();
 
   public Robot() {
+    gamepieceSupplier =
+        new Supplier<Gamepiece>() {
+          @Override
+          public Gamepiece get() {
+            return getLoadedGamepiece();
+          }
+        };
+
     configureButtonBindings();
     configureEventBindings();
     configureAutoOptions();
@@ -115,15 +126,20 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Driver Controller", driver.getHID());
     SmartDashboard.putData("Operator Controller", operator.getHID());
     SmartDashboard.putData(powerDistribution);
+    SmartDashboard.putString(
+        "Gamepiece", getLoadedGamepiece() == null ? "None" : getLoadedGamepiece().toString());
   }
 
   @Override
   public void disabledInit() {
-    leds.setDefaultCommand(
-        leds.createDisabledCommand(
-            autoSelector::getBinarySwitchPosition,
-            allianceSelector::getAllianceColor,
-            allianceSelector::agreementInAllianceInputs));
+    leds.replaceDefaultCommandImmediately(
+        leds.createAutoOptionDisplayCommand(
+                autoSelector,
+                () -> swerve.getPose(),
+                allianceSelector.getAgreementInAllianceColor())
+            .ignoringDisable(true));
+
+    // autoSelector.getChangedAutoSelection().onChange(leds.createAutoSelectionEffectCommand().withTimeout(Seconds.of(3)));
   }
 
   @Override
@@ -131,8 +147,10 @@ public class Robot extends TimedRobot {
     // Scan the USB devices. If they change, remap the buttons.
 
     /*
-     * Only check if controllers changed every kUSBCheckNumLoops loops of disablePeriodic().
-     * This prevents us from hammering on some routines that cause the RIO to lock up.
+     * Only check if controllers changed every kUSBCheckNumLoops loops of
+     * disablePeriodic().
+     * This prevents us from hammering on some routines that cause the RIO to lock
+     * up.
      */
     usbCheckDelay--;
     if (0 >= usbCheckDelay) {
@@ -150,9 +168,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     autoSelector.scheduleAuto();
-    leds.setDefaultCommand(leds.createEnabledCommand());
     climber.lockRatchet();
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
+    leds.replaceDefaultCommandImmediately(
+        leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
   }
 
   @Override
@@ -161,13 +180,16 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     autoSelector.cancelAuto();
-    leds.setDefaultCommand(leds.createEnabledCommand());
+
     swerve.resetHeadingOffset();
     climber.resetEncoder();
     climber.lockRatchet();
     elevator.resetPositionControllers();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     // lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
+
+    leds.replaceDefaultCommandImmediately(
+        leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
@@ -184,6 +206,15 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {}
+
+  Gamepiece getLoadedGamepiece() {
+    if (algaeRoller.hasAlgae.getAsBoolean()) {
+      return Gamepiece.ALGAE;
+    } else if (coralRoller.hasCoral.getAsBoolean()) {
+      return Gamepiece.CORAL;
+    }
+    return null;
+  }
 
   public void configureButtonBindings() {
 
@@ -218,21 +249,27 @@ public class Robot extends TimedRobot {
     // Outtake grippers
     driver.HIn()
         .whileTrue(coralRoller.createOuttakeCommand()
-        .alongWith(algaeRoller.createOuttakeCommand()));
+            .alongWith(algaeRoller.createOuttakeCommand()));
 
   }
 
   private void configureOperatorButtonBindings() {
 
-    Trigger algaeMode = operator.leftBumper();
+    var algaeMode = operator.leftBumper();
+    algaeModeSupplier = new BooleanSupplier() {
+      @Override
+      public boolean getAsBoolean() {
+        return algaeMode.getAsBoolean();
+      }
+    };
 
     // Test wrist motion
     // operator.back()
-    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode)
-    //     .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor)));
+    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode)
+    // .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor)));
     // operator.start()
-    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.L4)
-    //     .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode)));
+    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.L4)
+    // .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode)));
 
     // Test algae roller motion
     // operator.back().whileTrue(algaeRoller.createIntakeCommand());
@@ -286,12 +323,15 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
-    autoSelector.getChangedAutoSelection()
-        .onTrue(leds.createChangeAutoAnimationCommand());
-    // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
-    //     .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+    // autoSelector.getChangedAutoSelection()
+    //     .onTrue(leds.createScrollingRainbowCommand()
+    //     .ignoringDisable(true)
+    //     .withTimeout(3))
+    //     ;
 
-    algaeRoller.hasAlgae.onTrue(algaeRoller.createHoldAlgaeCommand());
+    coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
+    // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
+    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
   // spotless:on
 
@@ -339,5 +379,56 @@ public class Robot extends TimedRobot {
                   est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
               getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
             });
+  }
+
+  /**
+   * Create a command that animates the rollers based on their current state.
+   *
+   * <p>If both rollers are running we assume it's an outtake and use the color of the current
+   * gamepiece (yellow if none). If only one roller is running, we assume its an intake and use the
+   * color of piece associated with that roller.
+   *
+   * <p>After working out the logic, the command is created by the LED subsystem.
+   *
+   * @return An LED subsystem command that animates the rollers.
+   */
+  protected Command createRollerAnimationCommand() {
+    /*
+     * On intake, one and only one is rolling
+     */
+    BooleanSupplier intakeSupplier =
+        () -> {
+          return coralRoller.isRolling.getAsBoolean() ^ algaeRoller.isRolling.getAsBoolean();
+        };
+
+    /*
+     * Use currently held gamepiece to color outtake animation, yellow if none.
+     * On intake, use the color associated with the gripper's gamepiece.  On
+     * some weird logic error, use red.
+     */
+    Supplier<Color> colorSupplier =
+        () -> {
+          /*
+           * On outtake, use the color of the currently held game piece, yellow if none.
+           */
+          if (!intakeSupplier.getAsBoolean()) {
+            var gamepiece = getLoadedGamepiece();
+            return gamepiece == null ? Color.kYellow : gamepiece.color;
+          }
+          /*
+           * Otherwise, use the color associated with the gripper's target piece.
+           */
+          else if (algaeRoller.isRolling.getAsBoolean()) {
+            return Gamepiece.ALGAE.color;
+          } else if (coralRoller.isRolling.getAsBoolean()) {
+            return Gamepiece.CORAL.color;
+          }
+          /*
+           * On some weird logic error, use red.
+           */
+          return Color.kRed;
+        };
+
+    return leds.createRollerAnimationCommand(intakeSupplier, colorSupplier);
   }
 }

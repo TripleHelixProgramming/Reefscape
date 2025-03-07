@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class AutoSelector {
+public class AutoSelector implements Supplier<Optional<AutoOption>> {
 
   private Optional<AutoOption> currentAutoOption;
   private DigitalInput[] switchPositions;
@@ -72,14 +72,14 @@ public class AutoSelector {
     return sum;
   }
 
-  private Alliance getAllianceColor() {
+  private Alliance getAlliance() {
     return allianceColorSupplier.get();
   }
 
   private Optional<AutoOption> findMatchingOption() {
     return autoOptions.stream()
-        .filter(o -> o.getColor() == getAllianceColor())
-        .filter(o -> o.getOption() == getBinarySwitchPosition())
+        .filter(o -> o.getAlliance() == getAlliance())
+        .filter(o -> o.getOptionNumber() == getBinarySwitchPosition())
         .findFirst();
   }
 
@@ -90,6 +90,11 @@ public class AutoSelector {
     }
     currentAutoOption = newAutoOption;
     return true;
+  }
+
+  @Override
+  public Optional<AutoOption> get() {
+    return currentAutoOption;
   }
 
   /**

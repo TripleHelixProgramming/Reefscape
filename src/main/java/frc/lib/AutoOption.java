@@ -2,8 +2,10 @@ package frc.lib;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.auto.AutoMode;
+import frc.util.Util;
 import java.util.Optional;
 
 public class AutoOption {
@@ -37,14 +39,21 @@ public class AutoOption {
   /**
    * @return Alliance for which the option is valid
    */
-  public Alliance getColor() {
+  public Alliance getAlliance() {
     return this.allianceColor;
+  }
+
+  /**
+   * @return Color of the associated alliance
+   */
+  public Color getAllianceColor() {
+    return Util.allianceToColor(getAlliance());
   }
 
   /**
    * @return Selector switch index for which the option is valid
    */
-  public int getOption() {
+  public int getOptionNumber() {
     return this.switchNumber;
   }
 
