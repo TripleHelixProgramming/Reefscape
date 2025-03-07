@@ -4,7 +4,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLimitSwitch;
-import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -29,7 +28,7 @@ public class AlgaeRoller extends SubsystemBase {
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
   private final SparkLimitSwitch algaeSensor = leaderMotor.getForwardLimitSwitch();
-  public Trigger hasAlage = new Trigger(() -> algaeSensor.isPressed());
+  public Trigger hasAlgae = new Trigger(() -> algaeSensor.isPressed());
   public final Trigger isRolling = new Trigger(() -> Math.abs(encoder.getVelocity()) > 80);
 
   public AlgaeRoller() {
@@ -69,7 +68,7 @@ public class AlgaeRoller extends SubsystemBase {
     SmartDashboard.putNumber("Algae Roller/Velocity", encoder.getVelocity());
     // SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
     // SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
-    SmartDashboard.putBoolean("Algae Loaded", hasAlage.getAsBoolean());
+    SmartDashboard.putBoolean("Algae Loaded", hasAlgae.getAsBoolean());
     SmartDashboard.putBoolean("Coral isRolling", isRolling.getAsBoolean());
   }
 

@@ -208,7 +208,7 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {}
 
   Gamepiece getLoadedGamepiece() {
-    if (algaeRoller.hasAlage.getAsBoolean()) {
+    if (algaeRoller.hasAlgae.getAsBoolean()) {
       return Gamepiece.ALGAE;
     } else if (coralRoller.hasCoral.getAsBoolean()) {
       return Gamepiece.CORAL;
