@@ -56,11 +56,8 @@ public class BlueL4Auto extends AutoMode {
         Commands.sequence(
             Commands.waitSeconds(0.1),
             coralRoller.createOuttakeCommand().withTimeout(0.2),
-            Commands.waitSeconds(0.2),
-            blueL4GBack.cmd()));
+            Commands.waitSeconds(0.2)));
 
-    blueL4GBack.done().onTrue(
-        elevator.coralIntakeCG());
     // spotless:on
 
     return blueL4AutoRoutine;

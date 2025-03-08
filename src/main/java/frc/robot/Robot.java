@@ -320,6 +320,10 @@ public class Robot extends TimedRobot {
 
     // Auto climbe to position
     operator.povUp().onTrue(climber.createRetractCommand());
+
+    // just for testing roller animation.
+    operator.povLeft().whileTrue(leds.createRollerAnimationCommand(() -> true, () -> Color.kOrange));
+    operator.povRight().whileTrue(leds.createRollerAnimationCommand(() -> false, () -> Color.kOrange));
   }
 
   private void configureEventBindings() {

@@ -53,11 +53,8 @@ public class RedL4Auto extends AutoMode {
             elevator.coralL4PositionCG(),
             Commands.waitSeconds(0.1),
             coralRoller.createOuttakeCommand().withTimeout(0.2),
-            Commands.waitSeconds(0.2),
-            redL4GBack.cmd()));
+            Commands.waitSeconds(0.2)));
 
-    redL4GBack.done().onTrue(
-        elevator.coralIntakeCG());
     // spotless:on
 
     return redL4AutoRoutine;
