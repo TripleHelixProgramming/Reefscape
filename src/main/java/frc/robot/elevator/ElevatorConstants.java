@@ -130,12 +130,12 @@ public class ElevatorConstants {
     public static final AngularVelocity kVelocityConversionFactor =
         Rotations.of(gearRatioEncoderToArm).per(Minute);
 
-    public static final double kG = 1.1; // Found empirically 2/22/2025
-    public static final double kS = 0.3; // Found empirically 2/22/2025
+    public static final double kG = 0.55; // Found empirically 2/22/2025
+    public static final double kS = 0.15; // Found empirically 2/22/2025
     public static final double kV = (12.0 - kS) / maxArmVelocityTheoretical.in(RadiansPerSecond);
 
-    public static final double kP = 6.0;
-    public static final double kI = 5.0;
+    public static final double kP = 8.0;
+    public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final Angle kIZone = Degrees.of(30.0);
 
