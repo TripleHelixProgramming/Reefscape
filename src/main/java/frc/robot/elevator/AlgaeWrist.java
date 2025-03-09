@@ -41,7 +41,7 @@ public class AlgaeWrist extends SubsystemBase {
   private final ArmFeedforward feedforward =
       new ArmFeedforward(AlgaeWristConstants.kS, AlgaeWristConstants.kG, AlgaeWristConstants.kV);
 
-  private AlgaeWristState targetState = AlgaeWristState.Unknown;
+  private AlgaeWristState targetState = AlgaeWristState.Initial;
 
   public AlgaeWrist() {
     // spotless:off
@@ -78,6 +78,7 @@ public class AlgaeWrist extends SubsystemBase {
     feedback.setIZone(AlgaeWristConstants.kIZone.in(Radians));
     feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // feedback.setIntegratorRange();
+
 
     setDefaultCommand(createRemainAtCurrentAngleCommand());
   }

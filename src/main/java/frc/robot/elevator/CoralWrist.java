@@ -42,7 +42,7 @@ public class CoralWrist extends SubsystemBase {
   private final ArmFeedforward feedforward =
       new ArmFeedforward(CoralWristConstants.kS, CoralWristConstants.kG, CoralWristConstants.kV);
 
-  private CoralWristState targetState = CoralWristState.Unknown;
+  private CoralWristState targetState = CoralWristState.Initial;
 
   public CoralWrist() {
     // spotless:off

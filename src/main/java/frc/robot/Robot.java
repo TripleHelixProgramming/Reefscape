@@ -43,8 +43,11 @@ import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
+import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
+import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
+import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.vision.Vision;
 import frc.util.Gamepiece;
 import java.util.HashMap;
@@ -169,6 +172,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     autoSelector.scheduleAuto();
     climber.lockRatchet();
+    elevator.getCoralWrist().createSetAngleCommand(CoralWristState.Initial).schedule();
+    elevator.getAlgaeWrist().createSetAngleCommand(AlgaeWristState.Initial).schedule();
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
@@ -187,7 +192,6 @@ public class Robot extends TimedRobot {
     elevator.resetPositionControllers();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     // lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
-
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
@@ -333,7 +337,7 @@ public class Robot extends TimedRobot {
     //     .withTimeout(3))
     //     ;
 
-    coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
+    coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
     // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
     // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
@@ -397,6 +401,7 @@ public class Robot extends TimedRobot {
    * @return An LED subsystem command that animates the rollers.
    */
   protected Command createRollerAnimationCommand() {
+    System.err.printf("createRollerAnimation: algae=%b, coral=%b%n", algaeRoller.isRolling, coralRoller.isRolling);
     /*
      * On intake, one and only one is rolling
      */

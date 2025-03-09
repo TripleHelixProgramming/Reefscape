@@ -17,12 +17,12 @@ public class ZorroDriveCommand extends DriveCommand {
 
   @Override
   public double getX() {
-    return -MathUtil.applyDeadband(m_controller.getRightYAxis(), 0.05);
+    return -MathUtil.applyDeadband(m_controller.getRightYAxis(), 0.03);
   }
 
   @Override
   public double getY() {
-    return -MathUtil.applyDeadband(m_controller.getRightXAxis(), 0.05);
+    return -MathUtil.applyDeadband(m_controller.getRightXAxis(), 0.03);
   }
 
   @Override
