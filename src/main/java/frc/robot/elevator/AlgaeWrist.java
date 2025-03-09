@@ -41,7 +41,7 @@ public class AlgaeWrist extends SubsystemBase {
   private final ArmFeedforward feedforward =
       new ArmFeedforward(AlgaeWristConstants.kS, AlgaeWristConstants.kG, AlgaeWristConstants.kV);
 
-  private AlgaeWristState targetState = AlgaeWristState.Unknown;
+  private AlgaeWristState targetState = AlgaeWristState.Initial;
 
   public AlgaeWrist() {
     // spotless:off
