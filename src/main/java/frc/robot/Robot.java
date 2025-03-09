@@ -43,11 +43,10 @@ import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
-import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.Lifter;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
+import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import frc.util.Gamepiece;
 import java.util.HashMap;
@@ -401,7 +400,9 @@ public class Robot extends TimedRobot {
    * @return An LED subsystem command that animates the rollers.
    */
   protected Command createRollerAnimationCommand() {
-    System.err.printf("createRollerAnimation: algae=%b, coral=%b%n", algaeRoller.isRolling, coralRoller.isRolling);
+    System.err.printf(
+        "createRollerAnimation: algae=%b, coral=%b%n",
+        algaeRoller.isRolling, coralRoller.isRolling);
     /*
      * On intake, one and only one is rolling
      */

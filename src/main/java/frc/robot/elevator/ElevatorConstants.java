@@ -23,19 +23,21 @@ public class ElevatorConstants {
     // Convert to inches at the final stage
     private static final double gearRatioMotorToMechanism = 3.0 / 15.0;
     private static final Distance sprocketPitchDiameter = Inches.of(1.7567);
-    public static final Distance kPositionConversionFactor = sprocketPitchDiameter.times(Math.PI)
-        .times(gearRatioMotorToMechanism);
+    public static final Distance kPositionConversionFactor =
+        sprocketPitchDiameter.times(Math.PI).times(gearRatioMotorToMechanism);
     private static final double maxMotorVelocityRadPerSec = RPM.of(5676).in(RadiansPerSecond);
-    private static final LinearVelocity maxTheoreticalVelocity = InchesPerSecond
-        .of(maxMotorVelocityRadPerSec * kPositionConversionFactor.in(Inches));
+    private static final LinearVelocity maxTheoreticalVelocity =
+        InchesPerSecond.of(maxMotorVelocityRadPerSec * kPositionConversionFactor.in(Inches));
 
     // By default, the encoder in velocity mode measures RPM at the motor
     // Convert to inches per second at the final stage
-    public static final LinearVelocity kVelocityConversionFactor = kPositionConversionFactor.per(Minutes);
+    public static final LinearVelocity kVelocityConversionFactor =
+        kPositionConversionFactor.per(Minutes);
 
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
     public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(40.0);
-    public static final LinearAccelerationUnit inchesPerSecondPerSecond = InchesPerSecond.per(Second);
+    public static final LinearAccelerationUnit inchesPerSecondPerSecond =
+        InchesPerSecond.per(Second);
     public static final LinearAcceleration kRapidAcceleration = inchesPerSecondPerSecond.of(1000);
 
     public static final Distance kAllowableHeightError = Inches.of(0.2);
@@ -48,8 +50,9 @@ public class ElevatorConstants {
       public static final double kP = 40.0;
       public static final double kI = 0.0;
       public static final double kD = 0.0;
-      public static final Constraints kConstraints = new Constraints(
-          kRapidVelocity.in(MetersPerSecond), kRapidAcceleration.in(MetersPerSecondPerSecond));
+      public static final Constraints kConstraints =
+          new Constraints(
+              kRapidVelocity.in(MetersPerSecond), kRapidAcceleration.in(MetersPerSecondPerSecond));
       public static final Distance kIzone = Inches.of(2);
     }
 
@@ -100,20 +103,23 @@ public class ElevatorConstants {
     private static final double gearRatioMotortoEncoder = 1.0 / 5.0;
     private static final double gearRatioEncoderToArm = 24.0 / 42.0;
     private static final AngularVelocity maxMotorVelocity = RPM.of(5000);
-    private static final AngularVelocity maxArmVelocityTheoretical = maxMotorVelocity.times(gearRatioMotortoEncoder)
-        .times(gearRatioEncoderToArm);
+    private static final AngularVelocity maxArmVelocityTheoretical =
+        maxMotorVelocity.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
     private static final AngularVelocity maxArmVelocityConstraint = DegreesPerSecond.of(90.0);
-    private static final AngularAcceleration maxArmAcceleration = DegreesPerSecondPerSecond.of(180.0);
-    public static final Constraints kConstraints = new Constraints(
-        maxArmVelocityConstraint.in(RadiansPerSecond),
-        maxArmAcceleration.in(RadiansPerSecondPerSecond));
+    private static final AngularAcceleration maxArmAcceleration =
+        DegreesPerSecondPerSecond.of(180.0);
+    public static final Constraints kConstraints =
+        new Constraints(
+            maxArmVelocityConstraint.in(RadiansPerSecond),
+            maxArmAcceleration.in(RadiansPerSecondPerSecond));
 
     /*
      * When used as an absolute encoder, the CTRE SRX Mag encoder measures position
      * in rotations at the sensor by default. Convert to radians at the algae wrist.
      */
     public static final Angle kPositionConversionFactor = Rotations.of(gearRatioEncoderToArm);
-    public static final Angle kZeroOffset = Degrees.of(63).times(Rotations.of(1.0).div(kPositionConversionFactor));
+    public static final Angle kZeroOffset =
+        Degrees.of(63).times(Rotations.of(1.0).div(kPositionConversionFactor));
     public static final Angle kCenterOfGravityOffset = Degrees.of(0.0);
     public static final Angle kAllowableError = Degrees.of(3.0);
 
@@ -122,7 +128,8 @@ public class ElevatorConstants {
      * in rotations per minute at the sensor by default. Convert to radians per
      * second at the algae wrist.
      */
-    public static final AngularVelocity kVelocityConversionFactor = Rotations.of(gearRatioEncoderToArm).per(Minute);
+    public static final AngularVelocity kVelocityConversionFactor =
+        Rotations.of(gearRatioEncoderToArm).per(Minute);
 
     public static final double kG = 0.55; // Found empirically 2/22/2025
     public static final double kS = 0.15; // Found empirically 2/22/2025
@@ -176,16 +183,19 @@ public class ElevatorConstants {
   public static final class AlgaeWristConstants {
     public static final int kMotorPort = 14;
 
-    private static final double gearRatioMotortoEncoder = (1.0 / 5.0) * (18.0 / 36.0); // 5:1 for motor, 36:18 for belt
+    private static final double gearRatioMotortoEncoder =
+        (1.0 / 5.0) * (18.0 / 36.0); // 5:1 for motor, 36:18 for belt
     private static final double gearRatioEncoderToArm = 1.0;
     private static final AngularVelocity maxMotorVelocity = RPM.of(5676);
-    private static final AngularVelocity maxArmVelocityTheoretical = maxMotorVelocity.times(gearRatioMotortoEncoder)
-        .times(gearRatioEncoderToArm);
+    private static final AngularVelocity maxArmVelocityTheoretical =
+        maxMotorVelocity.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
     private static final AngularVelocity maxArmVelocityConstraint = DegreesPerSecond.of(180.0);
-    private static final AngularAcceleration maxArmAcceleration = DegreesPerSecondPerSecond.of(180.0);
-    public static final Constraints kConstraints = new Constraints(
-        maxArmVelocityConstraint.in(RadiansPerSecond),
-        maxArmAcceleration.in(RadiansPerSecondPerSecond));
+    private static final AngularAcceleration maxArmAcceleration =
+        DegreesPerSecondPerSecond.of(180.0);
+    public static final Constraints kConstraints =
+        new Constraints(
+            maxArmVelocityConstraint.in(RadiansPerSecond),
+            maxArmAcceleration.in(RadiansPerSecondPerSecond));
 
     /*
      * When used as an absolute encoder, the REV Through Bore encoder measures
@@ -203,7 +213,8 @@ public class ElevatorConstants {
      * in rotations per minute at the sensor by default. Convert to radians per
      * second at the algae wrist.
      */
-    public static final AngularVelocity kVelocityConversionFactor = Rotations.of(gearRatioEncoderToArm).per(Minute);
+    public static final AngularVelocity kVelocityConversionFactor =
+        Rotations.of(gearRatioEncoderToArm).per(Minute);
 
     public static final double kG = -0.25; // Found empirically 2/22/2025
     public static final double kS = 0.15; // Found empirically 2/22/2025

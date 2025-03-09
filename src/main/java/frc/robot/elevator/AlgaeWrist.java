@@ -79,7 +79,6 @@ public class AlgaeWrist extends SubsystemBase {
     feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // feedback.setIntegratorRange();
 
-
     setDefaultCommand(createRemainAtCurrentAngleCommand());
   }
 
