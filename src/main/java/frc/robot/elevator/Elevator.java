@@ -86,18 +86,20 @@ public class Elevator {
 
   public Command algaeL3IntakeCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.AlgaeL3),
-        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.L3),
-        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae));
+            lifter.createSetHeightCommand(LifterState.AlgaeL3),
+            coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.L3),
+            algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae))
+        .andThen(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
   }
 
   public Command algaeL2IntakeCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.AlgaeL2),
-        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.L2),
-        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae));
+            lifter.createSetHeightCommand(LifterState.AlgaeL2),
+            coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.L2),
+            algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae))
+        .andThen(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
   }
 
   public Command algaeProcessorPositionCG() {
@@ -109,9 +111,10 @@ public class Elevator {
 
   public Command algaeFloorIntakeCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.AlgaeIntakeFloor),
-        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.Floor),
-        algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae));
+            lifter.createSetHeightCommand(LifterState.AlgaeIntakeFloor),
+            coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.Floor),
+            algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae))
+        .andThen(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
   }
 }
