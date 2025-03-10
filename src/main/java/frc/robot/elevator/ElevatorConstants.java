@@ -35,7 +35,7 @@ public class ElevatorConstants {
         kPositionConversionFactor.per(Minutes);
 
     public static final LinearVelocity kFineVelocity = InchesPerSecond.of(15.0);
-    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(40.0);
+    public static final LinearVelocity kRapidVelocity = InchesPerSecond.of(47.0);
     public static final LinearAccelerationUnit inchesPerSecondPerSecond =
         InchesPerSecond.per(Second);
     public static final LinearAcceleration kRapidAcceleration = inchesPerSecondPerSecond.of(1000);

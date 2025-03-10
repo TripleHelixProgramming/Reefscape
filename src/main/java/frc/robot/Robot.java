@@ -194,6 +194,8 @@ public class Robot extends TimedRobot {
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
+    elevator.getCoralWrist().createSetAngleCommand(CoralWristState.Initial).schedule();
+    elevator.getAlgaeWrist().createSetAngleCommand(AlgaeWristState.Initial).schedule();
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
     // coralWrist.setDefaultCommand(coralWrist.createJoystickControlCommand(operator.getHID()));
@@ -330,15 +332,7 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
-    // autoSelector.getChangedAutoSelection()
-    //     .onTrue(leds.createScrollingRainbowCommand()
-    //     .ignoringDisable(true)
-    //     .withTimeout(3))
-    //     ;
-
     coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
-    // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
-    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
   // spotless:on
 
