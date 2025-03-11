@@ -54,7 +54,7 @@ public class Drivetrain extends SubsystemBase {
       new PIDController(RotationControllerGains.kP, 0.0, 0.0);
 
   private final Canandgyro canandgyro = new Canandgyro(0);
-  private Rotation2d headingOffset = new Rotation2d();
+  private Rotation2d headingOffset = Rotation2d.kZero;
 
   private StructPublisher<Pose2d> m_visionPosePublisher =
       NetworkTableInstance.getDefault().getStructTopic("Vision", Pose2d.struct).publish();
@@ -76,7 +76,7 @@ public class Drivetrain extends SubsystemBase {
             DriveConstants.kDriveKinematics,
             canandgyro.getRotation2d(),
             getSwerveModulePositions(),
-            new Pose2d(),
+            Pose2d.kZero,
             DriveConstants.kStateStdDevs,
             VisionConstants.kMultiTagStdDevs);
 
@@ -182,13 +182,13 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void resetHeadingOffset() {
-    headingOffset = new Rotation2d();
+    headingOffset = Rotation2d.kZero;
   }
 
   public void setHeadingOffset() {
     headingOffset =
         fieldRotatedSupplier.getAsBoolean()
-            ? getHeading().rotateBy(new Rotation2d(Math.PI))
+            ? getHeading().rotateBy(Rotation2d.kPi)
             : getHeading();
   }
 
@@ -257,7 +257,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Pose2d getNearestPose() {
-    Pose2d closestPose = new Pose2d();
+    Pose2d closestPose = Pose2d.kZero;
     double minDistance = Double.MAX_VALUE;
 
     for (Pose2d targetPose : DriveConstants.kReefTargetPoses) {
