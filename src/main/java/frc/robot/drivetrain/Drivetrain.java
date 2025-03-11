@@ -187,9 +187,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void setHeadingOffset() {
     headingOffset =
-        fieldRotatedSupplier.getAsBoolean()
-            ? getHeading().rotateBy(Rotation2d.kPi)
-            : getHeading();
+        fieldRotatedSupplier.getAsBoolean() ? getHeading().rotateBy(Rotation2d.kPi) : getHeading();
   }
 
   /**
