@@ -3,12 +3,29 @@ package frc.robot.vision;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.photonvision.EstimatedRobotPose;
 
-public class Vision {
+public class Vision extends SubsystemBase {
+
+  /** Choose the pose estimate with the lowest maximum stdev. */
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+    return Arrays.stream(Camera.values())
+        .sorted(
+            (lhs, rhs) ->
+                (int)
+                    Math.signum(
+                        lhs.getEstimationStdDevs().max() - rhs.getEstimationStdDevs().max()))
+        .map(cam -> cam.getEstimatedGlobalPose())
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .findFirst();
+  }
+
   public record EstimatedPoseWithStdevs(
       EstimatedRobotPose pose, Matrix<N3, N1> stdev, String name) {}
 
