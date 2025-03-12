@@ -57,12 +57,11 @@ public enum Reef {
   }
 
   /**
-   * Get the reef sector in which the specified pose falls, for the reef with the given center. The
-   * reef is divided into 6 sectors, each 60 degrees wide. The sectors are numbered 0 to 5, starting
-   * from the edge facing the driver station, and proceding clockwise. So sector 0 has the range
-   * (-30, 30] (relative to driver station).
+   * Get the sector of this reef into which the specified pose falls. The reefs are divided into 6
+   * sectors, each 60 degrees wide. The sectors are numbered 0 to 5, starting from the edge facing
+   * the driver station, and proceding clockwise. So sector 0 has the range (-30, 30], relative to
+   * driver station.
    *
-   * @param reefCenter the center of the reef
    * @param atPose the pose for which we want to know the reef sector
    * @return the index of the reef sector
    */
