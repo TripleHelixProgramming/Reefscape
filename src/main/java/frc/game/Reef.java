@@ -16,8 +16,8 @@ import edu.wpi.first.units.measure.Distance;
  * to a pose.
  */
 public enum Reef {
-  Blue(new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d())),
-  Red(new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI)));
+  Blue(new Pose2d(Inches.of(176.75), Inches.of(158.5), Rotation2d.kZero)),
+  Red(new Pose2d(Inches.of(514.125), Inches.of(158.5), Rotation2d.kPi));
 
   /** The radius of the reef hexagon */
   public static final Distance radius = Inches.of(50.25);
@@ -111,8 +111,7 @@ public enum Reef {
     Face(Reef reef, int index) {
       this.reef = reef;
       var rotation = new Rotation2d(Degrees.of(60.0)).times(index);
-      var translation =
-          new Translation2d(radius.in(Inches), rotation.plus(new Rotation2d(Math.PI)));
+      var translation = new Translation2d(radius.in(Inches), rotation.plus(Rotation2d.kPi));
       var offset = new Transform2d(translation, rotation);
       centerPose = reef.getCenterPose().plus(offset);
       leftPipePose =

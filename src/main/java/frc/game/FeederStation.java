@@ -17,7 +17,7 @@ public enum FeederStation {
 
   FeederStation(Pose2d pose) {
     final Transform2d feederStationOffset =
-        new Transform2d(Inches.of(-18), Inches.of(0), new Rotation2d(0));
+        new Transform2d(Inches.of(-18), Inches.of(0), Rotation2d.kZero);
     this.pose = pose.plus(feederStationOffset);
   }
 
