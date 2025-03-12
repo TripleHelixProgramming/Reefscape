@@ -329,7 +329,10 @@ public class Robot extends TimedRobot {
     //     .withTimeout(3))
     //     ;
 
-    coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
+    var coralRollerIsRolling = new Trigger(loop, elevator.getCoralRoller().isRolling);
+    var algaeRollerIsRolling = new Trigger(loop, elevator.getAlgaeRoller().isRolling);
+    coralRollerIsRolling.or(algaeRollerIsRolling).whileTrue(createRollerAnimationCommand());
+
     // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
     // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
