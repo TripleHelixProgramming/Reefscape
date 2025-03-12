@@ -20,11 +20,10 @@ public enum Reef {
   Blue(new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d())),
   Red(new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI)));
 
+  /** The radius of the reef hexagon */
   public static final double radius = Inches.of(50.25).in(Meters);
-  public static final Pose2d blueCenter =
-      new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d());
-  public static final Pose2d redCenter =
-      new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI));
+
+  /** The spacing between the left and right pipe centers. */
   public static final Distance pipeSpacing = Inches.of(13); // GM 5.3
 
   /**
@@ -37,8 +36,8 @@ public enum Reef {
    * @return the nearest reef
    */
   public static Reef getNearestReef(Pose2d atPose) {
-    var deltaRed = atPose.getTranslation().minus(redCenter.getTranslation()).getNorm();
-    var deltaBlue = atPose.getTranslation().minus(blueCenter.getTranslation()).getNorm();
+    var deltaRed = atPose.getTranslation().minus(Red.getCenterPose().getTranslation()).getNorm();
+    var deltaBlue = atPose.getTranslation().minus(Blue.getCenterPose().getTranslation()).getNorm();
     return deltaRed < deltaBlue ? Red : Blue;
   }
 
@@ -93,34 +92,45 @@ public enum Reef {
    * pipe, and right coral pipe.
    */
   public enum Face {
-    blueAB(blueCenter, 0),
-    blueCD(blueCenter, 1),
-    blueEF(blueCenter, 2),
-    blueGH(blueCenter, 3),
-    blueIJ(blueCenter, 4),
-    blueKL(blueCenter, 5),
-    redAB(redCenter, 0),
-    redCD(redCenter, 1),
-    redEF(redCenter, 2),
-    redGH(redCenter, 3),
-    redIJ(redCenter, 4),
-    redKL(redCenter, 5);
+    blueAB(Blue, 0),
+    blueCD(Blue, 1),
+    blueEF(Blue, 2),
+    blueGH(Blue, 3),
+    blueIJ(Blue, 4),
+    blueKL(Blue, 5),
+    redAB(Red, 0),
+    redCD(Red, 1),
+    redEF(Red, 2),
+    redGH(Red, 3),
+    redIJ(Red, 4),
+    redKL(Red, 5);
 
+    private final Reef reef;
     private Pose2d centerPose;
     private Pose2d leftPipePose;
     private Pose2d rightPipePose;
 
-    Face(Pose2d reefCenter, int index) {
+    Face(Reef reef, int index) {
+      this.reef = reef;
       var rotation = new Rotation2d(Degrees.of(60.0)).times(index);
       var translation = new Translation2d(radius, rotation.plus(new Rotation2d(Math.PI)));
       var offset = new Transform2d(translation, rotation);
-      centerPose = reefCenter.plus(offset);
+      centerPose = reef.getCenterPose().plus(offset);
       leftPipePose =
           centerPose.transformBy(
               new Transform2d(new Translation2d(0, -pipeSpacing.in(Inches) / 2), Rotation2d.kZero));
       rightPipePose =
           centerPose.transformBy(
               new Transform2d(new Translation2d(0, +pipeSpacing.in(Inches) / 2), Rotation2d.kZero));
+    }
+
+    /**
+     * Gets the reef this face belongs to.
+     *
+     * @return the reef this face belongs to
+     */
+    public Reef getReef() {
+      return reef;
     }
 
     /**
