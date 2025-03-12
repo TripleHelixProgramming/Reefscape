@@ -109,7 +109,7 @@ public class CoralWrist extends SubsystemBase {
     return Radians.of(feedback.getSetpoint().position);
   }
 
-  public void resetController() {
+  private void resetController() {
     feedback.reset(encoder.getPosition(), encoder.getVelocity());
   }
 
@@ -156,7 +156,12 @@ public class CoralWrist extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == CoralWristState.Unknown) feedback.setGoal(encoder.getPosition());
+          if (targetState == CoralWristState.Initial) {
+            feedback.setGoal(encoder.getPosition());
+            // Users should call reset() when they first start running the controller to avoid
+            // unwanted behavior.
+            resetController();
+          }
         },
         // execute
         () -> control(),

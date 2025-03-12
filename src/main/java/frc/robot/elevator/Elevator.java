@@ -36,11 +36,11 @@ public class Elevator {
     return algaeWrist;
   }
 
-  public void resetPositionControllers() {
-    lifter.resetController();
-    coralWrist.resetController();
-    algaeWrist.resetController();
-  }
+  // public void resetPositionControllers() {
+  //   lifter.resetController();
+  //   coralWrist.resetController();
+  //   algaeWrist.resetController();
+  // }
 
   public Command coralL4PositionCG() {
     return Commands.parallel(

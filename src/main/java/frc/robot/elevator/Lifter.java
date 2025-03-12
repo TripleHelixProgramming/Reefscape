@@ -56,7 +56,7 @@ public class Lifter extends SubsystemBase {
       new ElevatorFeedforward(LifterController.kS, LifterController.kG, LifterController.kV);
 
   private final EventLoop loop = new EventLoop();
-  private LifterState targetState = LifterState.Unknown;
+  private LifterState targetState = LifterState.Initial;
 
   public Lifter() {
     // spotless:off
@@ -109,7 +109,8 @@ public class Lifter extends SubsystemBase {
     // SmartDashboard.putNumber("Lifter/Velocity", encoder.getVelocity());
 
     SmartDashboard.putString("Lifter/Target State", getTargetState().name());
-    SmartDashboard.putNumber("Lifter/Target Height", feedback.getGoal().position);
+    SmartDashboard.putNumber("Lifter/Height Setpoint", feedback.getSetpoint().position);
+    SmartDashboard.putNumber("Lifter/Height Goal", feedback.getGoal().position);
 
     // SmartDashboard.putNumber("Lifter/Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
     // SmartDashboard.putNumber(
@@ -125,15 +126,11 @@ public class Lifter extends SubsystemBase {
     return Meters.of(encoder.getPosition());
   }
 
-  private Distance getSetPointHeight() {
-    return Meters.of(feedback.getSetpoint().position);
-  }
-
   public Dimensionless getProportionOfMaxHeight() {
     return getCurrentHeight().div(LifterState.Max.height);
   }
 
-  public void resetController() {
+  private void resetController() {
     feedback.reset(encoder.getPosition());
     feedback.setGoal(encoder.getPosition());
   }
@@ -184,7 +181,12 @@ public class Lifter extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == LifterState.Unknown) feedback.setGoal(encoder.getPosition());
+          if (targetState == LifterState.Initial) {
+            feedback.setGoal(encoder.getPosition());
+            // Users should call reset() when they first start running the controller to avoid
+            // unwanted behavior.
+            resetController();
+          }
         },
         // execute
         () -> control(),
