@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.auto.AutoMode;
-import frc.util.Util;
 import java.util.Optional;
 
 public class AutoOption {
