@@ -44,6 +44,8 @@ import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
+import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
+import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import frc.util.Gamepiece;
@@ -169,6 +171,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     autoSelector.scheduleAuto();
     climber.lockRatchet();
+    elevator.getCoralWrist().createSetAngleCommand(CoralWristState.Initial).schedule();
+    elevator.getAlgaeWrist().createSetAngleCommand(AlgaeWristState.Initial).schedule();
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
@@ -187,10 +191,11 @@ public class Robot extends TimedRobot {
     elevator.resetPositionControllers();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     // lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
-
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
+    elevator.getCoralWrist().createSetAngleCommand(CoralWristState.Initial).schedule();
+    elevator.getAlgaeWrist().createSetAngleCommand(AlgaeWristState.Initial).schedule();
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
     // coralWrist.setDefaultCommand(coralWrist.createJoystickControlCommand(operator.getHID()));
@@ -320,6 +325,10 @@ public class Robot extends TimedRobot {
 
     // Auto climbe to position
     operator.povUp().onTrue(climber.createRetractCommand());
+
+    // just for testing roller animation.
+    operator.povLeft().whileTrue(leds.createRollerAnimationCommand(() -> true, () -> Color.kOrange));
+    operator.povRight().whileTrue(leds.createRollerAnimationCommand(() -> false, () -> Color.kOrange));
   }
 
   private void configureEventBindings() {
@@ -396,6 +405,9 @@ public class Robot extends TimedRobot {
    * @return An LED subsystem command that animates the rollers.
    */
   protected Command createRollerAnimationCommand() {
+    System.err.printf(
+        "createRollerAnimation: algae=%b, coral=%b%n",
+        algaeRoller.isRolling, coralRoller.isRolling);
     /*
      * On intake, one and only one is rolling
      */

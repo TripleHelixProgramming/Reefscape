@@ -546,7 +546,7 @@ public class LEDs extends SubsystemBase {
       @Override
       public void initialize() {
         var blocks = stackedBlocksPattern(colorSupplier.get(), 3, 2);
-        scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(1).asFrequency());
+        scrollingBlocks = blocks.scrollAtRelativeSpeed(Seconds.of(0.5).asFrequency());
         buffers = isIntakeSupplier.getAsBoolean() ? intakeBuffers : outtakeBuffers;
         setName(
             String.format(

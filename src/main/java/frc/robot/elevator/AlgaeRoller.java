@@ -70,7 +70,7 @@ public class AlgaeRoller extends SubsystemBase {
     // SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
     // SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putBoolean("Algae Loaded", hasAlgae.getAsBoolean());
-    SmartDashboard.putBoolean("Coral isRolling", isRolling.getAsBoolean());
+    SmartDashboard.putBoolean("Algae isRolling", isRolling.getAsBoolean());
   }
 
   private void setVoltage(Voltage voltage) {
