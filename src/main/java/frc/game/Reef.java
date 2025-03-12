@@ -2,7 +2,6 @@ package frc.game;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,7 +20,7 @@ public enum Reef {
   Red(new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI)));
 
   /** The radius of the reef hexagon */
-  public static final double radius = Inches.of(50.25).in(Meters);
+  public static final Distance radius = Inches.of(50.25);
 
   /** The spacing between the left and right pipe centers. */
   public static final Distance pipeSpacing = Inches.of(13); // GM 5.3
@@ -112,7 +111,8 @@ public enum Reef {
     Face(Reef reef, int index) {
       this.reef = reef;
       var rotation = new Rotation2d(Degrees.of(60.0)).times(index);
-      var translation = new Translation2d(radius, rotation.plus(new Rotation2d(Math.PI)));
+      var translation =
+          new Translation2d(radius.in(Inches), rotation.plus(new Rotation2d(Math.PI)));
       var offset = new Transform2d(translation, rotation);
       centerPose = reef.getCenterPose().plus(offset);
       leftPipePose =
