@@ -1,7 +1,5 @@
 package frc.robot.elevator;
 
-import java.util.function.BooleanSupplier;
-
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -16,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.CoralRollerConstants;
+import java.util.function.BooleanSupplier;
 
 public class CoralRoller extends SubsystemBase {
 
@@ -25,8 +24,7 @@ public class CoralRoller extends SubsystemBase {
   private final RelativeEncoder encoder = motor.getEncoder();
   private final SparkLimitSwitch coralSensor = motor.getForwardLimitSwitch();
   public final BooleanSupplier hasCoral = () -> coralSensor.isPressed();
-  public final BooleanSupplier isRolling = () ->  Math.abs(getRollerVelocity()) > 1;
-
+  public final BooleanSupplier isRolling = () -> Math.abs(getRollerVelocity()) > 1;
 
   public CoralRoller() {
     // spotless:off
