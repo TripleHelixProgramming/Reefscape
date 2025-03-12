@@ -101,19 +101,19 @@ public final class Constants {
     private static double radius = Inches.of(50.25).in(Meters);
     private static Rotation2d increment = new Rotation2d(Degrees.of(60.0));
 
-    private static Pose2d blueAB = blueReefCenter.plus(offset(0));
-    private static Pose2d blueCD = blueReefCenter.plus(offset(1));
-    private static Pose2d blueEF = blueReefCenter.plus(offset(2));
-    private static Pose2d blueGH = blueReefCenter.plus(offset(3));
-    private static Pose2d blueIJ = blueReefCenter.plus(offset(4));
-    private static Pose2d blueKL = blueReefCenter.plus(offset(5));
+    public static Pose2d blueAB = blueReefCenter.plus(offset(0));
+    public static Pose2d blueCD = blueReefCenter.plus(offset(1));
+    public static Pose2d blueEF = blueReefCenter.plus(offset(2));
+    public static Pose2d blueGH = blueReefCenter.plus(offset(3));
+    public static Pose2d blueIJ = blueReefCenter.plus(offset(4));
+    public static Pose2d blueKL = blueReefCenter.plus(offset(5));
 
-    private static Pose2d redAB = redReefCenter.plus(offset(0));
-    private static Pose2d redCD = redReefCenter.plus(offset(1));
-    private static Pose2d redEF = redReefCenter.plus(offset(2));
-    private static Pose2d redGH = redReefCenter.plus(offset(3));
-    private static Pose2d redIJ = redReefCenter.plus(offset(4));
-    private static Pose2d redKL = redReefCenter.plus(offset(5));
+    public static Pose2d redAB = redReefCenter.plus(offset(0));
+    public static Pose2d redCD = redReefCenter.plus(offset(1));
+    public static Pose2d redEF = redReefCenter.plus(offset(2));
+    public static Pose2d redGH = redReefCenter.plus(offset(3));
+    public static Pose2d redIJ = redReefCenter.plus(offset(4));
+    public static Pose2d redKL = redReefCenter.plus(offset(5));
 
     private static Transform2d feederStationOffset =
         new Transform2d(Inches.of(-18), Inches.of(0), new Rotation2d(0));
@@ -135,6 +135,11 @@ public final class Constants {
       Translation2d translation = new Translation2d(radius, rotation.plus(new Rotation2d(Math.PI)));
       return new Transform2d(translation, rotation);
     }
+
+    /*
+     * The distance between the poles on the reef (center to center see 5.3).
+     */
+    public final static Distance pipeSpacing = Inches.of(13);
 
     public static final Pose2d[] kReefTargetPoses = {
       new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
