@@ -332,7 +332,18 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
-    coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
+    // autoSelector.getChangedAutoSelection()
+    //     .onTrue(leds.createScrollingRainbowCommand()
+    //     .ignoringDisable(true)
+    //     .withTimeout(3))
+    //     ;
+
+    var coralRollerIsRolling = new Trigger(loop, elevator.getCoralRoller().isRolling);
+    var algaeRollerIsRolling = new Trigger(loop, elevator.getAlgaeRoller().isRolling);
+    coralRollerIsRolling.or(algaeRollerIsRolling).whileTrue(createRollerAnimationCommand());
+
+    // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
+    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
   }
   // spotless:on
 
