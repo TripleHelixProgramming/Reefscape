@@ -139,7 +139,7 @@ public final class Constants {
     /*
      * The distance between the poles on the reef (center to center see 5.3).
      */
-    public final static Distance pipeSpacing = Inches.of(13);
+    public static final Distance pipeSpacing = Inches.of(13);
 
     public static final Pose2d[] kReefTargetPoses = {
       new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),

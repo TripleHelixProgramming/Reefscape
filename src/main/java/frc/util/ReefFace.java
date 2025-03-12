@@ -9,18 +9,18 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants.DriveConstants;
 
 public enum ReefFace {
-  BLUE_AB (DriveConstants.blueAB),
-  BLUE_CD (DriveConstants.blueCD),
-  BLUE_EF (DriveConstants.blueEF),
-  BLUE_GH (DriveConstants.blueGH),
-  BLUE_IJ (DriveConstants.blueIJ),
-  BLUE_KL (DriveConstants.blueKL),
-  RED_AB (DriveConstants.redAB),
-  RED_CD (DriveConstants.redCD),
-  RED_EF (DriveConstants.redEF),
-  RED_GH (DriveConstants.redGH),
-  RED_IJ (DriveConstants.redIJ),
-  RED_KL (DriveConstants.redKL);
+  BLUE_AB(DriveConstants.blueAB),
+  BLUE_CD(DriveConstants.blueCD),
+  BLUE_EF(DriveConstants.blueEF),
+  BLUE_GH(DriveConstants.blueGH),
+  BLUE_IJ(DriveConstants.blueIJ),
+  BLUE_KL(DriveConstants.blueKL),
+  RED_AB(DriveConstants.redAB),
+  RED_CD(DriveConstants.redCD),
+  RED_EF(DriveConstants.redEF),
+  RED_GH(DriveConstants.redGH),
+  RED_IJ(DriveConstants.redIJ),
+  RED_KL(DriveConstants.redKL);
 
   public final Pose2d centerPose;
   public final Pose2d leftPolePose;
@@ -28,12 +28,21 @@ public enum ReefFace {
 
   ReefFace(Pose2d pose) {
     this.centerPose = pose;
-    this.leftPolePose = pose.transformBy(new Transform2d(new Translation2d(0, -DriveConstants.pipeSpacing.in(Inches)/2), Rotation2d.kZero));
-    this.rightPolePose = pose.transformBy(new Transform2d(new Translation2d(0, +DriveConstants.pipeSpacing.in(Inches)/2), Rotation2d.kZero));
+    this.leftPolePose =
+        pose.transformBy(
+            new Transform2d(
+                new Translation2d(0, -DriveConstants.pipeSpacing.in(Inches) / 2),
+                Rotation2d.kZero));
+    this.rightPolePose =
+        pose.transformBy(
+            new Transform2d(
+                new Translation2d(0, +DriveConstants.pipeSpacing.in(Inches) / 2),
+                Rotation2d.kZero));
   }
 
   /**
    * Get the face on the red reef into whose sector the specified pose falls.
+   *
    * @param atPose the pose for which we want to know the reef sector
    * @return the reef face
    */
@@ -44,6 +53,7 @@ public enum ReefFace {
 
   /**
    * Get the face on the blue reef into whose sector the specified pose falls.
+   *
    * @param atPose the pose for which we want to know the reef sector
    * @return the reef face
    */
