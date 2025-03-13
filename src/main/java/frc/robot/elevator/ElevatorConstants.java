@@ -176,7 +176,7 @@ public class ElevatorConstants {
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
-    public static final Voltage kHoldVoltage = Volts.of(1.0);
+    public static final Voltage kHoldVoltage = Volts.of(2.0);
     public static final Voltage kOuttakeVoltage = kIntakeVoltage.unaryMinus();
   }
 
