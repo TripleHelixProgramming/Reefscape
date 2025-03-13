@@ -46,6 +46,7 @@ import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
+import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import frc.util.Gamepiece;
@@ -333,6 +334,8 @@ public class Robot extends TimedRobot {
 
   private void configureEventBindings() {
     algaeRoller.hasAlgae.onTrue(algaeRoller.createHoldAlgaeCommand());
+    lifter.atFloorIntakingHeight.and(algaeRoller.hasAlgae)
+        .onTrue(lifter.createSetHeightCommand(LifterState.AlgaeProcessor));
     coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
   }
   // spotless:on
