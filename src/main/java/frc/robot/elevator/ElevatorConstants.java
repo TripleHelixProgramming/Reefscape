@@ -69,6 +69,7 @@ public class ElevatorConstants {
       AlgaeProcessor(12.0),
       AlgaeL2(28),
       AlgaeL3(44.5),
+      AlgaeBarge(67.8),
       Max(67.8);
 
       public Distance height;
@@ -177,7 +178,8 @@ public class ElevatorConstants {
 
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
     public static final Voltage kHoldVoltage = Volts.of(1.0);
-    public static final Voltage kOuttakeVoltage = kIntakeVoltage.unaryMinus();
+    public static final Voltage kOuttakeToProcessorVoltage = Volts.of(-5.0);
+    public static final Voltage kOuttakeToBargeVoltage = Volts.of(-2.5);
   }
 
   public static final class AlgaeWristConstants {
