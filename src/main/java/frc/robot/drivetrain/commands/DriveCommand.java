@@ -54,7 +54,7 @@ public abstract class DriveCommand extends Command {
     Rotation2d offsetHeading = drivetrain.getHeading().minus(drivetrain.getHeadingOffset());
     return drivetrain.fieldRotatedSupplier().getAsBoolean()
         ? ChassisSpeeds.fromFieldRelativeSpeeds(
-            xDot, yDot, thetaDot, offsetHeading.rotateBy(new Rotation2d(Math.PI)))
+            xDot, yDot, thetaDot, offsetHeading.rotateBy(Rotation2d.kPi))
         : ChassisSpeeds.fromFieldRelativeSpeeds(xDot, yDot, thetaDot, offsetHeading);
   }
 

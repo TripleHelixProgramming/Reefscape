@@ -127,12 +127,12 @@ public class AutoSelector implements Supplier<Optional<AutoOption>> {
           SmartDashboard.putString("SelectedAutonomousMode", ao.getName());
           ao.getInitialPose()
               .ifPresentOrElse(
-                  initialPosePublisher::set, () -> initialPosePublisher.set(new Pose2d()));
+                  initialPosePublisher::set, () -> initialPosePublisher.set(Pose2d.kZero));
         },
         () -> {
           SmartDashboard.putString(
               "SelectedAutonomousMode", "None; no auto mode assigned to this slot");
-          initialPosePublisher.set(new Pose2d());
+          initialPosePublisher.set(Pose2d.kZero);
         });
   }
 

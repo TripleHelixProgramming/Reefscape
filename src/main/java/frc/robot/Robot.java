@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.game.Gamepiece;
+import frc.game.Reef;
 import frc.lib.AllianceSelector;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
@@ -48,7 +50,6 @@ import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
-import frc.util.Gamepiece;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -249,7 +250,7 @@ public class Robot extends TimedRobot {
 
     // Drive to nearest pose
     driver.AIn()
-        .whileTrue(new DriveToPoseCommand(swerve, vision, () -> swerve.getNearestPose()));
+        .whileTrue(new DriveToPoseCommand(swerve, () -> swerve.getNearestPose()));
 
     // Outtake grippers
     driver.HIn()
@@ -326,9 +327,20 @@ public class Robot extends TimedRobot {
     // Auto climbe to position
     operator.povUp().onTrue(climber.createRetractCommand());
 
+    /*
+     * Left and right D-pad buttons will cause the robot to go to the left/right
+     * pipe on the nearest reef face.
+     */
+    operator.povLeft().whileTrue(
+      new DriveToPoseCommand(swerve, 
+      () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));
+    operator.povRight().whileTrue(
+      new DriveToPoseCommand(swerve, 
+      () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipePose()));
+
     // just for testing roller animation.
-    operator.povLeft().whileTrue(leds.createRollerAnimationCommand(() -> true, () -> Color.kOrange));
-    operator.povRight().whileTrue(leds.createRollerAnimationCommand(() -> false, () -> Color.kOrange));
+    // operator.povLeft().whileTrue(leds.createRollerAnimationCommand(() -> true, () -> Color.kOrange));
+    // operator.povRight().whileTrue(leds.createRollerAnimationCommand(() -> false, () -> Color.kOrange));
   }
 
   private void configureEventBindings() {
