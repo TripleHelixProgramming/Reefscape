@@ -60,6 +60,10 @@ public enum Reef {
    * sectors, each 60 degrees wide. The sectors are numbered 0 to 5, starting from the edge facing
    * the driver station, and proceding clockwise. So sector 0 has the range (-30, 30], relative to
    * driver station.
+   * 
+   * Note: this code works the same for Red as Blue alliance because the Red reef center pose
+   * has a rotational component that sets the frame of reference for the pose subtraction.  This
+   * is why a pose in sector 1 of the Red reef does not appear to be in sector 4.
    *
    * @param atPose the pose for which we want to know the reef sector
    * @return the index of the reef sector
