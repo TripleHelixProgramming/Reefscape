@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceSelector;
 import frc.lib.AutoOption;
@@ -168,7 +169,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     autoSelector.scheduleAuto();
-    climber.lockRatchet();
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
@@ -180,10 +180,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     autoSelector.cancelAuto();
-
-    swerve.resetHeadingOffset();
-    climber.resetEncoder();
-    climber.lockRatchet();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
@@ -324,13 +320,23 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
+    RobotModeTriggers.autonomous()
+        .onTrue(elevator.resetPositionControllers()
+        .andThen(climber.lockRatchet()));
+    RobotModeTriggers.teleop()
+        .onTrue(swerve.resetHeadingOffset()
+        .andThen(elevator.resetPositionControllers())
+        .andThen(climber.lockRatchet())
+        .andThen(climber.resetEncoder()));
+
     coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
   }
-  // spotless:on
 
   private void configureAutoOptions() {
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4Auto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4Auto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 1, new RedL4Auto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 1, new BlueL4Auto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Red, 2, new RedNoProcess3PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
@@ -339,9 +345,12 @@ public class Robot extends TimedRobot {
         new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
   }
+  // spotless:on
 
   /**
    * Gets the current drawn from the Power Distribution Hub by a CAN motor controller, assuming that

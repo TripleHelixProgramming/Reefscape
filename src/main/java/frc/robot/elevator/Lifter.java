@@ -130,7 +130,7 @@ public class Lifter extends SubsystemBase {
     return getCurrentHeight().div(LifterState.Max.height);
   }
 
-  private void resetController() {
+  public void resetController() {
     feedback.reset(encoder.getPosition());
     feedback.setGoal(encoder.getPosition());
   }

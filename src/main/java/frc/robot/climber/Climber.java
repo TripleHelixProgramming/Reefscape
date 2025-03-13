@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.RobotConstants;
@@ -82,16 +83,16 @@ public class Climber extends SubsystemBase {
     // SmartDashboard.putNumber("Climber/Applied Duty Cycle", motor.getAppliedOutput());
   }
 
-  public void resetEncoder() {
-    encoder.setPosition(0);
+  public Command resetEncoder() {
+    return new InstantCommand(() -> encoder.setPosition(0));
   }
 
-  public void unlockRatchet() {
-    servo.set(ClimberConstants.kDisengedPosition);
+  public Command unlockRatchet() {
+    return new InstantCommand(() -> servo.set(ClimberConstants.kDisengedPosition));
   }
 
-  public void lockRatchet() {
-    servo.set(ClimberConstants.kEngagedPosition);
+  public Command lockRatchet() {
+    return new InstantCommand(() -> servo.set(ClimberConstants.kEngagedPosition));
   }
 
   private void setPosition(double targetPosition) {
@@ -134,51 +135,43 @@ public class Climber extends SubsystemBase {
         });
   }
 
-  public Command createUnlockCommand() {
-    return this.run(() -> unlockRatchet());
-  }
-
-  public Command createLockCommand() {
-    return this.run(() -> lockRatchet());
-  }
-
   /**
    * @return Command that unlocks and deploys the climber arm
    */
   public Command createDeployCommand() {
     return new FunctionalCommand(
-        // initialize
-        () -> {
-          unlockRatchet();
-          setPosition(ClimberConstants.kDeployPosition);
-        },
-        // execute
-        () -> {},
-        // end
-        interrupted -> {
-          lockRatchet();
-          motor.set(0.0);
-        },
-        // isFinished
-        () -> isDeployed(),
-        // requirements
-        this);
+            // initialize
+            () -> {
+              setPosition(ClimberConstants.kDeployPosition);
+            },
+            // execute
+            () -> {},
+            // end
+            interrupted -> {
+              motor.set(0.0);
+            },
+            // isFinished
+            () -> isDeployed(),
+            // requirements
+            this)
+        .beforeStarting(unlockRatchet())
+        .andThen(lockRatchet());
   }
 
   public Command createRetractCommand() {
     return new FunctionalCommand(
-        // initialze
-        () -> {
-          lockRatchet();
-          setPosition(ClimberConstants.kRetractPosition);
-        },
-        // execute
-        () -> {},
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> isRetracted(),
-        // requirements
-        this);
+            // initialze
+            () -> {
+              setPosition(ClimberConstants.kRetractPosition);
+            },
+            // execute
+            () -> {},
+            // end
+            interrupted -> {},
+            // isFinished
+            () -> isRetracted(),
+            // requirements
+            this)
+        .beforeStarting(lockRatchet());
   }
 }

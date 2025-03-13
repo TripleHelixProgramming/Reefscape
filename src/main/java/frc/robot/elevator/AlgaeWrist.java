@@ -106,7 +106,7 @@ public class AlgaeWrist extends SubsystemBase {
     return Radians.of(feedback.getSetpoint().position);
   }
 
-  private void resetController() {
+  public void resetController() {
     feedback.reset(encoder.getPosition(), encoder.getVelocity());
   }
 
