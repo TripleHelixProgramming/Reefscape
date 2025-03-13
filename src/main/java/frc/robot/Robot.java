@@ -332,6 +332,7 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
+    algaeRoller.hasAlgae.onTrue(algaeRoller.createHoldAlgaeCommand());
     coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
   }
   // spotless:on
