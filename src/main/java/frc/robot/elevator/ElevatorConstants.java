@@ -23,7 +23,7 @@ public class ElevatorConstants {
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the final stage
-    private static final double gearRatioMotorToMechanism = 3.0 / 15.0;
+    private static final double gearRatioMotorToMechanism = 3.0 / 5.0;
     private static final Distance sprocketPitchDiameter = Inches.of(1.7567);
     public static final Distance kPositionConversionFactor =
         sprocketPitchDiameter.times(Math.PI).times(gearRatioMotorToMechanism);
@@ -46,8 +46,8 @@ public class ElevatorConstants {
     public static final Distance kAllowableHeightError = Inches.of(0.2);
 
     public final class LifterController {
-      public static final double kS = 0.13; // Found empirically 2/22/2025
-      public static final double kG = 0.194; // Found empirically 2/22/2025
+      public static final double kS = 0.39; // Found empirically 2/22/2025
+      public static final double kG = 0.582; // Found empirically 2/22/2025
       public static final double kV = (12.0 - kS) / maxTheoreticalVelocity.in(MetersPerSecond);
 
       public static final double kP = 40.0;
