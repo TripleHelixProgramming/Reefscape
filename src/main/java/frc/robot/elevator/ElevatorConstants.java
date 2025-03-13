@@ -189,7 +189,7 @@ public class ElevatorConstants {
     public static final int kMotorPort = 14;
 
     private static final double gearRatioMotortoEncoder =
-        (1.0 / 5.0) * (18.0 / 36.0); // 5:1 for motor, 36:18 for belt
+        (1.0 / 9.0) * (18.0 / 36.0); // 5:1 for motor, 36:18 for belt
     private static final double gearRatioEncoderToArm = 1.0;
     private static final AngularVelocity maxArmVelocityTheoretical =
         NEOConstants.kFreeSpeed.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
@@ -220,13 +220,13 @@ public class ElevatorConstants {
     public static final AngularVelocity kVelocityConversionFactor =
         Rotations.of(gearRatioEncoderToArm).per(Minute);
 
-    public static final double kG = -0.25; // Found empirically 2/22/2025
-    public static final double kS = 0.15; // Found empirically 2/22/2025
+    public static final double kG = -0.12; // Found empirically 2/22/2025
+    public static final double kS = 0.07; // Found empirically 2/22/2025
     public static final double kV = (12.0 - kS) / maxArmVelocityTheoretical.in(RadiansPerSecond);
 
-    public static final double kP = 1.5;
-    public static final double kI = 1.0;
-    public static final double kD = 0.1;
+    public static final double kP = 3.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
     public static final Angle kIZone = Degrees.of(30.0);
 
     public static enum AlgaeWristState {
