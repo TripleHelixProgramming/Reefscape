@@ -11,6 +11,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants.MotorConstants.NEO550Constants;
+import frc.robot.Constants.MotorConstants.NEOConstants;
 
 public class ElevatorConstants {
 
@@ -25,7 +27,8 @@ public class ElevatorConstants {
     private static final Distance sprocketPitchDiameter = Inches.of(1.7567);
     public static final Distance kPositionConversionFactor =
         sprocketPitchDiameter.times(Math.PI).times(gearRatioMotorToMechanism);
-    private static final double maxMotorVelocityRadPerSec = RPM.of(5676).in(RadiansPerSecond);
+    private static final double maxMotorVelocityRadPerSec =
+        NEOConstants.kFreeSpeed.in(RadiansPerSecond);
     private static final LinearVelocity maxTheoreticalVelocity =
         InchesPerSecond.of(maxMotorVelocityRadPerSec * kPositionConversionFactor.in(Inches));
 
@@ -100,11 +103,11 @@ public class ElevatorConstants {
   public static final class CoralWristConstants {
     public static final int kMotorPort = 22;
 
-    private static final double gearRatioMotortoEncoder = 1.0 / 5.0;
+    private static final double gearRatioMotortoEncoder =
+        1.0 / 10.0; // VersaPlanetary gearbox, changed 3/7/2025
     private static final double gearRatioEncoderToArm = 24.0 / 42.0;
-    private static final AngularVelocity maxMotorVelocity = RPM.of(5000);
     private static final AngularVelocity maxArmVelocityTheoretical =
-        maxMotorVelocity.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
+        NEO550Constants.kFreeSpeed.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
     private static final AngularVelocity maxArmVelocityConstraint = DegreesPerSecond.of(90.0);
     private static final AngularAcceleration maxArmAcceleration =
         DegreesPerSecondPerSecond.of(180.0);
@@ -131,8 +134,10 @@ public class ElevatorConstants {
     public static final AngularVelocity kVelocityConversionFactor =
         Rotations.of(gearRatioEncoderToArm).per(Minute);
 
-    public static final double kG = 0.55; // Found empirically 2/22/2025
-    public static final double kS = 0.15; // Found empirically 2/22/2025
+    // Found empirically 2/22/2025, then halved when gearing was doubled 3/7/2025
+    public static final double kG = 0.55;
+    public static final double kS = 0.15;
+
     public static final double kV = (12.0 - kS) / maxArmVelocityTheoretical.in(RadiansPerSecond);
 
     public static final double kP = 6.0;
@@ -186,9 +191,8 @@ public class ElevatorConstants {
     private static final double gearRatioMotortoEncoder =
         (1.0 / 5.0) * (18.0 / 36.0); // 5:1 for motor, 36:18 for belt
     private static final double gearRatioEncoderToArm = 1.0;
-    private static final AngularVelocity maxMotorVelocity = RPM.of(5676);
     private static final AngularVelocity maxArmVelocityTheoretical =
-        maxMotorVelocity.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
+        NEOConstants.kFreeSpeed.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
     private static final AngularVelocity maxArmVelocityConstraint = DegreesPerSecond.of(180.0);
     private static final AngularAcceleration maxArmAcceleration =
         DegreesPerSecondPerSecond.of(180.0);
