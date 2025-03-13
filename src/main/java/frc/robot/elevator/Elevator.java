@@ -79,7 +79,7 @@ public class Elevator {
 
   public Command algaeBargePositionCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.Max),
+        lifter.createSetHeightCommand(LifterState.AlgaeBarge),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
   }

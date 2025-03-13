@@ -88,8 +88,12 @@ public class AlgaeRoller extends SubsystemBase {
     return this.run(() -> setVoltage(AlgaeRollerConstants.kIntakeVoltage));
   }
 
-  public Command createOuttakeCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeVoltage));
+  public Command createOuttakeToBargeCommand() {
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToBargeVoltage));
+  }
+
+  public Command createOuttakeToProcessorCommand() {
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToProcessorVoltage));
   }
 
   public Command createHoldAlgaeCommand() {

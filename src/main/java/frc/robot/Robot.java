@@ -252,10 +252,13 @@ public class Robot extends TimedRobot {
         .whileTrue(new DriveToPoseCommand(swerve, vision, () -> swerve.getNearestPose()));
 
     // Outtake grippers
-    driver.HIn()
-        .whileTrue(coralRoller.createOuttakeCommand()
-            .alongWith(algaeRoller.createOuttakeCommand()));
-
+    var outtaking = driver.HIn();
+    lifter.atProcessorHeight.and(outtaking)
+        .whileTrue(algaeRoller.createOuttakeToProcessorCommand());
+    lifter.atBargeHeight.and(outtaking)
+        .whileTrue(algaeRoller.createOuttakeToBargeCommand());
+    outtaking
+        .whileTrue(coralRoller.createOuttakeCommand());
   }
 
   private void configureOperatorButtonBindings() {
