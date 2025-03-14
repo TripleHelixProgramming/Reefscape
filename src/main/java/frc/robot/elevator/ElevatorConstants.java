@@ -47,9 +47,9 @@ public class ElevatorConstants {
 
     public final class LifterController {
       // Found empirically 2/22/2025, then increased by 3x when 3:1 gearing was removed
-      public static final double kS = 0.39; 
+      public static final double kS = 0.39;
       public static final double kG = 0.582;
-      
+
       public static final double kV = (12.0 - kS) / maxTheoreticalVelocity.in(MetersPerSecond);
 
       public static final double kP = 10.0;
