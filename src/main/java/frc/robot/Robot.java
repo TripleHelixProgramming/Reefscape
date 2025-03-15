@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
   private StructPublisher<Pose2d> leftCoralPipeTargetPositionsPublisher =
       NetworkTableInstance.getDefault().getStructTopic("Left pipe target", Pose2d.struct).publish();
   private StructPublisher<Pose2d> rightCoralPipeTargetPositionsPublisher =
-      NetworkTableInstance.getDefault().getStructTopic("Left pipe target", Pose2d.struct).publish();
+      NetworkTableInstance.getDefault().getStructTopic("Right pipe target", Pose2d.struct).publish();
 
   public Robot() {
     gamepieceSupplier =
@@ -362,7 +362,7 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
-    coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
+    coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
   // spotless:on
 

@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Enumerates the Reefs on the field.
@@ -71,7 +72,11 @@ public enum Reef {
   public int getSector(Pose2d atPose) {
     var delta = atPose.getTranslation().minus(centerPose.getTranslation());
     int vectorAngle = (int) delta.getAngle().getDegrees();
-    int rayAngle = (vectorAngle + 30) % 360;
+    int rayAngle = (vectorAngle + 30 + 360) % 360;
+    SmartDashboard.putNumber("Sector delta X", delta.getX());
+    SmartDashboard.putNumber("Sector delta Y", delta.getY());
+    SmartDashboard.putNumber("Sector vector delta", vectorAngle);
+    SmartDashboard.putNumber("Sector ray angle", rayAngle);
     return rayAngle / 60;
   }
 
