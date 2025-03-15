@@ -254,7 +254,7 @@ public class Robot extends TimedRobot {
     // Outtake grippers
     driver.HIn()
         .whileTrue(coralRoller.createOuttakeCommand()
-            .alongWith(algaeRoller.createOuttakeCommand()));
+        .alongWith(algaeRoller.createOuttakeCommand()));
 
   }
 
@@ -307,9 +307,11 @@ public class Robot extends TimedRobot {
     operator.rightTrigger().whileTrue(new ConditionalCommand(
         elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
-    // Intake either coral or algae
-    operator.rightBumper().whileTrue(new ConditionalCommand(
-        algaeRoller.createIntakeCommand(), coralRoller.createIntakeCommand(), algaeMode));
+    // Intake coral and algae
+    operator.rightBumper()
+        .whileTrue(algaeRoller.createIntakeCommand()
+        .alongWith(coralRoller.createIntakeCommand())
+        .andThen(new ConditionalCommand(algaeRoller.createHoldAlgaeCommand(), algaeRoller.createStopCommand(), algaeRoller.hasAlgae)));
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
@@ -332,7 +334,7 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
-    algaeRoller.hasAlgae.onTrue(algaeRoller.createHoldAlgaeCommand());
+    algaeRoller.hasAlgae.whileTrue(algaeRoller.createHoldAlgaeCommand());
     coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
   }
   // spotless:on
