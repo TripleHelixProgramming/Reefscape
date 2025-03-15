@@ -184,7 +184,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Command resetHeadingOffset() {
-    return new InstantCommand(() -> this.headingOffset = new Rotation2d());
+    return new InstantCommand(() -> this.headingOffset = new Rotation2d())
+    .withName("reset heading offset");
   }
 
   public void setHeadingOffset() {

@@ -175,7 +175,7 @@ public class Lifter extends SubsystemBase {
         // isFinished
         () -> feedback.atGoal(),
         // requirements
-        this);
+        this).withName("Lifter set to " + state.name());
   }
 
   public Command createRemainAtCurrentHeightCommand() {
@@ -196,7 +196,7 @@ public class Lifter extends SubsystemBase {
         // isFinished
         () -> false,
         // requirements
-        this);
+        this).withName("Lifter position set to " + targetState.name());
   }
 
   private Boolean isInRange(Distance height) {
@@ -217,7 +217,8 @@ public class Lifter extends SubsystemBase {
 
           if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
           control();
-        });
+        })
+        .withName("Created Joystick command for lifter");
   }
 
   public Command createJoystickVoltageCommand(XboxController gamepad) {
@@ -225,6 +226,7 @@ public class Lifter extends SubsystemBase {
         () -> {
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
           leaderMotor.setVoltage(joystickInput * 2.0);
-        });
+        })
+        .withName("Created Joystick voltage command for lifter");
   }
 }

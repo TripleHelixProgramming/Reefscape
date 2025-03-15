@@ -139,7 +139,7 @@ public class AlgaeWrist extends SubsystemBase {
         // isFinished
         () -> feedback.atGoal(),
         // requirements
-        this);
+        this).withName("Algae wrist is set to " + state.name());
   }
 
   public Command createRemainAtCurrentAngleCommand() {
@@ -161,7 +161,7 @@ public class AlgaeWrist extends SubsystemBase {
         // isFinished
         () -> false,
         // requirements
-        this);
+        this).withName("Algae wrist is holding at angle " + targetState.name());
   }
 
   public Command createJoystickControlCommand(XboxController gamepad) {
@@ -169,6 +169,7 @@ public class AlgaeWrist extends SubsystemBase {
         () -> {
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
           motor.setVoltage(joystickInput);
-        });
+        })
+        .withName("Created joystick command for algae wrist");
   }
 }

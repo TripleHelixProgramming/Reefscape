@@ -85,15 +85,18 @@ public class Climber extends SubsystemBase {
   }
 
   public Command resetEncoder() {
-    return new InstantCommand(() -> encoder.setPosition(0));
+    return new InstantCommand(() -> encoder.setPosition(0))
+    .withName("Climber encoder is reset");
   }
 
   public Command unlockRatchet() {
-    return new InstantCommand(() -> servo.set(ClimberConstants.kDisengedPosition));
+    return new InstantCommand(() -> servo.set(ClimberConstants.kDisengedPosition))
+    .withName("Climber ratchet unlocked");
   }
 
   public Command lockRatchet() {
-    return new InstantCommand(() -> servo.set(ClimberConstants.kEngagedPosition));
+    return new InstantCommand(() -> servo.set(ClimberConstants.kEngagedPosition))
+    .withName("Climber ratchet locked");
   }
 
   private void setPosition(double targetPosition) {
@@ -114,7 +117,8 @@ public class Climber extends SubsystemBase {
    * @return Command that moves the climber arm using the controller joystick
    */
   public Command createClimbByControllerCommand(XboxController controller, double factor) {
-    return this.run(() -> this.setVelocity(Math.max(0.0, controller.getRightY()) * factor));
+    return this.run(() -> this.setVelocity(Math.max(0.0, controller.getRightY()) * factor))
+    .withName("Climb initialized by controller input");
   }
 
   private double getPosition() {
@@ -133,7 +137,8 @@ public class Climber extends SubsystemBase {
     return this.run(
         () -> {
           motor.set(0.0);
-        });
+        })
+        .withName("Created defult climb");
   }
 
   /**
@@ -156,7 +161,8 @@ public class Climber extends SubsystemBase {
             // requirements
             this)
         .beforeStarting(unlockRatchet())
-        .andThen(lockRatchet());
+        .andThen(lockRatchet())
+        .withName("Climber deployed");
   }
 
   public Command createRetractCommand() {
@@ -173,6 +179,7 @@ public class Climber extends SubsystemBase {
             () -> isRetracted(),
             // requirements
             this)
-        .beforeStarting(lockRatchet());
+        .beforeStarting(lockRatchet())
+        .withName("Climber retracted");
   }
 }
