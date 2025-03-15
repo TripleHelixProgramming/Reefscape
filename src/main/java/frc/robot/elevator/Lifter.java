@@ -154,6 +154,8 @@ public class Lifter extends SubsystemBase {
   }
 
   public Trigger atIntakingHeight = new Trigger(() -> inState(LifterState.CoralIntake));
+  public Trigger atProcessorHeight = new Trigger(() -> inState(LifterState.AlgaeProcessor));
+  public Trigger atBargeHeight = new Trigger(() -> inState(LifterState.AlgaeBarge));
   public Trigger atFloorIntakingHeight = new Trigger(() -> inState(LifterState.AlgaeIntakeFloor));
   public Trigger tooHighForCoralWrist =
       new Trigger(() -> getCurrentHeight().gt(LifterState.CoralL3.height.plus(Inches.of(2.0))));
