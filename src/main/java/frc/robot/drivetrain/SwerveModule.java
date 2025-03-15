@@ -23,6 +23,8 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ModuleConstants.DriveControllerGains;
 import frc.robot.Constants.ModuleConstants.TurningControllerGains;
+import frc.robot.Constants.MotorConstants.NEOConstants;
+import frc.robot.Constants.MotorConstants.NEOVortexConstants;
 import frc.robot.Constants.RobotConstants;
 
 public enum SwerveModule {
@@ -68,13 +70,13 @@ public enum SwerveModule {
       .voltageCompensation(RobotConstants.kNominalVoltage)
       .inverted(false)
       .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(ModuleConstants.kDriveMotorCurrentLimit);
+      .smartCurrentLimit(NEOVortexConstants.kDefaultCurrentLimit);
 
     m_turningMotorConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .inverted(false)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
+        .smartCurrentLimit(NEOConstants.kDefaultCurrentLimit);
 
     m_driveMotorConfig.closedLoop
         .p(DriveControllerGains.kP)

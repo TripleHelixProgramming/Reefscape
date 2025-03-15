@@ -11,6 +11,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants.MotorConstants.NEO550Constants;
+import frc.robot.Constants.MotorConstants.NEOConstants;
 
 public class ElevatorConstants {
 
@@ -21,11 +23,12 @@ public class ElevatorConstants {
 
     // By default, the encoder in position mode measures rotations at the motor
     // Convert to inches at the final stage
-    private static final double gearRatioMotorToMechanism = 3.0 / 15.0;
+    private static final double gearRatioMotorToMechanism = 3.0 / 5.0;
     private static final Distance sprocketPitchDiameter = Inches.of(1.7567);
     public static final Distance kPositionConversionFactor =
         sprocketPitchDiameter.times(Math.PI).times(gearRatioMotorToMechanism);
-    private static final double maxMotorVelocityRadPerSec = RPM.of(5676).in(RadiansPerSecond);
+    private static final double maxMotorVelocityRadPerSec =
+        NEOConstants.kFreeSpeed.in(RadiansPerSecond);
     private static final LinearVelocity maxTheoreticalVelocity =
         InchesPerSecond.of(maxMotorVelocityRadPerSec * kPositionConversionFactor.in(Inches));
 
@@ -43,11 +46,13 @@ public class ElevatorConstants {
     public static final Distance kAllowableHeightError = Inches.of(0.2);
 
     public final class LifterController {
-      public static final double kS = 0.13; // Found empirically 2/22/2025
-      public static final double kG = 0.194; // Found empirically 2/22/2025
+      // Found empirically 2/22/2025, then increased by 3x when 3:1 gearing was removed
+      public static final double kS = 0.39;
+      public static final double kG = 0.582;
+
       public static final double kV = (12.0 - kS) / maxTheoreticalVelocity.in(MetersPerSecond);
 
-      public static final double kP = 40.0;
+      public static final double kP = 10.0;
       public static final double kI = 0.0;
       public static final double kD = 0.0;
       public static final Constraints kConstraints =
@@ -100,11 +105,11 @@ public class ElevatorConstants {
   public static final class CoralWristConstants {
     public static final int kMotorPort = 22;
 
-    private static final double gearRatioMotortoEncoder = 1.0 / 5.0;
+    private static final double gearRatioMotortoEncoder =
+        1.0 / 10.0; // VersaPlanetary gearbox, changed 3/7/2025
     private static final double gearRatioEncoderToArm = 24.0 / 42.0;
-    private static final AngularVelocity maxMotorVelocity = RPM.of(5000);
     private static final AngularVelocity maxArmVelocityTheoretical =
-        maxMotorVelocity.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
+        NEO550Constants.kFreeSpeed.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
     private static final AngularVelocity maxArmVelocityConstraint = DegreesPerSecond.of(90.0);
     private static final AngularAcceleration maxArmAcceleration =
         DegreesPerSecondPerSecond.of(180.0);
@@ -131,8 +136,10 @@ public class ElevatorConstants {
     public static final AngularVelocity kVelocityConversionFactor =
         Rotations.of(gearRatioEncoderToArm).per(Minute);
 
-    public static final double kG = 0.55; // Found empirically 2/22/2025
-    public static final double kS = 0.15; // Found empirically 2/22/2025
+    // Found empirically 2/22/2025, then halved when gearing was doubled 3/7/2025
+    public static final double kG = 0.55;
+    public static final double kS = 0.15;
+
     public static final double kV = (12.0 - kS) / maxArmVelocityTheoretical.in(RadiansPerSecond);
 
     public static final double kP = 6.0;
@@ -175,7 +182,8 @@ public class ElevatorConstants {
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
-    public static final Voltage kHoldVoltage = Volts.of(1.0);
+    // Found 3/9/2025 that 5V applied at stall will draw ~5A, which is acceptable for motor lifetime
+    public static final Voltage kHoldVoltage = Volts.of(5.0);
     public static final Voltage kOuttakeVoltage = kIntakeVoltage.unaryMinus();
   }
 
@@ -185,9 +193,8 @@ public class ElevatorConstants {
     private static final double gearRatioMotortoEncoder =
         (1.0 / 5.0) * (18.0 / 36.0); // 5:1 for motor, 36:18 for belt
     private static final double gearRatioEncoderToArm = 1.0;
-    private static final AngularVelocity maxMotorVelocity = RPM.of(5676);
     private static final AngularVelocity maxArmVelocityTheoretical =
-        maxMotorVelocity.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
+        NEOConstants.kFreeSpeed.times(gearRatioMotortoEncoder).times(gearRatioEncoderToArm);
     private static final AngularVelocity maxArmVelocityConstraint = DegreesPerSecond.of(180.0);
     private static final AngularAcceleration maxArmAcceleration =
         DegreesPerSecondPerSecond.of(180.0);

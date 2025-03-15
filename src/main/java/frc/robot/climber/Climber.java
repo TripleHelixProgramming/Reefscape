@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.MotorConstants.NEOVortexConstants;
 import frc.robot.Constants.RobotConstants;
 
 public class Climber extends SubsystemBase {
@@ -37,7 +38,7 @@ public class Climber extends SubsystemBase {
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .inverted(false)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(ClimberConstants.kClimberCurrentLimit);
+        .smartCurrentLimit(NEOVortexConstants.kDefaultCurrentLimit);
 
     motorConfig.closedLoop
         .p(ClimberConstants.kP)
