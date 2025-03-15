@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -35,7 +37,7 @@ public class AlgaeWrist extends SubsystemBase {
 
   private final ProfiledPIDController feedback =
       new ProfiledPIDController(
-          AlgaeWristConstants.kP,
+          AlgaeWristConstants.kPWithoutAlgae,
           AlgaeWristConstants.kI,
           AlgaeWristConstants.kD,
           AlgaeWristConstants.kConstraints);
@@ -43,8 +45,11 @@ public class AlgaeWrist extends SubsystemBase {
       new ArmFeedforward(AlgaeWristConstants.kS, AlgaeWristConstants.kG, AlgaeWristConstants.kV);
 
   private AlgaeWristState targetState = AlgaeWristState.Initial;
+  private BooleanSupplier hasAlgae;
 
-  public AlgaeWrist() {
+  public AlgaeWrist(BooleanSupplier hasAlgaeSupplier) {
+    hasAlgae = hasAlgaeSupplier;
+
     // spotless:off
     config
         .inverted(false)
@@ -112,6 +117,12 @@ public class AlgaeWrist extends SubsystemBase {
   }
 
   private void control() {
+    if (hasAlgae.getAsBoolean()) {
+      feedback.setP(AlgaeWristConstants.kPWithAlgae);
+    } else {
+      feedback.setP(AlgaeWristConstants.kPWithoutAlgae);
+    }
+    
     double currentPosition = encoder.getPosition();
     double offsetPosition =
         currentPosition + AlgaeWristConstants.kCenterOfGravityOffset.in(Radians);

@@ -73,8 +73,9 @@ public class ElevatorConstants {
       CoralIntake(11.7),
       AlgaeProcessor(12.0),
       AlgaeL2(28),
-      AlgaeL3(44.5),
-      Max(67.8);
+      AlgaeL3(43.5),
+      AlgaeBarge(67.8),
+      Max(68.3);
 
       public Distance height;
 
@@ -226,9 +227,10 @@ public class ElevatorConstants {
     public static final double kS = 0.15; // Found empirically 2/22/2025
     public static final double kV = (12.0 - kS) / maxArmVelocityTheoretical.in(RadiansPerSecond);
 
-    public static final double kP = 1.5;
-    public static final double kI = 1.0;
-    public static final double kD = 0.1;
+    public static final double kPWithAlgae = 3.0;
+    public static final double kPWithoutAlgae = 1.0;
+    public static final double kI = 0;
+    public static final double kD = 0;
     public static final Angle kIZone = Degrees.of(30.0);
 
     public static enum AlgaeWristState {
