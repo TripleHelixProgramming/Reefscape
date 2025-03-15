@@ -55,6 +55,8 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveControlParameters;
+
 public class Robot extends TimedRobot {
   private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
   private final AllianceSelector allianceSelector =
@@ -129,7 +131,12 @@ public class Robot extends TimedRobot {
     checkVision();
     SmartDashboard.putData("Driver Controller", driver.getHID());
     SmartDashboard.putData("Operator Controller", operator.getHID());
+    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putData(swerve);
+    SmartDashboard.putData(climber);
+    SmartDashboard.putData(leds);
     SmartDashboard.putData(powerDistribution);
+    elevator.periodic();
     SmartDashboard.putString(
         "Gamepiece", getLoadedGamepiece() == null ? "None" : getLoadedGamepiece().toString());
   }
