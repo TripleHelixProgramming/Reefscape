@@ -74,7 +74,7 @@ public enum Reef {
   public int getSector(Pose2d atPose) {
     var delta = centerPose.getTranslation().minus(atPose.getTranslation());
     int vectorAngle = (int) delta.getAngle().getDegrees();
-    int rayAngle = (vectorAngle + 30 + 360 + (int)centerPose.getRotation().getDegrees()) % 360;
+    int rayAngle = (vectorAngle + 30 + 360 + (int) centerPose.getRotation().getDegrees()) % 360;
     SmartDashboard.putNumber("Sector delta X", delta.getX());
     SmartDashboard.putNumber("Sector delta Y", delta.getY());
     SmartDashboard.putNumber("Sector vector delta", vectorAngle);
@@ -90,7 +90,7 @@ public enum Reef {
    */
   public Face getNearestFace(Pose2d atPose) {
     var sector = getSector(atPose);
-    return Face.values()[6*ordinal() + sector];
+    return Face.values()[6 * ordinal() + sector];
   }
 
   /**
@@ -127,12 +127,14 @@ public enum Reef {
       centerPose = reef.getCenterPose().plus(offset);
       leftPipePose =
           centerPose.transformBy(
-              new Transform2d(new Translation2d(Meters.of(0), pipeSpacing.div(2)), Rotation2d.kZero));
+              new Transform2d(
+                  new Translation2d(Meters.of(0), pipeSpacing.div(2)), Rotation2d.kZero));
       rightPipePose =
           centerPose.transformBy(
-              new Transform2d(new Translation2d(Meters.of(0), pipeSpacing.div(-2)), Rotation2d.kZero));
+              new Transform2d(
+                  new Translation2d(Meters.of(0), pipeSpacing.div(-2)), Rotation2d.kZero));
 
-      SmartDashboard.putString("ReefFace."+this.toString(), centerPose.toString());
+      SmartDashboard.putString("ReefFace." + this.toString(), centerPose.toString());
     }
 
     /**
