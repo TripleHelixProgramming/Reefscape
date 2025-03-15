@@ -55,8 +55,6 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveControlParameters;
-
 public class Robot extends TimedRobot {
   private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
   private final AllianceSelector allianceSelector =
