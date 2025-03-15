@@ -45,6 +45,7 @@ import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
+import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
@@ -332,9 +333,11 @@ public class Robot extends TimedRobot {
         .andThen(climber.lockRatchet())
         .andThen(climber.resetEncoder()));
 
-    algaeRoller.hasAlgae.whileTrue(algaeRoller.createHoldAlgaeCommand());
-    lifter.atFloorIntakingHeight.and(algaeRoller.hasAlgae)
-        .onTrue(lifter.createSetHeightCommand(LifterState.AlgaeProcessor));
+    algaeRoller.hasAlgae
+        .onTrue(algaeRoller.createHoldAlgaeCommand()
+        .alongWith(elevator.getAlgaeWrist().createSetAngleCommand(AlgaeWristState.Barge)));
+    // lifter.atFloorIntakingHeight.and(algaeRoller.hasAlgae)
+    //     .onTrue(lifter.createSetHeightCommand(LifterState.AlgaeProcessor));
     coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
   }
 
