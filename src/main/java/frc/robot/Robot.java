@@ -253,20 +253,27 @@ public class Robot extends TimedRobot {
   private void configureDriverButtonBindings() {
 
     // Reset heading
-    driver.DIn()
+    driver.GIn()
         .onTrue(new InstantCommand(() -> {
           swerve.setHeadingOffset();
           // swerve.initializeRelativeTurningEncoder();
         }).ignoringDisable(true));
 
     // Drive to nearest pose
-    driver.AIn()
-        .whileTrue(new DriveToPoseCommand(swerve, () -> swerve.getNearestPose()));
+    // driver.AIn()
+    //     .whileTrue(new DriveToPoseCommand(swerve, () -> swerve.getNearestPose()));
 
     // Outtake grippers
     driver.HIn()
         .whileTrue(coralRoller.createOuttakeCommand()
             .alongWith(algaeRoller.createOuttakeCommand()));
+
+    driver.AIn().whileTrue(
+        new DriveToPoseCommand(swerve, 
+          () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));
+    driver.DIn().whileTrue(
+        new DriveToPoseCommand(swerve, 
+          () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipePose()));
 
   }
 
@@ -342,12 +349,12 @@ public class Robot extends TimedRobot {
      * Left and right D-pad buttons will cause the robot to go to the left/right
      * pipe on the nearest reef face.
      */
-    operator.povLeft().whileTrue(
-      new DriveToPoseCommand(swerve, 
-      () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));
-    operator.povRight().whileTrue(
-      new DriveToPoseCommand(swerve, 
-      () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipePose()));
+    // operator.povLeft().whileTrue(
+    //   new DriveToPoseCommand(swerve, 
+    //   () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));
+    // operator.povRight().whileTrue(
+    //   new DriveToPoseCommand(swerve, 
+    //   () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipePose()));
 
     // just for testing roller animation.
     // operator.povLeft().whileTrue(leds.createRollerAnimationCommand(() -> true, () -> Color.kOrange));
