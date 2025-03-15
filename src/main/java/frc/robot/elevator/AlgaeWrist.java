@@ -127,49 +127,51 @@ public class AlgaeWrist extends SubsystemBase {
 
   public Command createSetAngleCommand(AlgaeWristState state) {
     return new FunctionalCommand(
-        // initialize
-        () -> {
-          targetState = state;
-          feedback.setGoal(targetState.angle.in(Radians));
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> feedback.atGoal(),
-        // requirements
-        this).withName("Algae wrist is set to " + state.name());
+            // initialize
+            () -> {
+              targetState = state;
+              feedback.setGoal(targetState.angle.in(Radians));
+            },
+            // execute
+            () -> control(),
+            // end
+            interrupted -> {},
+            // isFinished
+            () -> feedback.atGoal(),
+            // requirements
+            this)
+        .withName("Algae wrist is set to " + state.name());
   }
 
   public Command createRemainAtCurrentAngleCommand() {
     return new FunctionalCommand(
-        // initialize
-        () -> {
-          if (targetState == AlgaeWristState.Initial) {
-            targetState = AlgaeWristState.CoralMode;
-            feedback.setGoal(targetState.angle.in(Radians));
-            // Users should call reset() when they first start running the controller to avoid
-            // unwanted behavior.
-            resetController();
-          }
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> false,
-        // requirements
-        this).withName("Algae wrist is holding at angle " + targetState.name());
+            // initialize
+            () -> {
+              if (targetState == AlgaeWristState.Initial) {
+                targetState = AlgaeWristState.CoralMode;
+                feedback.setGoal(targetState.angle.in(Radians));
+                // Users should call reset() when they first start running the controller to avoid
+                // unwanted behavior.
+                resetController();
+              }
+            },
+            // execute
+            () -> control(),
+            // end
+            interrupted -> {},
+            // isFinished
+            () -> false,
+            // requirements
+            this)
+        .withName("Algae wrist is holding at angle " + targetState.name());
   }
 
   public Command createJoystickControlCommand(XboxController gamepad) {
     return this.run(
-        () -> {
-          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          motor.setVoltage(joystickInput);
-        })
+            () -> {
+              double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+              motor.setVoltage(joystickInput);
+            })
         .withName("Created joystick command for algae wrist");
   }
 }

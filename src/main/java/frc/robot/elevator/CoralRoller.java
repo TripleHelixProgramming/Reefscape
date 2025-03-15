@@ -71,17 +71,16 @@ public class CoralRoller extends SubsystemBase {
   }
 
   public Command createStopCommand() {
-    return this.startEnd(() -> motor.set(0.0), () -> {})
-    .withName("Coral roller is deactivated");
+    return this.startEnd(() -> motor.set(0.0), () -> {}).withName("Coral roller is deactivated");
   }
 
   public Command createIntakeCommand() {
     return this.run(() -> setVoltage(CoralRollerConstants.kIntakeVoltage))
-    .withName("Coral roller is intaking");
+        .withName("Coral roller is intaking");
   }
 
   public Command createOuttakeCommand() {
     return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeVoltage))
-    .withName("Coral roller is outtaking");
+        .withName("Coral roller is outtaking");
   }
 }

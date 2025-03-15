@@ -355,8 +355,7 @@ public class LEDs extends SubsystemBase {
    * @see Command#run(Runnable)
    */
   public Command newCommand(Runnable action) {
-    return this.run(action)
-    .withName("Ran " + action);
+    return this.run(action).withName("Ran " + action);
   }
 
   /**
@@ -369,7 +368,8 @@ public class LEDs extends SubsystemBase {
   public Command createStandardDisplayCommand(
       BooleanSupplier isAlgeMode, Supplier<Gamepiece> gamepiece) {
     return newCommand(
-        () -> displayDefaultInfo(isAlgeMode.getAsBoolean(), Optional.ofNullable(gamepiece.get())))
+            () ->
+                displayDefaultInfo(isAlgeMode.getAsBoolean(), Optional.ofNullable(gamepiece.get())))
         .withName("Displays " + isAlgeMode + " and " + gamepiece + " on LEDs");
   }
 
@@ -383,8 +383,7 @@ public class LEDs extends SubsystemBase {
   public Command createPoseSeekingCommand(
       Supplier<Pose2d> targetPoseSupplier, Supplier<Pose2d> currentPoseSupplier) {
     return newCommand(() -> displayPoseSeek(currentPoseSupplier.get(), targetPoseSupplier.get()))
-    .withName("Displays " + targetPoseSupplier + " and " + currentPoseSupplier + 
-    " on LEDS");
+        .withName("Displays " + targetPoseSupplier + " and " + currentPoseSupplier + " on LEDS");
   }
 
   /**

@@ -39,58 +39,59 @@ public class Elevator {
 
   public Command resetPositionControllers() {
     return new InstantCommand(
-        () -> {
-          lifter.resetController();
-          coralWrist.resetController();
-          algaeWrist.resetController();
-        }).withName("Reset the position controllers");
+            () -> {
+              lifter.resetController();
+              coralWrist.resetController();
+              algaeWrist.resetController();
+            })
+        .withName("Reset the position controllers");
   }
 
   public Command coralL4PositionCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralL4),
-        coralWrist.createSetAngleCommand(CoralWristState.L4),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
+            lifter.createSetHeightCommand(LifterState.CoralL4),
+            coralWrist.createSetAngleCommand(CoralWristState.L4),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
         .withName("Elevator set to coralL4Position");
   }
 
   public Command coralL3PositionCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralL3),
-        coralWrist.createSetAngleCommand(CoralWristState.L3),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
+            lifter.createSetHeightCommand(LifterState.CoralL3),
+            coralWrist.createSetAngleCommand(CoralWristState.L3),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
         .withName("Elevator set to coralL3Position");
   }
 
   public Command coralL2PositionCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralL2),
-        coralWrist.createSetAngleCommand(CoralWristState.L2),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
+            lifter.createSetHeightCommand(LifterState.CoralL2),
+            coralWrist.createSetAngleCommand(CoralWristState.L2),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
         .withName("Elevator set to coralL2Position");
   }
 
   public Command coralL1PositionCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralL1),
-        coralWrist.createSetAngleCommand(CoralWristState.L1),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
+            lifter.createSetHeightCommand(LifterState.CoralL1),
+            coralWrist.createSetAngleCommand(CoralWristState.L1),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
         .withName("Elevator set to coralL1Position");
   }
 
   public Command coralIntakeCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralIntake),
-        coralWrist.createSetAngleCommand(CoralWristState.Intake),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
+            lifter.createSetHeightCommand(LifterState.CoralIntake),
+            coralWrist.createSetAngleCommand(CoralWristState.Intake),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode))
         .withName("Elevator set to coral Intake position");
   }
 
   public Command algaeBargePositionCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.Max),
-        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.Barge))
+            lifter.createSetHeightCommand(LifterState.Max),
+            coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.Barge))
         .withName("Elevator set to algae Barge Position");
   }
 
@@ -116,9 +117,9 @@ public class Elevator {
 
   public Command algaeProcessorPositionCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.AlgaeProcessor),
-        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.Processor))
+            lifter.createSetHeightCommand(LifterState.AlgaeProcessor),
+            coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
+            algaeWrist.createSetAngleCommand(AlgaeWristState.Processor))
         .withName("Elevator set to algae processor position");
   }
 

@@ -163,40 +163,42 @@ public class Lifter extends SubsystemBase {
 
   public Command createSetHeightCommand(LifterState state) {
     return new FunctionalCommand(
-        // initialize
-        () -> {
-          targetState = state;
-          feedback.setGoal(targetState.height.in(Meters));
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> feedback.atGoal(),
-        // requirements
-        this).withName("Lifter set to " + state.name());
+            // initialize
+            () -> {
+              targetState = state;
+              feedback.setGoal(targetState.height.in(Meters));
+            },
+            // execute
+            () -> control(),
+            // end
+            interrupted -> {},
+            // isFinished
+            () -> feedback.atGoal(),
+            // requirements
+            this)
+        .withName("Lifter set to " + state.name());
   }
 
   public Command createRemainAtCurrentHeightCommand() {
     return new FunctionalCommand(
-        // initialize
-        () -> {
-          if (targetState == LifterState.Initial) {
-            feedback.setGoal(encoder.getPosition());
-            // Users should call reset() when they first start running the controller to avoid
-            // unwanted behavior.
-            resetController();
-          }
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> false,
-        // requirements
-        this).withName("Lifter position set to " + targetState.name());
+            // initialize
+            () -> {
+              if (targetState == LifterState.Initial) {
+                feedback.setGoal(encoder.getPosition());
+                // Users should call reset() when they first start running the controller to avoid
+                // unwanted behavior.
+                resetController();
+              }
+            },
+            // execute
+            () -> control(),
+            // end
+            interrupted -> {},
+            // isFinished
+            () -> false,
+            // requirements
+            this)
+        .withName("Lifter position set to " + targetState.name());
   }
 
   private Boolean isInRange(Distance height) {
@@ -207,26 +209,26 @@ public class Lifter extends SubsystemBase {
 
   public Command createJoystickControlCommand(XboxController gamepad) {
     return this.run(
-        () -> {
-          Distance targetPosition = Meters.of(feedback.getGoal().position);
+            () -> {
+              Distance targetPosition = Meters.of(feedback.getGoal().position);
 
-          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          Distance adder =
-              LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
-          targetPosition = targetPosition.plus(adder);
+              double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+              Distance adder =
+                  LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
+              targetPosition = targetPosition.plus(adder);
 
-          if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
-          control();
-        })
+              if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
+              control();
+            })
         .withName("Created Joystick command for lifter");
   }
 
   public Command createJoystickVoltageCommand(XboxController gamepad) {
     return this.run(
-        () -> {
-          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          leaderMotor.setVoltage(joystickInput * 2.0);
-        })
+            () -> {
+              double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+              leaderMotor.setVoltage(joystickInput * 2.0);
+            })
         .withName("Created Joystick voltage command for lifter");
   }
 }

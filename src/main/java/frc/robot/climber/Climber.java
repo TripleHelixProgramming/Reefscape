@@ -85,18 +85,17 @@ public class Climber extends SubsystemBase {
   }
 
   public Command resetEncoder() {
-    return new InstantCommand(() -> encoder.setPosition(0))
-    .withName("Climber encoder is reset");
+    return new InstantCommand(() -> encoder.setPosition(0)).withName("Climber encoder is reset");
   }
 
   public Command unlockRatchet() {
     return new InstantCommand(() -> servo.set(ClimberConstants.kDisengedPosition))
-    .withName("Climber ratchet unlocked");
+        .withName("Climber ratchet unlocked");
   }
 
   public Command lockRatchet() {
     return new InstantCommand(() -> servo.set(ClimberConstants.kEngagedPosition))
-    .withName("Climber ratchet locked");
+        .withName("Climber ratchet locked");
   }
 
   private void setPosition(double targetPosition) {
@@ -118,7 +117,7 @@ public class Climber extends SubsystemBase {
    */
   public Command createClimbByControllerCommand(XboxController controller, double factor) {
     return this.run(() -> this.setVelocity(Math.max(0.0, controller.getRightY()) * factor))
-    .withName("Climb initialized by controller input");
+        .withName("Climb initialized by controller input");
   }
 
   private double getPosition() {
@@ -135,9 +134,9 @@ public class Climber extends SubsystemBase {
 
   public Command createDefaultClimberCommand() {
     return this.run(
-        () -> {
-          motor.set(0.0);
-        })
+            () -> {
+              motor.set(0.0);
+            })
         .withName("Created defult climb");
   }
 

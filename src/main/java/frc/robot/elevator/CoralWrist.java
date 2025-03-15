@@ -138,48 +138,50 @@ public class CoralWrist extends SubsystemBase {
 
   public Command createSetAngleCommand(CoralWristState state) {
     return new FunctionalCommand(
-        // initialize
-        () -> {
-          targetState = state;
-          feedback.setGoal(targetState.angle.in(Radians));
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> feedback.atGoal(),
-        // requirements
-        this).withName("Coral wrist is set at " + state.name());
+            // initialize
+            () -> {
+              targetState = state;
+              feedback.setGoal(targetState.angle.in(Radians));
+            },
+            // execute
+            () -> control(),
+            // end
+            interrupted -> {},
+            // isFinished
+            () -> feedback.atGoal(),
+            // requirements
+            this)
+        .withName("Coral wrist is set at " + state.name());
   }
 
   public Command createRemainAtCurrentAngleCommand() {
     return new FunctionalCommand(
-        // initialize
-        () -> {
-          if (targetState == CoralWristState.Initial) {
-            feedback.setGoal(encoder.getPosition());
-            // Users should call reset() when they first start running the controller to avoid
-            // unwanted behavior.
-            resetController();
-          }
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> false,
-        // requirements
-        this).withName("Coral wrist is holding at angle " + targetState.name());
+            // initialize
+            () -> {
+              if (targetState == CoralWristState.Initial) {
+                feedback.setGoal(encoder.getPosition());
+                // Users should call reset() when they first start running the controller to avoid
+                // unwanted behavior.
+                resetController();
+              }
+            },
+            // execute
+            () -> control(),
+            // end
+            interrupted -> {},
+            // isFinished
+            () -> false,
+            // requirements
+            this)
+        .withName("Coral wrist is holding at angle " + targetState.name());
   }
 
   public Command createJoystickControlCommand(XboxController gamepad) {
     return this.run(
-        () -> {
-          double joystickInput = 2.0 * MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          motor.setVoltage(joystickInput);
-        })
+            () -> {
+              double joystickInput = 2.0 * MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+              motor.setVoltage(joystickInput);
+            })
         .withName("Created joystick command for Coral wrist");
   }
 }
