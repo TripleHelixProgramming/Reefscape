@@ -86,6 +86,10 @@ public class Robot extends TimedRobot {
       NetworkTableInstance.getDefault()
           .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
           .publish();
+  private StructPublisher<Pose2d> leftCoralPipeTargetPositionsPublisher =
+      NetworkTableInstance.getDefault().getStructTopic("Left pipe target", Pose2d.struct).publish();
+  private StructPublisher<Pose2d> rightCoralPipeTargetPositionsPublisher =
+      NetworkTableInstance.getDefault().getStructTopic("Left pipe target", Pose2d.struct).publish();
 
   public Robot() {
     gamepieceSupplier =
@@ -131,6 +135,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(powerDistribution);
     SmartDashboard.putString(
         "Gamepiece", getLoadedGamepiece() == null ? "None" : getLoadedGamepiece().toString());
+
+    var nearestReef = Reef.getNearestReef(swerve.getPose());
+    var nearestReefFace = nearestReef.getNearestFace(swerve.getPose());
+    var nearestLeftPipe = nearestReefFace.getLeftPipePose();
+    var nearestRightPipe = nearestReefFace.getRightPipePose();
+    leftCoralPipeTargetPositionsPublisher.set(nearestLeftPipe);
+    rightCoralPipeTargetPositionsPublisher.set(nearestRightPipe);
   }
 
   @Override
