@@ -22,6 +22,22 @@ import frc.game.Reef;
 
 public final class Constants {
 
+  public static final class MotorConstants {
+    public static final class NEOConstants {
+      public static final AngularVelocity kFreeSpeed = RPM.of(5676);
+      public static final int kDefaultCurrentLimit = 80;
+    }
+
+    public static final class NEO550Constants {
+      public static final AngularVelocity kFreeSpeed = RPM.of(11000);
+      public static final int kDefaultCurrentLimit = 30;
+    }
+
+    public static final class NEOVortexConstants {
+      public static final int kDefaultCurrentLimit = 80;
+    }
+  }
+
   public static final class VisionConstants {
     public static final String kAprilTagLayoutPath =
         Filesystem.getDeployDirectory() + "/" + "stemgym.json";
@@ -36,9 +52,6 @@ public final class Constants {
   public static final class RobotConstants {
     public static final double kNominalVoltage = 12.0;
     public static final Time kPeriod = Seconds.of(TimedRobot.kDefaultPeriod);
-
-    public static final int kDefaultNEOCurrentLimit = 80;
-    public static final int kDefaultNEO550CurretnLimit = 30;
   }
 
   public static final class DriveConstants {
@@ -116,10 +129,6 @@ public final class Constants {
   }
 
   public static final class ModuleConstants {
-
-    public static final int kDriveMotorCurrentLimit = 80;
-    public static final int kTurningMotorCurrentLimit = 80;
-
     public static final class DriveControllerGains {
       public static final double kP = 0.1; // 2023 Competition Robot
       public static final double kI = 0.0; // 2023 Competition Robot
@@ -218,8 +227,6 @@ public final class Constants {
 
   public static final class ClimberConstants {
     public static final int kClimberPort = 17;
-    public static final int kClimberCurrentLimit = 80;
-
     public static final int kRatchetServoPort = 1;
     public static final double kEngagedPosition = 0 / 1024.0;
     public static final double kDisengedPosition = 1024.0 / 1024.0;

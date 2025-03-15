@@ -21,6 +21,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants.RotationControllerGains;
 import frc.robot.Constants.AutoConstants.TranslationControllerGains;
@@ -181,8 +183,8 @@ public class Drivetrain extends SubsystemBase {
     return headingOffset;
   }
 
-  public void resetHeadingOffset() {
-    headingOffset = Rotation2d.kZero;
+  public Command resetHeadingOffset() {
+    return new InstantCommand(() -> this.headingOffset = new Rotation2d());
   }
 
   public void setHeadingOffset() {
