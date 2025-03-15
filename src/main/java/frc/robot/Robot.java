@@ -130,6 +130,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     loop.poll();
+    SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     CommandScheduler.getInstance().run();
     checkVision();
     SmartDashboard.putData("Driver Controller", driver.getHID());
