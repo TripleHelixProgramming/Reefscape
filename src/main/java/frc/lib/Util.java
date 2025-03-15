@@ -1,4 +1,4 @@
-package frc.util;
+package frc.lib;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
@@ -15,6 +15,6 @@ public class Util {
   }
 
   public static boolean nearlyEqual(double a, double b) {
-    return Math.abs(a - b) < 1e-6;
+    return Math.abs(a - b) < Math.ulp(1);
   }
 }
