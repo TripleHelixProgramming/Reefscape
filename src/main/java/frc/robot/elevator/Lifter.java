@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.MotorConstants.NEOConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterController;
@@ -56,14 +57,14 @@ public class Lifter extends SubsystemBase {
       new ElevatorFeedforward(LifterController.kS, LifterController.kG, LifterController.kV);
 
   private final EventLoop loop = new EventLoop();
-  private LifterState targetState = LifterState.Unknown;
+  private LifterState targetState = LifterState.Initial;
 
   public Lifter() {
     // spotless:off
     globalConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
+        .smartCurrentLimit(NEOConstants.kDefaultCurrentLimit)
         .inverted(false);
 
     leaderConfig
@@ -109,7 +110,8 @@ public class Lifter extends SubsystemBase {
     // SmartDashboard.putNumber("Lifter/Velocity", encoder.getVelocity());
 
     SmartDashboard.putString("Lifter/Target State", getTargetState().name());
-    SmartDashboard.putNumber("Lifter/Target Height", feedback.getGoal().position);
+    SmartDashboard.putNumber("Lifter/Height Setpoint", feedback.getSetpoint().position);
+    SmartDashboard.putNumber("Lifter/Height Goal", feedback.getGoal().position);
 
     // SmartDashboard.putNumber("Lifter/Leader Applied Duty Cycle", leaderMotor.getAppliedOutput());
     // SmartDashboard.putNumber(
@@ -123,10 +125,6 @@ public class Lifter extends SubsystemBase {
 
   public Distance getCurrentHeight() {
     return Meters.of(encoder.getPosition());
-  }
-
-  private Distance getSetPointHeight() {
-    return Meters.of(feedback.getSetpoint().position);
   }
 
   public Dimensionless getProportionOfMaxHeight() {
@@ -185,7 +183,12 @@ public class Lifter extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == LifterState.Unknown) feedback.setGoal(encoder.getPosition());
+          if (targetState == LifterState.Initial) {
+            feedback.setGoal(encoder.getPosition());
+            // Users should call reset() when they first start running the controller to avoid
+            // unwanted behavior.
+            resetController();
+          }
         },
         // execute
         () -> control(),

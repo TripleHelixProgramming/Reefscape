@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.MotorConstants.NEOConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
@@ -48,7 +49,7 @@ public class AlgaeWrist extends SubsystemBase {
     config
         .inverted(false)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEOCurrentLimit)
+        .smartCurrentLimit(NEOConstants.kDefaultCurrentLimit)
         .voltageCompensation(RobotConstants.kNominalVoltage);
     
     config.closedLoop
@@ -145,9 +146,12 @@ public class AlgaeWrist extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == AlgaeWristState.Unknown) {
+          if (targetState == AlgaeWristState.Initial) {
             targetState = AlgaeWristState.CoralMode;
             feedback.setGoal(targetState.angle.in(Radians));
+            // Users should call reset() when they first start running the controller to avoid
+            // unwanted behavior.
+            resetController();
           }
         },
         // execute

@@ -2,6 +2,7 @@ package frc.robot.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
@@ -36,10 +37,13 @@ public class Elevator {
     return algaeWrist;
   }
 
-  public void resetPositionControllers() {
-    lifter.resetController();
-    coralWrist.resetController();
-    algaeWrist.resetController();
+  public Command resetPositionControllers() {
+    return new InstantCommand(
+        () -> {
+          lifter.resetController();
+          coralWrist.resetController();
+          algaeWrist.resetController();
+        });
   }
 
   public Command coralL4PositionCG() {
