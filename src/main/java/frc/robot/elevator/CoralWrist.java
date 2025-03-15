@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.MotorConstants.NEO550Constants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
@@ -49,7 +50,7 @@ public class CoralWrist extends SubsystemBase {
     config
         .inverted(true)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
+        .smartCurrentLimit(NEO550Constants.kDefaultCurrentLimit)
         .voltageCompensation(RobotConstants.kNominalVoltage);
 
     config.closedLoop
@@ -156,7 +157,12 @@ public class CoralWrist extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == CoralWristState.Unknown) feedback.setGoal(encoder.getPosition());
+          if (targetState == CoralWristState.Initial) {
+            feedback.setGoal(encoder.getPosition());
+            // Users should call reset() when they first start running the controller to avoid
+            // unwanted behavior.
+            resetController();
+          }
         },
         // execute
         () -> control(),
