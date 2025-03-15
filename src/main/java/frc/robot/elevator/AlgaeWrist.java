@@ -146,9 +146,12 @@ public class AlgaeWrist extends SubsystemBase {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == AlgaeWristState.Unknown) {
+          if (targetState == AlgaeWristState.Initial) {
             targetState = AlgaeWristState.CoralMode;
             feedback.setGoal(targetState.angle.in(Radians));
+            // Users should call reset() when they first start running the controller to avoid
+            // unwanted behavior.
+            resetController();
           }
         },
         // execute

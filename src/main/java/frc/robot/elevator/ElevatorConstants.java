@@ -62,7 +62,7 @@ public class ElevatorConstants {
     }
 
     public static enum LifterState {
-      Unknown(0.0),
+      Initial(0.0),
       Min(0.0),
       AlgaeIntakeFloor(1.0),
       EncoderReset(0.36),
@@ -149,7 +149,6 @@ public class ElevatorConstants {
 
     public static enum CoralWristState {
       Initial(90),
-      Unknown(90),
       Min(15),
       Max(135),
       L1(125),
@@ -234,7 +233,6 @@ public class ElevatorConstants {
 
     public static enum AlgaeWristState {
       Initial(80),
-      Unknown(90),
       Floor(0),
       Min(-10),
       Max(95),
