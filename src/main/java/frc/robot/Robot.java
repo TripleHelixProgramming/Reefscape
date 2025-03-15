@@ -137,7 +137,12 @@ public class Robot extends TimedRobot {
     checkVision();
     SmartDashboard.putData("Driver Controller", driver.getHID());
     SmartDashboard.putData("Operator Controller", operator.getHID());
+    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putData(swerve);
+    SmartDashboard.putData(climber);
+    SmartDashboard.putData(leds);
     SmartDashboard.putData(powerDistribution);
+    elevator.periodic();
     SmartDashboard.putString(
         "Gamepiece", getLoadedGamepiece() == null ? "None" : getLoadedGamepiece().toString());
 
