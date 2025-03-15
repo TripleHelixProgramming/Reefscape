@@ -91,7 +91,9 @@ public class Robot extends TimedRobot {
   private StructPublisher<Pose2d> leftCoralPipeTargetPositionsPublisher =
       NetworkTableInstance.getDefault().getStructTopic("Left pipe target", Pose2d.struct).publish();
   private StructPublisher<Pose2d> rightCoralPipeTargetPositionsPublisher =
-      NetworkTableInstance.getDefault().getStructTopic("Right pipe target", Pose2d.struct).publish();
+      NetworkTableInstance.getDefault()
+          .getStructTopic("Right pipe target", Pose2d.struct)
+          .publish();
 
   public Robot() {
     gamepieceSupplier =

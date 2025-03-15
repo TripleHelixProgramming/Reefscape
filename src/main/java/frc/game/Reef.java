@@ -88,7 +88,7 @@ public enum Reef {
    */
   public Face getNearestFace(Pose2d atPose) {
     var sector = getSector(atPose);
-    return Face.values()[sector + ordinal() * 6];
+    return Face.values()[sector * 6 + ordinal()];
   }
 
   /**
