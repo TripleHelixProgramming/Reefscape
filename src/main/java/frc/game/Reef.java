@@ -72,7 +72,7 @@ public enum Reef {
   public int getSector(Pose2d atPose) {
     var delta = atPose.getTranslation().minus(centerPose.getTranslation());
     int vectorAngle = (int) delta.getAngle().getDegrees();
-    int rayAngle = (vectorAngle + 30 + 360 + 180) % 360;
+    int rayAngle = (vectorAngle + 30 + 360 + 180 + (int)centerPose.getRotation().getDegrees()) % 360;
     SmartDashboard.putNumber("Sector delta X", delta.getX());
     SmartDashboard.putNumber("Sector delta Y", delta.getY());
     SmartDashboard.putNumber("Sector vector delta", vectorAngle);
