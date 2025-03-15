@@ -89,10 +89,10 @@ public class Robot extends TimedRobot {
           .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
           .publish();
   private StructPublisher<Pose2d> leftCoralPipeTargetPositionsPublisher =
-      NetworkTableInstance.getDefault().getStructTopic("Left pipe target", Pose2d.struct).publish();
+      NetworkTableInstance.getDefault().getStructTopic("Sector eft pipe target", Pose2d.struct).publish();
   private StructPublisher<Pose2d> rightCoralPipeTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
-          .getStructTopic("Right pipe target", Pose2d.struct)
+          .getStructTopic("Sector ight pipe target", Pose2d.struct)
           .publish();
 
   public Robot() {
@@ -145,6 +145,8 @@ public class Robot extends TimedRobot {
     var nearestReefFace = nearestReef.getNearestFace(swerve.getPose());
     var nearestLeftPipe = nearestReefFace.getLeftPipePose();
     var nearestRightPipe = nearestReefFace.getRightPipePose();
+    SmartDashboard.putString("Sector nearest reef", nearestReef.toString());
+    SmartDashboard.putString("Sector nearest reef face", nearestReefFace.toString());
     leftCoralPipeTargetPositionsPublisher.set(nearestLeftPipe);
     rightCoralPipeTargetPositionsPublisher.set(nearestRightPipe);
   }
