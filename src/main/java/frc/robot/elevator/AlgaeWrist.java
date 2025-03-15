@@ -5,8 +5,6 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 
-import java.util.function.BooleanSupplier;
-
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -28,6 +26,7 @@ import frc.robot.Constants.MotorConstants.NEOConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
+import java.util.function.BooleanSupplier;
 
 public class AlgaeWrist extends SubsystemBase {
 
@@ -122,7 +121,7 @@ public class AlgaeWrist extends SubsystemBase {
     } else {
       feedback.setP(AlgaeWristConstants.kPWithoutAlgae);
     }
-    
+
     double currentPosition = encoder.getPosition();
     double offsetPosition =
         currentPosition + AlgaeWristConstants.kCenterOfGravityOffset.in(Radians);
