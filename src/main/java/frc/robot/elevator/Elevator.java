@@ -12,8 +12,8 @@ public class Elevator {
   Lifter lifter = new Lifter();
   CoralWrist coralWrist = new CoralWrist();
   CoralRoller coralRoller = new CoralRoller();
-  AlgaeWrist algaeWrist = new AlgaeWrist();
   AlgaeRoller algaeRoller = new AlgaeRoller();
+  AlgaeWrist algaeWrist = new AlgaeWrist(algaeRoller.hasAlgae);
 
   public Elevator() {}
 
@@ -83,7 +83,7 @@ public class Elevator {
 
   public Command algaeBargePositionCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.Max),
+        lifter.createSetHeightCommand(LifterState.AlgaeBarge),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
   }

@@ -43,8 +43,10 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
+import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
+import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import frc.util.Gamepiece;
@@ -65,6 +67,7 @@ public class Robot extends TimedRobot {
   private final Lifter lifter = elevator.getLifter();
   private final CoralRoller coralRoller = elevator.getCoralRoller();
   private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
+  private final AlgaeWrist algaeWrist = elevator.getAlgaeWrist();
 
   private final Drivetrain swerve =
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
@@ -298,8 +301,7 @@ public class Robot extends TimedRobot {
     // Intake coral and algae
     operator.rightBumper()
         .whileTrue(algaeRoller.createIntakeCommand()
-        .alongWith(coralRoller.createIntakeCommand())
-        .andThen(new ConditionalCommand(algaeRoller.createHoldAlgaeCommand(), algaeRoller.createStopCommand(), algaeRoller.hasAlgae)));
+        .alongWith(coralRoller.createIntakeCommand()));
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
@@ -313,7 +315,7 @@ public class Robot extends TimedRobot {
 
     operator.leftTrigger().onTrue(climber.createDeployCommand());
 
-    // Auto climbe to position
+    // Auto climb to position
     operator.povUp().onTrue(climber.createRetractCommand());
 
     // just for testing roller animation.
@@ -331,7 +333,10 @@ public class Robot extends TimedRobot {
         .andThen(climber.lockRatchet())
         .andThen(climber.resetEncoder()));
 
-    algaeRoller.hasAlgae.whileTrue(algaeRoller.createHoldAlgaeCommand());
+    algaeRoller.hasAlgae
+        .whileTrue(algaeRoller.createHoldAlgaeCommand());
+    algaeRoller.hasAlgae
+        .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
     coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
   }
 
