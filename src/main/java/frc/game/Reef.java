@@ -2,6 +2,7 @@ package frc.game;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -120,15 +121,15 @@ public enum Reef {
     Face(Reef reef, int index) {
       this.reef = reef;
       var rotation = new Rotation2d(Degrees.of(60.0)).times(index);
-      var translation = new Translation2d(radius.in(Inches), rotation.plus(Rotation2d.kPi));
+      var translation = new Translation2d(radius.in(Meters), rotation.plus(Rotation2d.kPi));
       var offset = new Transform2d(translation, rotation);
       centerPose = reef.getCenterPose().plus(offset);
       leftPipePose =
           centerPose.transformBy(
-              new Transform2d(new Translation2d(0, -pipeSpacing.in(Inches) / 2), Rotation2d.kZero));
+              new Transform2d(new Translation2d(Meters.of(0), pipeSpacing.div(-2)), Rotation2d.kZero));
       rightPipePose =
           centerPose.transformBy(
-              new Transform2d(new Translation2d(0, +pipeSpacing.in(Inches) / 2), Rotation2d.kZero));
+              new Transform2d(new Translation2d(Meters.of(0), pipeSpacing.div(2)), Rotation2d.kZero));
 
       SmartDashboard.putString("ReefFace."+this.toString(), centerPose.toString());
     }
