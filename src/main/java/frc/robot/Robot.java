@@ -455,11 +455,12 @@ public class Robot extends TimedRobot {
         "createRollerAnimation: algae=%b, coral=%b%n",
         algaeRoller.isRolling, coralRoller.isRolling);
     /*
-     * On intake, one and only one is rolling
+     * Both rollers run for intake and outtake now, so need to use motor direction
+     * to determine intake vs. outtake
      */
     BooleanSupplier intakeSupplier =
         () -> {
-          return coralRoller.isRolling.getAsBoolean() ^ algaeRoller.isRolling.getAsBoolean();
+          return coralRoller.getRollerVelocity() > 0 || algaeRoller.getRollerVelocity() > 0;
         };
 
     /*
@@ -477,17 +478,13 @@ public class Robot extends TimedRobot {
             return gamepiece == null ? Color.kYellow : gamepiece.color;
           }
           /*
-           * Otherwise, use the color associated with the gripper's target piece.
+           * Otherwise, use the color associated with the current control mode.
            */
-          else if (algaeRoller.isRolling.getAsBoolean()) {
+          else if (algaeModeSupplier.getAsBoolean()) {
             return Gamepiece.ALGAE.color;
-          } else if (coralRoller.isRolling.getAsBoolean()) {
+          } else {
             return Gamepiece.CORAL.color;
           }
-          /*
-           * On some weird logic error, use red.
-           */
-          return Color.kRed;
         };
 
     return leds.createRollerAnimationCommand(intakeSupplier, colorSupplier);
