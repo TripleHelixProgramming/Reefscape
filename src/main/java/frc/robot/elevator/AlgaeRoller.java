@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.MotorConstants.NEO550Constants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeRollerConstants;
 import java.util.function.BooleanSupplier;
@@ -36,7 +37,7 @@ public class AlgaeRoller extends SubsystemBase {
     config
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
+        .smartCurrentLimit(NEO550Constants.kDefaultCurrentLimit)
         .inverted(false);
 
     config.limitSwitch
@@ -88,8 +89,12 @@ public class AlgaeRoller extends SubsystemBase {
     return this.run(() -> setVoltage(AlgaeRollerConstants.kIntakeVoltage));
   }
 
-  public Command createOuttakeCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeVoltage));
+  public Command createOuttakeToBargeCommand() {
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToBargeVoltage));
+  }
+
+  public Command createOuttakeToProcessorCommand() {
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToProcessorVoltage));
   }
 
   public Command createHoldAlgaeCommand() {

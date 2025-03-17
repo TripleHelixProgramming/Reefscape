@@ -19,7 +19,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.game.Gamepiece;
+import frc.game.Reef;
 import frc.lib.AllianceSelector;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
@@ -42,13 +45,12 @@ import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
+import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
-import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
-import frc.util.Gamepiece;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -66,6 +68,7 @@ public class Robot extends TimedRobot {
   private final Lifter lifter = elevator.getLifter();
   private final CoralRoller coralRoller = elevator.getCoralRoller();
   private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
+  private final AlgaeWrist algaeWrist = elevator.getAlgaeWrist();
 
   private final Drivetrain swerve =
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
@@ -84,6 +87,14 @@ public class Robot extends TimedRobot {
   private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
           .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
+          .publish();
+  private StructPublisher<Pose2d> leftCoralPipeTargetPositionsPublisher =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("Sector left pipe target", Pose2d.struct)
+          .publish();
+  private StructPublisher<Pose2d> rightCoralPipeTargetPositionsPublisher =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("Sector right pipe target", Pose2d.struct)
           .publish();
 
   public Robot() {
@@ -123,13 +134,31 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     loop.poll();
+    SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     CommandScheduler.getInstance().run();
     checkVision();
     SmartDashboard.putData("Driver Controller", driver.getHID());
     SmartDashboard.putData("Operator Controller", operator.getHID());
+    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putData(swerve);
+    SmartDashboard.putData(climber);
+    SmartDashboard.putData(leds);
     SmartDashboard.putData(powerDistribution);
+    elevator.periodic();
     SmartDashboard.putString(
         "Gamepiece", getLoadedGamepiece() == null ? "None" : getLoadedGamepiece().toString());
+
+    var nearestReef = Reef.getNearestReef(swerve.getPose());
+    var nearestReefFace = nearestReef.getNearestFace(swerve.getPose());
+    var nearestLeftPipe = nearestReefFace.getLeftPipePose();
+    var nearestRightPipe = nearestReefFace.getRightPipePose();
+    var nearestRedReefFace = Reef.Red.getNearestFace(swerve.getPose());
+
+    SmartDashboard.putString("Sector nearest reef", nearestReef.toString());
+    SmartDashboard.putString("Sector nearest reef face", nearestReefFace.toString());
+    SmartDashboard.putString("Sector nearest red reef face", nearestRedReefFace.toString());
+    leftCoralPipeTargetPositionsPublisher.set(nearestLeftPipe);
+    rightCoralPipeTargetPositionsPublisher.set(nearestRightPipe);
   }
 
   @Override
@@ -170,9 +199,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     autoSelector.scheduleAuto();
-    climber.lockRatchet();
-    elevator.getCoralWrist().createSetAngleCommand(CoralWristState.Initial).schedule();
-    elevator.getAlgaeWrist().createSetAngleCommand(AlgaeWristState.Initial).schedule();
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
@@ -184,18 +210,10 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     autoSelector.cancelAuto();
-
-    swerve.resetHeadingOffset();
-    climber.resetEncoder();
-    climber.lockRatchet();
-    elevator.resetPositionControllers();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
-    // lifter.setDefaultCommand(lifter.createJoystickVoltageCommand(operator.getHID()));
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
-    elevator.getCoralWrist().createSetAngleCommand(CoralWristState.Initial).schedule();
-    elevator.getAlgaeWrist().createSetAngleCommand(AlgaeWristState.Initial).schedule();
     // Test wrist feedforwards
     // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
     // coralWrist.setDefaultCommand(coralWrist.createJoystickControlCommand(operator.getHID()));
@@ -241,21 +259,31 @@ public class Robot extends TimedRobot {
   private void configureDriverButtonBindings() {
 
     // Reset heading
-    driver.DIn()
+    driver.GIn()
         .onTrue(new InstantCommand(() -> {
           swerve.setHeadingOffset();
           // swerve.initializeRelativeTurningEncoder();
         }).ignoringDisable(true));
 
     // Drive to nearest pose
-    driver.AIn()
-        .whileTrue(new DriveToPoseCommand(swerve, vision, () -> swerve.getNearestPose()));
+    // driver.AIn()
+    //     .whileTrue(new DriveToPoseCommand(swerve, () -> swerve.getNearestPose()));
+
+    driver.AIn().whileTrue(
+        new DriveToPoseCommand(swerve, 
+          () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));
+    driver.DIn().whileTrue(
+        new DriveToPoseCommand(swerve, 
+          () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipePose()));
 
     // Outtake grippers
-    driver.HIn()
-        .whileTrue(coralRoller.createOuttakeCommand()
-            .alongWith(algaeRoller.createOuttakeCommand()));
-
+    var outtaking = driver.HIn();
+    lifter.atProcessorHeight.and(outtaking)
+        .whileTrue(algaeRoller.createOuttakeToProcessorCommand());
+    lifter.atBargeHeight.and(outtaking)
+        .whileTrue(algaeRoller.createOuttakeToBargeCommand());
+    outtaking
+        .whileTrue(coralRoller.createOuttakeCommand());
   }
 
   private void configureOperatorButtonBindings() {
@@ -307,9 +335,10 @@ public class Robot extends TimedRobot {
     operator.rightTrigger().whileTrue(new ConditionalCommand(
         elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
-    // Intake either coral or algae
-    operator.rightBumper().whileTrue(new ConditionalCommand(
-        algaeRoller.createIntakeCommand(), coralRoller.createIntakeCommand(), algaeMode));
+    // Intake coral and algae
+    operator.rightBumper()
+        .whileTrue(algaeRoller.createIntakeCommand()
+        .alongWith(coralRoller.createIntakeCommand()));
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
@@ -323,33 +352,47 @@ public class Robot extends TimedRobot {
 
     operator.leftTrigger().onTrue(climber.createDeployCommand());
 
-    // Auto climbe to position
+    // Auto climb to position
     operator.povUp().onTrue(climber.createRetractCommand());
 
+    /*
+     * Left and right D-pad buttons will cause the robot to go to the left/right
+     * pipe on the nearest reef face.
+     */
+    // operator.povLeft().whileTrue(
+    //   new DriveToPoseCommand(swerve, 
+    //   () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));
+    // operator.povRight().whileTrue(
+    //   new DriveToPoseCommand(swerve, 
+    //   () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipePose()));
+
     // just for testing roller animation.
-    operator.povLeft().whileTrue(leds.createRollerAnimationCommand(() -> true, () -> Color.kOrange));
-    operator.povRight().whileTrue(leds.createRollerAnimationCommand(() -> false, () -> Color.kOrange));
+    // operator.povLeft().whileTrue(leds.createRollerAnimationCommand(() -> true, () -> Color.kOrange));
+    // operator.povRight().whileTrue(leds.createRollerAnimationCommand(() -> false, () -> Color.kOrange));
   }
 
   private void configureEventBindings() {
-    // autoSelector.getChangedAutoSelection()
-    //     .onTrue(leds.createScrollingRainbowCommand()
-    //     .ignoringDisable(true)
-    //     .withTimeout(3))
-    //     ;
+    RobotModeTriggers.autonomous()
+        .onTrue(elevator.resetPositionControllers()
+        .andThen(climber.lockRatchet()));
+    RobotModeTriggers.teleop()
+        .onTrue(swerve.resetHeadingOffset()
+        .andThen(elevator.resetPositionControllers())
+        .andThen(climber.lockRatchet())
+        .andThen(climber.resetEncoder()));
 
-    var coralRollerIsRolling = new Trigger(loop, elevator.getCoralRoller().isRolling);
-    var algaeRollerIsRolling = new Trigger(loop, elevator.getAlgaeRoller().isRolling);
-    coralRollerIsRolling.or(algaeRollerIsRolling).whileTrue(createRollerAnimationCommand());
-
-    // lifter.tooHighForCoralWrist.and(coralWrist.atRiskOfDamage)
-    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode));
+    algaeRoller.hasAlgae
+        .whileTrue(algaeRoller.createHoldAlgaeCommand());
+    algaeRoller.hasAlgae
+        .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+    coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
-  // spotless:on
 
   private void configureAutoOptions() {
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 1, new RedL4Auto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 1, new BlueL4Auto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 1, new RedL4Auto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 1, new BlueL4Auto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Red, 2, new RedNoProcess3PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
@@ -358,9 +401,12 @@ public class Robot extends TimedRobot {
         new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
-    autoSelector.addAuto(new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
-    autoSelector.addAuto(new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
   }
+  // spotless:on
 
   /**
    * Gets the current drawn from the Power Distribution Hub by a CAN motor controller, assuming that

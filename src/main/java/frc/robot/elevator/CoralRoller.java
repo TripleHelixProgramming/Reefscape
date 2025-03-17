@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.MotorConstants.NEO550Constants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.CoralRollerConstants;
 import java.util.function.BooleanSupplier;
@@ -31,7 +32,7 @@ public class CoralRoller extends SubsystemBase {
     config
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(RobotConstants.kDefaultNEO550CurretnLimit)
+        .smartCurrentLimit(NEO550Constants.kDefaultCurrentLimit)
         .inverted(true);
 
     config.limitSwitch

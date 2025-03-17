@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -40,16 +42,16 @@ public enum Camera {
     this.transform = new Transform3d(translation, rotation);
     this.device = new PhotonCamera(name);
 
-    // AprilTagFieldLayout tagLayout;
-    // try {
-    //   tagLayout = new AprilTagFieldLayout(VisionConstants.kAprilTagLayoutPath);
-    // } catch (IOException e) {
-    //   System.err.println("Error loading custom AprilTag layout: " + e.getMessage());
-    //   tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    // }
+    AprilTagFieldLayout tagLayout;
+    try {
+      tagLayout = new AprilTagFieldLayout(VisionConstants.kAprilTagLayoutPath);
+    } catch (IOException e) {
+      System.err.println("Error loading custom AprilTag layout: " + e.getMessage());
+      tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    }
 
-    AprilTagFieldLayout tagLayout =
-        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+    // AprilTagFieldLayout tagLayout =
+    //     AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     this.pose =
         new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, transform);

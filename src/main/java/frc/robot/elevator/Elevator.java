@@ -1,7 +1,9 @@
 package frc.robot.elevator;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
@@ -11,10 +13,18 @@ public class Elevator {
   Lifter lifter = new Lifter();
   CoralWrist coralWrist = new CoralWrist();
   CoralRoller coralRoller = new CoralRoller();
-  AlgaeWrist algaeWrist = new AlgaeWrist();
   AlgaeRoller algaeRoller = new AlgaeRoller();
+  AlgaeWrist algaeWrist = new AlgaeWrist(algaeRoller.hasAlgae);
 
   public Elevator() {}
+
+  public void periodic() {
+    SmartDashboard.putData(lifter);
+    SmartDashboard.putData(coralWrist);
+    SmartDashboard.putData(coralRoller);
+    SmartDashboard.putData(algaeRoller);
+    SmartDashboard.putData(algaeWrist);
+  }
 
   public Lifter getLifter() {
     return lifter;
@@ -36,10 +46,13 @@ public class Elevator {
     return algaeWrist;
   }
 
-  public void resetPositionControllers() {
-    lifter.resetController();
-    coralWrist.resetController();
-    algaeWrist.resetController();
+  public Command resetPositionControllers() {
+    return new InstantCommand(
+        () -> {
+          lifter.resetController();
+          coralWrist.resetController();
+          algaeWrist.resetController();
+        });
   }
 
   public Command coralL4PositionCG() {
@@ -79,7 +92,7 @@ public class Elevator {
 
   public Command algaeBargePositionCG() {
     return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.Max),
+        lifter.createSetHeightCommand(LifterState.AlgaeBarge),
         coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
         algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
   }
