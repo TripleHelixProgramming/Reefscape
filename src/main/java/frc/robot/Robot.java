@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
     // Create a button on Smart Dashboard to reset the encoders.
     SmartDashboard.putData(
         "Align Encoders",
-        new InstantCommand(() -> m_swerve.zeroAbsTurningEncoderOffsets())
+        new InstantCommand(() -> swerve.zeroAbsTurningEncoderOffsets())
             .ignoringDisable(true)
             .withName("Align swerve module steering encoders"));
 
@@ -227,6 +227,7 @@ public class Robot extends TimedRobot {
     configureOperatorButtonBindings();
   }
 
+  // spotless:off
   private void configureDriverButtonBindings() {
 
     // Reset heading
