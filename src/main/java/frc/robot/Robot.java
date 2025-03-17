@@ -101,7 +101,9 @@ public class Robot extends TimedRobot {
     // Create a button on Smart Dashboard to reset the encoders.
     SmartDashboard.putData(
         "Align Encoders",
-        new InstantCommand(() -> swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
+        new InstantCommand(() -> swerve.zeroAbsTurningEncoderOffsets())
+            .ignoringDisable(true)
+            .withName("Align swerve module steering encoders"));
 
     addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), 0.1);
   }
@@ -233,7 +235,9 @@ public class Robot extends TimedRobot {
         .onTrue(new InstantCommand(() -> {
           swerve.setHeadingOffset();
           // swerve.initializeRelativeTurningEncoder();
-        }).ignoringDisable(true));
+        })
+        .ignoringDisable(true)
+        .withName("Reset heading of robot pose"));
 
     // Drive to nearest pose
     driver.AIn()
@@ -243,7 +247,6 @@ public class Robot extends TimedRobot {
     driver.HIn()
         .whileTrue(coralRoller.createOuttakeCommand()
         .alongWith(algaeRoller.createOuttakeCommand()));
-
   }
 
   private void configureOperatorButtonBindings() {
