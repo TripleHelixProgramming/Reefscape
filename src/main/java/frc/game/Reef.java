@@ -4,12 +4,15 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib.Util;
 
 /**
  * Enumerates the Reefs on the field.
@@ -46,6 +49,10 @@ public enum Reef {
   private Pose2d centerPose;
 
   Reef(Pose2d centerPose) {
+    var adjust = Util.loadTransform("Reef."+this.name());
+    if (adjust.isPresent()) {
+      centerPose = centerPose.transformBy(adjust.get());
+    }
     this.centerPose = centerPose;
   }
 
@@ -118,6 +125,8 @@ public enum Reef {
     private Pose2d centerPose;
     private Pose2d leftPipePose;
     private Pose2d rightPipePose;
+    private Optional<Pose2d> memoLeftPipePose;
+    private Optional<Pose2d> memoRightPipePose;
 
     Face(Reef reef, int index) {
       this.reef = reef;
@@ -134,7 +143,9 @@ public enum Reef {
               new Transform2d(
                   new Translation2d(Meters.of(0), pipeSpacing.div(-2)), Rotation2d.kZero));
 
-      SmartDashboard.putString("ReefFace." + this.toString(), centerPose.toString());
+      memoLeftPipePose = Util.loadPose2d("Reef.Face." + this.name() + ".leftPipe");
+      memoRightPipePose = Util.loadPose2d("Reef.Face." + this.name() + ".rightPipe");
+      SmartDashboard.putString("Reef.Face." + this.name(), centerPose.toString());
     }
 
     /**
@@ -161,7 +172,7 @@ public enum Reef {
      * @return the left pipe pose of this face
      */
     public Pose2d getLeftPipePose() {
-      return leftPipePose;
+      return memoLeftPipePose.orElse(leftPipePose);
     }
 
     /**
@@ -170,7 +181,25 @@ public enum Reef {
      * @return the right pipe pose of this face
      */
     public Pose2d getRightPipePose() {
-      return rightPipePose;
+      return memoRightPipePose.orElse(rightPipePose);
+    }
+
+    /**
+     * Store the specified pose as an override for the derived value for the left pipe.
+     * @param pose the override pose
+     */
+    public void memoizeLeftPipePose(Pose2d pose) {
+      memoLeftPipePose = Optional.of(pose);
+      Util.storePose2d("Reef.Face." + this.toString() + ".leftPipe", pose);
+    }
+
+    /**
+     * Store the specified pose as an override for the derived value for the left pipe.
+     * @param pose the override pose
+     */
+    public void memoizeRightPipePose(Pose2d pose) {
+      memoRightPipePose = Optional.of(pose);
+      Util.storePose2d("Reef.Face." + this.toString() + ".rightPipe", pose);
     }
   }
 }
