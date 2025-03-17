@@ -4,15 +4,15 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
-import java.util.Optional;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib.AutoAlignTarget;
 import frc.lib.Util;
+import java.util.Optional;
 
 /**
  * Enumerates the Reefs on the field.
@@ -49,7 +49,7 @@ public enum Reef {
   private Pose2d centerPose;
 
   Reef(Pose2d centerPose) {
-    var adjust = Util.loadTransform("Reef."+this.name());
+    var adjust = Util.loadTransform("Reef." + this.name());
     if (adjust.isPresent()) {
       centerPose = centerPose.transformBy(adjust.get());
     }
@@ -128,6 +128,28 @@ public enum Reef {
     private Optional<Pose2d> memoLeftPipePose;
     private Optional<Pose2d> memoRightPipePose;
 
+    class PipeTarget implements AutoAlignTarget {
+      private final boolean isLeft;
+
+      public PipeTarget(boolean isLeft) {
+        this.isLeft = isLeft;
+      }
+
+      @Override
+      public Pose2d getPose() {
+        return isLeft ? getLeftPipePose() : getRightPipePose();
+      }
+
+      @Override
+      public void memoize(Pose2d pose) {
+        if (isLeft) {
+          memoizeLeftPipePose(pose);
+        } else {
+          memoizeRightPipePose(pose);
+        }
+      }
+    }
+
     Face(Reef reef, int index) {
       this.reef = reef;
       var rotation = new Rotation2d(Degrees.of(60.0)).times(index);
@@ -167,11 +189,34 @@ public enum Reef {
     }
 
     /**
+     * Return the left pipe as an auto-align target
+     *
+     * @return left pipe target
+     */
+    public AutoAlignTarget getLeftPipe() {
+      return new PipeTarget(true);
+    }
+
+    /**
+     * Return the right pipe as an auto-align target
+     *
+     * @return right pipe target
+     */
+    public AutoAlignTarget getRightPipe() {
+      return new PipeTarget(false);
+    }
+
+    /**
      * Gets the left pipe pose of this face.
      *
      * @return the left pipe pose of this face
      */
     public Pose2d getLeftPipePose() {
+      if (memoLeftPipePose.isEmpty() && memoRightPipePose.isPresent()) {
+        var transform =
+            new Transform2d(new Translation2d(Meters.of(0), pipeSpacing), Rotation2d.kZero);
+        memoLeftPipePose = Optional.of(memoRightPipePose.get().transformBy(transform));
+      }
       return memoLeftPipePose.orElse(leftPipePose);
     }
 
@@ -181,11 +226,18 @@ public enum Reef {
      * @return the right pipe pose of this face
      */
     public Pose2d getRightPipePose() {
+      if (memoRightPipePose.isEmpty() && memoLeftPipePose.isPresent()) {
+        var transform =
+            new Transform2d(
+                new Translation2d(Meters.of(0), pipeSpacing.unaryMinus()), Rotation2d.kZero);
+        memoRightPipePose = Optional.of(memoLeftPipePose.get().transformBy(transform));
+      }
       return memoRightPipePose.orElse(rightPipePose);
     }
 
     /**
-     * Store the specified pose as an override for the derived value for the left pipe.
+     * Store the specified pose as an override for the derived value for the left pipe. Temporarily
+     *
      * @param pose the override pose
      */
     public void memoizeLeftPipePose(Pose2d pose) {
@@ -195,6 +247,7 @@ public enum Reef {
 
     /**
      * Store the specified pose as an override for the derived value for the left pipe.
+     *
      * @param pose the override pose
      */
     public void memoizeRightPipePose(Pose2d pose) {

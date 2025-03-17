@@ -1,14 +1,13 @@
 package frc.lib;
 
-import java.util.Optional;
-import java.util.prefs.Preferences;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
+import java.util.Optional;
+import java.util.prefs.Preferences;
 
 public interface Util {
   /**
@@ -66,7 +65,7 @@ public interface Util {
   }
 
   public static void storePose2d(String key, Pose2d value) {
-    storeTranslation2d(key, value.getTranslation() );
+    storeTranslation2d(key, value.getTranslation());
     storeRotation2d(key, value.getRotation());
   }
 

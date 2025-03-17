@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.game.Gamepiece;
 import frc.game.Reef;
 import frc.lib.AllianceSelector;
+import frc.lib.AutoAlignTarget;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
@@ -53,6 +54,7 @@ import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -83,6 +85,7 @@ public class Robot extends TimedRobot {
   private Supplier<Gamepiece> gamepieceSupplier;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
+  private Optional<AutoAlignTarget> currentAutoAlignTarget = Optional.empty();
 
   private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
@@ -255,6 +258,22 @@ public class Robot extends TimedRobot {
     configureOperatorButtonBindings();
   }
 
+  /** Store the supplied auto-align target for possible fixing. */
+  protected Supplier<Pose2d> startAutoAlign(AutoAlignTarget target) {
+    currentAutoAlignTarget = Optional.of(target);
+    return () -> target.getPose();
+  }
+
+  /**
+   * Fix the most recent auto-align target by ammending its position with the one suppliked.
+   *
+   * @param newPose new pose to use for this target
+   */
+  protected void fixAutoAlign(Pose2d newPose) {
+    currentAutoAlignTarget.ifPresent(target -> target.memoize(newPose));
+    currentAutoAlignTarget = Optional.empty();
+  }
+
   // spotless:off
   private void configureDriverButtonBindings() {
 
@@ -269,12 +288,11 @@ public class Robot extends TimedRobot {
     // driver.AIn()
     //     .whileTrue(new DriveToPoseCommand(swerve, () -> swerve.getNearestPose()));
 
-    driver.AIn().whileTrue(
-        new DriveToPoseCommand(swerve, 
-          () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));
-    driver.DIn().whileTrue(
-        new DriveToPoseCommand(swerve, 
-          () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipePose()));
+    //TODO: add a button binding to call fixAutoAlign(swerve.getPose())
+    driver.AIn().whileTrue(new DriveToPoseCommand(swerve, 
+      () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipe()).get()));
+    driver.DIn().whileTrue(new DriveToPoseCommand(swerve, 
+      () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipe()).get()));
 
     // Outtake grippers
     var outtaking = driver.HIn();
