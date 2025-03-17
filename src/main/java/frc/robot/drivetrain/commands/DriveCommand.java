@@ -17,16 +17,16 @@ public abstract class DriveCommand extends Command {
   private AngularVelocity thetaDot;
 
   // used to swap control locations
-  SwerveDriveKinematics kinematicsType;
+  SwerveDriveKinematics kinematics;
 
   // The subsystem the command runs on
   public final Drivetrain drivetrain;
 
-  public DriveCommand(Drivetrain subsystem, SwerveDriveKinematics kinematicsType) {
+  public DriveCommand(Drivetrain subsystem, SwerveDriveKinematics kinematics) {
     drivetrain = subsystem;
     addRequirements(drivetrain);
 
-    this.kinematicsType = kinematicsType;
+    this.kinematics = kinematics;
   }
 
   @Override
@@ -41,24 +41,22 @@ public abstract class DriveCommand extends Command {
     SmartDashboard.putBoolean("fieldRelative", fieldRelative());
     SmartDashboard.putBoolean("rotateField", drivetrain.fieldRotatedSupplier().getAsBoolean());
 
-    drivetrain.setChassisSpeeds(
+    drivetrain.setRobotRelativeChassisSpeeds(
         fieldRelative() ? getFieldRelativeChassisSpeeds() : getRobotRelativeChassisSpeeds(),
-        kinematicsType);
+        kinematics);
   }
 
   private ChassisSpeeds getRobotRelativeChassisSpeeds() {
-    return new ChassisSpeeds(xDot.unaryMinus(), yDot.unaryMinus(), thetaDot);
+    return new ChassisSpeeds(xDot, yDot, thetaDot);
   }
 
-  // spotless:off
   private ChassisSpeeds getFieldRelativeChassisSpeeds() {
+    Rotation2d offsetHeading = drivetrain.getHeading().minus(drivetrain.getHeadingOffset());
     return drivetrain.fieldRotatedSupplier().getAsBoolean()
         ? ChassisSpeeds.fromFieldRelativeSpeeds(
-            xDot, yDot, thetaDot, drivetrain.getHeading().rotateBy(new Rotation2d(Math.PI)))
-        : ChassisSpeeds.fromFieldRelativeSpeeds(
-            xDot, yDot, thetaDot, drivetrain.getHeading());
+            xDot, yDot, thetaDot, offsetHeading.rotateBy(new Rotation2d(Math.PI)))
+        : ChassisSpeeds.fromFieldRelativeSpeeds(xDot, yDot, thetaDot, offsetHeading);
   }
-  // spotless:on
 
   /**
    * @return The input to the drive controller in the x axis, range [-1, 1]

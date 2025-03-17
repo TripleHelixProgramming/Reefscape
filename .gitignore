@@ -170,8 +170,11 @@ out/
 
 # Simulation GUI and other tools window save file
 networktables.json
+simgui-ds.json
 simgui.json
 *-window.json
+networktables.json.bck
+.bak
 
 # Simulation data log directory
 logs/
@@ -183,6 +186,5 @@ ctre_sim/
 /.cache
 compile_commands.json
 
-# Simulation generated files
-networktables.json.bck
-simgui-ds.json
+# Eclipse generated file for annotation processors
+.factorypath

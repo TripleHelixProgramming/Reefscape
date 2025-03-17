@@ -1,58 +1,102 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Axis;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceSelector;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
+import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
-import frc.lib.ZorroController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.autos.ExampleAuto;
+import frc.robot.LEDs.LEDs;
+import frc.robot.auto.BlueL4Auto;
+import frc.robot.auto.BlueMoveAuto;
+import frc.robot.auto.BlueNoProcess3PieceAuto;
+import frc.robot.auto.BlueProcess3PieceAuto;
+import frc.robot.auto.RedL4Auto;
+import frc.robot.auto.RedMoveAuto;
+import frc.robot.auto.RedNoProcess3PieceAuto;
+import frc.robot.auto.RedProcess3PieceAuto;
+import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
+import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
-import java.util.ArrayList;
-import java.util.List;
+import frc.robot.elevator.AlgaeRoller;
+import frc.robot.elevator.CoralRoller;
+import frc.robot.elevator.Elevator;
+import frc.robot.elevator.Lifter;
+import frc.robot.vision.Vision;
+import frc.util.Gamepiece;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class Robot extends TimedRobot {
+  private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
+  private final AllianceSelector allianceSelector =
+      new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
+  private final AutoSelector autoSelector =
+      new AutoSelector(
+          AutoConstants.kAutonomousModeSelectorPorts, allianceSelector::getAllianceColor);
 
-  private List<AutoOption> m_autoOptions = new ArrayList<>();
+  private final Elevator elevator = new Elevator();
+  private final Lifter lifter = elevator.getLifter();
+  private final CoralRoller coralRoller = elevator.getCoralRoller();
+  private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
 
-  private final PowerDistribution m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
-  private final AllianceSelector m_allianceSelector;
-  private final AutoSelector m_autoSelector;
-  private final Drivetrain m_swerve;
+  private final Drivetrain swerve =
+      new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
+  private final Climber climber = new Climber();
+  private final LEDs leds = LEDs.getInstance();
+  private final Vision vision = new Vision();
+  private final EventLoop loop = new EventLoop();
 
-  private ZorroController m_driver;
-  private XboxController m_operator;
+  private CommandZorroController driver;
+  private CommandXboxController operator;
+  private BooleanSupplier algaeModeSupplier;
+  private Supplier<Gamepiece> gamepieceSupplier;
+  private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
+  private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
 
-  private int m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
+  private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
+      NetworkTableInstance.getDefault()
+          .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
+          .publish();
 
   public Robot() {
-    m_allianceSelector = new AllianceSelector(AutoConstants.kAllianceColorSelectorPort);
-
-    configureAutoOptions();
-    m_autoSelector =
-        new AutoSelector(
-            AutoConstants.kAutonomousModeSelectorPorts,
-            m_allianceSelector::getAllianceColor,
-            m_autoOptions);
-
-    m_swerve = new Drivetrain(m_allianceSelector::fieldRotated);
+    gamepieceSupplier =
+        new Supplier<Gamepiece>() {
+          @Override
+          public Gamepiece get() {
+            return getLoadedGamepiece();
+          }
+        };
 
     configureButtonBindings();
-    configureDefaultCommands();
+    configureEventBindings();
+    configureAutoOptions();
 
     // Create a button on Smart Dashboard to reset the encoders.
     SmartDashboard.putData(
@@ -60,51 +104,76 @@ public class Robot extends TimedRobot {
         new InstantCommand(() -> m_swerve.zeroAbsTurningEncoderOffsets())
             .ignoringDisable(true)
             .withName("Align swerve module steering encoders"));
+
+    addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), 0.1);
   }
 
   @Override
   public void robotInit() {
-    // Starts recording to data log
+    // Start recording to data log
     // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html#logging-joystick-data
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
+
+    swerve.setDefaultCommand(
+        new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
+
+    reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
 
   @Override
   public void robotPeriodic() {
+    loop.poll();
     CommandScheduler.getInstance().run();
-    SmartDashboard.putData(m_driver);
-    SmartDashboard.putData(m_operator);
-    SmartDashboard.putData(m_powerDistribution);
+    checkVision();
+    SmartDashboard.putData("Driver Controller", driver.getHID());
+    SmartDashboard.putData("Operator Controller", operator.getHID());
+    SmartDashboard.putData(powerDistribution);
+    SmartDashboard.putString(
+        "Gamepiece", getLoadedGamepiece() == null ? "None" : getLoadedGamepiece().toString());
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    leds.replaceDefaultCommandImmediately(
+        leds.createAutoOptionDisplayCommand(
+                autoSelector,
+                () -> swerve.getPose(),
+                allianceSelector.getAgreementInAllianceColor())
+            .ignoringDisable(true));
+
+    // autoSelector.getChangedAutoSelection().onChange(leds.createAutoSelectionEffectCommand().withTimeout(Seconds.of(3)));
+  }
 
   @Override
   public void disabledPeriodic() {
     // Scan the USB devices. If they change, remap the buttons.
 
     /*
-     * Only check if controllers changed every kUSBCheckNumLoops loops of disablePeriodic().
-     * This prevents us from hammering on some routines that cause the RIO to lock up.
+     * Only check if controllers changed every kUSBCheckNumLoops loops of
+     * disablePeriodic().
+     * This prevents us from hammering on some routines that cause the RIO to lock
+     * up.
      */
-    m_usb_check_delay--;
-    if (0 >= m_usb_check_delay) {
-      m_usb_check_delay = OIConstants.kUSBCheckNumLoops;
+    usbCheckDelay--;
+    if (0 >= usbCheckDelay) {
+      usbCheckDelay = OIConstants.kUSBCheckNumLoops;
       if (ControllerPatroller.getInstance().controllersChanged()) {
         // Reset the joysticks & button mappings.
         configureButtonBindings();
       }
     }
 
-    m_allianceSelector.disabledPeriodic();
-    m_autoSelector.disabledPeriodic();
+    allianceSelector.disabledPeriodic();
+    autoSelector.disabledPeriodic();
   }
 
   @Override
   public void autonomousInit() {
-    m_autoSelector.scheduleAuto();
+    autoSelector.scheduleAuto();
+    lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
+    leds.replaceDefaultCommandImmediately(
+        leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
   }
 
   @Override
@@ -112,7 +181,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    m_autoSelector.cancelAuto();
+    autoSelector.cancelAuto();
+    lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+    leds.replaceDefaultCommandImmediately(
+        leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
+
+    // Test wrist feedforwards
+    // algaeWrist.setDefaultCommand(algaeWrist.createJoystickControlCommand(operator.getHID()));
+    // coralWrist.setDefaultCommand(coralWrist.createJoystickControlCommand(operator.getHID()));
   }
 
   @Override
@@ -126,9 +202,13 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {}
 
-  private void configureDefaultCommands() {
-    m_swerve.setDefaultCommand(
-        new ZorroDriveCommand(m_swerve, DriveConstants.kDriveKinematics, m_driver));
+  Gamepiece getLoadedGamepiece() {
+    if (algaeRoller.hasAlgae.getAsBoolean()) {
+      return Gamepiece.ALGAE;
+    } else if (coralRoller.hasCoral.getAsBoolean()) {
+      return Gamepiece.CORAL;
+    }
+    return null;
   }
 
   public void configureButtonBindings() {
@@ -140,8 +220,8 @@ public class Robot extends TimedRobot {
 
     // We use two different types of controllers - Joystick & XboxController.
     // Create objects of the specific types.
-    m_driver = new ZorroController(cp.findDriverPort());
-    m_operator = new XboxController(cp.findOperatorPort());
+    driver = new CommandZorroController(cp.findDriverPort());
+    operator = new CommandXboxController(cp.findOperatorPort());
 
     configureDriverButtonBindings();
     configureOperatorButtonBindings();
@@ -150,19 +230,132 @@ public class Robot extends TimedRobot {
   private void configureDriverButtonBindings() {
 
     // Reset heading
-    new JoystickButton(m_driver, ZorroController.Button.kHIn.value)
-        .onTrue(
-            new InstantCommand(() -> m_swerve.resetHeading())
-                .ignoringDisable(true)
-                .withName("Reset heading of robot pose"));
+    driver.DIn()
+        .onTrue(new InstantCommand(() -> {
+          swerve.setHeadingOffset();
+          // swerve.initializeRelativeTurningEncoder();
+        })
+        .ignoringDisable(true)
+        .withName("Reset heading of robot pose"));
+
+    // Drive to nearest pose
+    driver.AIn()
+        .whileTrue(new DriveToPoseCommand(swerve, vision, () -> swerve.getNearestPose()));
+
+    // Outtake grippers
+    driver.HIn()
+        .whileTrue(coralRoller.createOuttakeCommand()
+        .alongWith(algaeRoller.createOuttakeCommand()));
   }
 
-  private void configureOperatorButtonBindings() {}
+  private void configureOperatorButtonBindings() {
+
+    var algaeMode = operator.leftBumper();
+    algaeModeSupplier = new BooleanSupplier() {
+      @Override
+      public boolean getAsBoolean() {
+        return algaeMode.getAsBoolean();
+      }
+    };
+
+    // Test wrist motion
+    // operator.back()
+    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode)
+    // .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.Floor)));
+    // operator.start()
+    // .onTrue(coralWrist.createSetAngleCommand(CoralWristState.L4)
+    // .alongWith(algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode)));
+
+    // Test algae roller motion
+    // operator.back().whileTrue(algaeRoller.createIntakeCommand());
+    // operator.start().whileTrue(algaeRoller.createOuttakeCommand());
+
+    // Test coral roller motion
+    // operator.back().whileTrue(coralRoller.createIntakeCommand());
+    // operator.start().whileTrue(coralRoller.createOuttakeCommand());
+
+    // Configure to either score coral on L1 or score algae in processor
+    operator.a().whileTrue(new ConditionalCommand(
+        elevator.algaeProcessorPositionCG(), elevator.coralL1PositionCG(), algaeMode));
+
+    // Configure to either score coral on L2 or intake algae from L2
+    operator.b().whileTrue(new ConditionalCommand(
+        elevator.algaeL2IntakeCG(), elevator.coralL2PositionCG(), algaeMode));
+
+    // Configure to either score coral on L3 or intake algae from L3
+    operator.x().whileTrue(new ConditionalCommand(
+        elevator.algaeL3IntakeCG(), elevator.coralL3PositionCG(), algaeMode));
+
+    // Configure to either score coral on L4 or score algae in barge
+    operator.y().whileTrue(new ConditionalCommand(
+        elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
+
+    // Configure to either intake coral from source or intake algae from floor
+    // operator.start().whileTrue(new ConditionalCommand(
+    //     elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
+
+    operator.rightTrigger().whileTrue(new ConditionalCommand(
+        elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
+
+    // Intake coral and algae
+    operator.rightBumper()
+        .whileTrue(algaeRoller.createIntakeCommand()
+        .alongWith(coralRoller.createIntakeCommand())
+        .andThen(new ConditionalCommand(algaeRoller.createHoldAlgaeCommand(), algaeRoller.createStopCommand(), algaeRoller.hasAlgae)));
+
+    // Force joystick operation of the elevator
+    Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
+    Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
+    elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
+
+    // Actuate climber winch
+    // Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
+    // climbTrigger.onTrue(climber.createDeployCommand()
+    //     .andThen(climber.createClimbByControllerCommand(operator.getHID(), -ClimberConstants.kMaxVelocityInchesPerSecond)));
+
+    operator.leftTrigger().onTrue(climber.createDeployCommand());
+
+    // Auto climbe to position
+    operator.povUp().onTrue(climber.createRetractCommand());
+
+    // just for testing roller animation.
+    operator.povLeft().whileTrue(leds.createRollerAnimationCommand(() -> true, () -> Color.kOrange));
+    operator.povRight().whileTrue(leds.createRollerAnimationCommand(() -> false, () -> Color.kOrange));
+  }
+
+  private void configureEventBindings() {
+    RobotModeTriggers.autonomous()
+        .onTrue(elevator.resetPositionControllers()
+        .andThen(climber.lockRatchet()));
+    RobotModeTriggers.teleop()
+        .onTrue(swerve.resetHeadingOffset()
+        .andThen(elevator.resetPositionControllers())
+        .andThen(climber.lockRatchet())
+        .andThen(climber.resetEncoder()));
+
+    algaeRoller.hasAlgae.whileTrue(algaeRoller.createHoldAlgaeCommand());
+    coralRoller.isRolling.whileTrue(createRollerAnimationCommand());
+  }
 
   private void configureAutoOptions() {
-    m_autoOptions.add(new AutoOption(Alliance.Red, 4, new ExampleAuto()));
-    m_autoOptions.add(new AutoOption(Alliance.Blue, 1));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 1, new RedL4Auto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 1, new BlueL4Auto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 2, new RedNoProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
   }
+  // spotless:on
 
   /**
    * Gets the current drawn from the Power Distribution Hub by a CAN motor controller, assuming that
@@ -172,6 +365,80 @@ public class Robot extends TimedRobot {
    * @return Current in Amps on the PDH channel corresponding to the motor channel
    */
   public double getPDHCurrent(int CANBusPort) {
-    return m_powerDistribution.getCurrent(CANBusPort - 10);
+    return powerDistribution.getCurrent(CANBusPort - 10);
+  }
+
+  private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {
+    var publisher = posePublishers.get(name);
+    if (publisher == null) {
+      publisher = NetworkTableInstance.getDefault().getStructTopic(name, Pose2d.struct).publish();
+      posePublishers.put(name, publisher);
+    }
+    return publisher;
+  }
+
+  protected void checkVision() {
+    vision
+        .getPoseEstimates()
+        .forEach(
+            est -> {
+              swerve.addVisionMeasurement(
+                  est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
+              getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
+            });
+  }
+
+  /**
+   * Create a command that animates the rollers based on their current state.
+   *
+   * <p>If both rollers are running we assume it's an outtake and use the color of the current
+   * gamepiece (yellow if none). If only one roller is running, we assume its an intake and use the
+   * color of piece associated with that roller.
+   *
+   * <p>After working out the logic, the command is created by the LED subsystem.
+   *
+   * @return An LED subsystem command that animates the rollers.
+   */
+  protected Command createRollerAnimationCommand() {
+    System.err.printf(
+        "createRollerAnimation: algae=%b, coral=%b%n",
+        algaeRoller.isRolling, coralRoller.isRolling);
+    /*
+     * On intake, one and only one is rolling
+     */
+    BooleanSupplier intakeSupplier =
+        () -> {
+          return coralRoller.isRolling.getAsBoolean() ^ algaeRoller.isRolling.getAsBoolean();
+        };
+
+    /*
+     * Use currently held gamepiece to color outtake animation, yellow if none.
+     * On intake, use the color associated with the gripper's gamepiece.  On
+     * some weird logic error, use red.
+     */
+    Supplier<Color> colorSupplier =
+        () -> {
+          /*
+           * On outtake, use the color of the currently held game piece, yellow if none.
+           */
+          if (!intakeSupplier.getAsBoolean()) {
+            var gamepiece = getLoadedGamepiece();
+            return gamepiece == null ? Color.kYellow : gamepiece.color;
+          }
+          /*
+           * Otherwise, use the color associated with the gripper's target piece.
+           */
+          else if (algaeRoller.isRolling.getAsBoolean()) {
+            return Gamepiece.ALGAE.color;
+          } else if (coralRoller.isRolling.getAsBoolean()) {
+            return Gamepiece.CORAL.color;
+          }
+          /*
+           * On some weird logic error, use red.
+           */
+          return Color.kRed;
+        };
+
+    return leds.createRollerAnimationCommand(intakeSupplier, colorSupplier);
   }
 }

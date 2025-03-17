@@ -2,17 +2,16 @@ package frc.robot.drivetrain;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,87 +23,92 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ModuleConstants.DriveControllerGains;
 import frc.robot.Constants.ModuleConstants.TurningControllerGains;
+import frc.robot.Constants.MotorConstants.NEOConstants;
+import frc.robot.Constants.MotorConstants.NEOVortexConstants;
 import frc.robot.Constants.RobotConstants;
 
-public class SwerveModule {
-  public final String moduleName;
+public enum SwerveModule {
+  FrontLeft(
+      DriveConstants.MotorControllers.kFrontLeftDriveMotorPort,
+      DriveConstants.MotorControllers.kFrontLeftTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kFrontLeftTurningEncoderPort),
+  FrontRight(
+      DriveConstants.MotorControllers.kFrontRightDriveMotorPort,
+      DriveConstants.MotorControllers.kFrontRightTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kFrontRightTurningEncoderPort),
+  RearLeft(
+      DriveConstants.MotorControllers.kRearLeftDriveMotorPort,
+      DriveConstants.MotorControllers.kRearLeftTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kRearLeftTurningEncoderPort),
+  RearRight(
+      DriveConstants.MotorControllers.kRearRightDriveMotorPort,
+      DriveConstants.MotorControllers.kRearRightTurningMotorPort,
+      DriveConstants.AbsoluteEncoders.kRearRightTurningEncoderPort);
 
-  private final SparkMax m_driveMotor;
+  private final SparkFlex m_driveMotor;
   private final SparkMax m_turningMotor;
-  private final SparkMaxConfig m_defaultMotorConfig = new SparkMaxConfig();
-  private final SparkMaxConfig m_driveMotorConfig = new SparkMaxConfig();
+  private final SparkFlexConfig m_driveMotorConfig = new SparkFlexConfig();
   private final SparkMaxConfig m_turningMotorConfig = new SparkMaxConfig();
 
   private final RelativeEncoder m_driveEncoder;
   private final RelativeEncoder m_turningRelativeEncoder;
-  private final EncoderConfig m_driveEncoderConfig = new EncoderConfig();
-  private final EncoderConfig m_turningRelativeEncoderConfig = new EncoderConfig();
 
   private final SparkClosedLoopController m_driveController;
   private final SparkClosedLoopController m_turningController;
-  private final ClosedLoopConfig m_driveControllerConfig = new ClosedLoopConfig();
-  private final ClosedLoopConfig m_turningControllerConfig = new ClosedLoopConfig();
 
   private final CANcoder m_turningAbsEncoder;
   private final CANcoderConfiguration m_turningAbsEncoderConfig;
 
-  /**
-   * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
-   *
-   * @param moduleName Name of the module
-   * @param driveMotorChannel CAN ID of the drive motor controller
-   * @param turningMotorChannel CAN ID of the turning motor controller
-   * @param turningAbsoluteEncoderChannel CAN ID of absolute encoder
-   */
-  public SwerveModule(
-      String name,
-      int driveMotorChannel,
-      int turningMotorChannel,
-      int turningAbsoluteEncoderChannel) {
-    moduleName = name;
+  private SwerveModule(
+      int driveMotorChannel, int turningMotorChannel, int turningAbsoluteEncoderChannel) {
 
-    m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
+    m_driveMotor = new SparkFlex(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
 
-    m_defaultMotorConfig.voltageCompensation(RobotConstants.kNominalVoltage);
-    m_defaultMotorConfig.inverted(false);
-    m_driveMotorConfig.apply(m_defaultMotorConfig);
-    m_turningMotorConfig.apply(m_defaultMotorConfig);
+    // spotless:off
+    m_driveMotorConfig
+      .voltageCompensation(RobotConstants.kNominalVoltage)
+      .inverted(false)
+      .idleMode(IdleMode.kCoast)
+      .smartCurrentLimit(NEOVortexConstants.kDefaultCurrentLimit);
 
-    m_driveMotorConfig.idleMode(IdleMode.kCoast);
-    m_turningMotorConfig.idleMode(IdleMode.kBrake);
+    m_turningMotorConfig
+        .voltageCompensation(RobotConstants.kNominalVoltage)
+        .inverted(false)
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(NEOConstants.kDefaultCurrentLimit);
 
-    m_driveMotorConfig.smartCurrentLimit(ModuleConstants.kDriveMotorCurrentLimit);
-    m_turningMotorConfig.smartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
+    m_driveMotorConfig.closedLoop
+        .p(DriveControllerGains.kP)
+        .i(DriveControllerGains.kI)
+        .d(DriveControllerGains.kD)
+        // .iZone();
+        .velocityFF(DriveControllerGains.kFF);
+        // .outputRange();
 
-    m_driveControllerConfig.p(DriveControllerGains.kP);
-    m_driveControllerConfig.i(DriveControllerGains.kI);
-    m_driveControllerConfig.d(DriveControllerGains.kD);
-    // m_driveControllerConfig.iZone();
-    m_driveControllerConfig.velocityFF(DriveControllerGains.kFF);
-    // m_driveControllerConfig.outputRange();
-    m_driveMotorConfig.apply(m_driveControllerConfig);
+    m_turningMotorConfig.closedLoop
+        .p(TurningControllerGains.kP)
+        .i(TurningControllerGains.kI)
+        .d(TurningControllerGains.kD)
+        // .iZone();
+        // .outputRange();
+        .positionWrappingEnabled(true)
+        .positionWrappingInputRange(-0.5, 0.5);
 
-    m_turningControllerConfig.p(TurningControllerGains.kP);
-    m_turningControllerConfig.i(TurningControllerGains.kI);
-    m_turningControllerConfig.d(TurningControllerGains.kD);
-    // m_turningControllerConfig.iZone();
-    // m_turningControllerConfig.outputRange();
-    m_turningControllerConfig.positionWrappingEnabled(true);
-    m_turningControllerConfig.positionWrappingInputRange(-0.5, 0.5);
-    m_turningMotorConfig.apply(m_turningControllerConfig);
+    m_driveMotorConfig.encoder
+        .positionConversionFactor(ModuleConstants.kDrivePositionConversionFactor)
+        .velocityConversionFactor(ModuleConstants.kDriveVelocityConversionFactor);
 
-    m_driveEncoderConfig.positionConversionFactor(ModuleConstants.kDrivePositionConversionFactor);
-    m_driveEncoderConfig.velocityConversionFactor(ModuleConstants.kDriveVelocityConversionFactor);
-    m_driveMotorConfig.apply(m_driveEncoderConfig);
+    m_turningMotorConfig.encoder
+        .positionConversionFactor(ModuleConstants.kTurnPositionConversionFactor);
 
-    m_turningRelativeEncoderConfig.positionConversionFactor(
-        ModuleConstants.kTurnPositionConversionFactor);
-    m_turningMotorConfig.apply(m_turningRelativeEncoderConfig);
+    m_turningMotorConfig.signals
+        .primaryEncoderVelocityPeriodMs(100);
+    // spotless:on
 
-    m_driveMotor.configure(
+    m_driveMotor.configureAsync(
         m_driveMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    m_turningMotor.configure(
+    m_turningMotor.configureAsync(
         m_turningMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     m_driveController = m_driveMotor.getClosedLoopController();
@@ -117,6 +121,7 @@ public class SwerveModule {
     m_turningAbsEncoderConfig = new CANcoderConfiguration();
     m_turningAbsEncoder.getConfigurator().refresh(m_turningAbsEncoderConfig);
     m_turningAbsEncoder.getAbsolutePosition().setUpdateFrequency(50, 0.5);
+    m_turningAbsEncoder.optimizeBusUtilization();
   }
 
   /**
@@ -197,15 +202,19 @@ public class SwerveModule {
     m_turningRelativeEncoder.setPosition(getAbsTurningPosition(0.25).getRotations());
   }
 
+  public void refreshRelativeTurningEncoder() {
+    m_turningRelativeEncoder.setPosition(getAbsTurningPosition(0.0).getRotations());
+  }
+
   /** Initializes the magnetic offset of the absolute turning encoder */
   public void initializeAbsoluteTurningEncoder() {
     double magnetOffsetFromCANCoder = getAbsTurningEncoderOffset().getRotations();
     Preferences.initDouble(
-        moduleName + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
+        name() + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
         magnetOffsetFromCANCoder);
     double magnetOffsetFromPreferences =
         Preferences.getDouble(
-            moduleName + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
+            name() + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
             magnetOffsetFromCANCoder);
     setAbsTurningEncoderOffset(magnetOffsetFromPreferences);
   }
@@ -220,7 +229,7 @@ public class SwerveModule {
 
     Rotation2d magnetOffset = getAbsTurningEncoderOffset().minus(getAbsTurningPosition(0.25));
     Preferences.setDouble(
-        moduleName + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
+        name() + DriveConstants.AbsoluteEncoders.kAbsEncoderMagnetOffsetKey,
         magnetOffset.getRotations());
     setAbsTurningEncoderOffset(magnetOffset.getRotations());
 
@@ -234,8 +243,7 @@ public class SwerveModule {
    */
   public void setAbsTurningEncoderOffset(double offset) {
     m_turningAbsEncoderConfig.MagnetSensor.MagnetOffset = offset;
-    m_turningAbsEncoderConfig.MagnetSensor.AbsoluteSensorRange =
-        AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+    m_turningAbsEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
     m_turningAbsEncoderConfig.MagnetSensor.SensorDirection =
         SensorDirectionValue.CounterClockwise_Positive;
     m_turningAbsEncoder.getConfigurator().apply(m_turningAbsEncoderConfig);
@@ -252,7 +260,7 @@ public class SwerveModule {
    * @return The name of the swerve module
    */
   public String getName() {
-    return moduleName;
+    return name();
   }
 
   public double getDriveMotorCurrent() {
