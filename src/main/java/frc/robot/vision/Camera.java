@@ -42,6 +42,7 @@ public enum Camera {
     this.transform = new Transform3d(translation, rotation);
     this.device = new PhotonCamera(name);
 
+    // TODO: switch back to official field layout
     AprilTagFieldLayout tagLayout;
     try {
       tagLayout = new AprilTagFieldLayout(VisionConstants.kAprilTagLayoutPath);

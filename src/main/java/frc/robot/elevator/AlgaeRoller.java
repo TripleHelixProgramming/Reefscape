@@ -29,7 +29,7 @@ public class AlgaeRoller extends SubsystemBase {
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
   private final SparkLimitSwitch algaeSensor = leaderMotor.getForwardLimitSwitch();
-  public Trigger hasAlgae = new Trigger(() -> algaeSensor.isPressed());
+  public final Trigger hasAlgae = new Trigger(() -> algaeSensor.isPressed());
   public final Trigger isRolling = new Trigger(() -> Math.abs(encoder.getVelocity()) > 1);
 
   public AlgaeRoller() {
