@@ -2,6 +2,7 @@ package frc.robot.drivetrain.commands;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,14 +17,14 @@ public class DriveToPoseCommand extends Command {
 
   private final ProfiledPIDController xController =
       new ProfiledPIDController(
-          DriveToPoseControllerGains.kTraP,
+          DriveToPoseControllerGains.kTraXP,
           DriveToPoseControllerGains.kTraI,
           DriveToPoseControllerGains.kTraD,
           new TrapezoidProfile.Constraints(
               DriveConstants.kMaxTranslationalVelocity.baseUnitMagnitude(), 5));
   private final ProfiledPIDController yController =
       new ProfiledPIDController(
-          DriveToPoseControllerGains.kTraP,
+          DriveToPoseControllerGains.kTraYP,
           DriveToPoseControllerGains.kTraI,
           DriveToPoseControllerGains.kTraD,
           new TrapezoidProfile.Constraints(
@@ -57,14 +58,14 @@ public class DriveToPoseCommand extends Command {
     Pose2d currentPose = swerve.getPose();
     var targetPose = targetPoseSupplier.get();
 
+    var xform = new Transform2d(currentPose, targetPose);
+
     ChassisSpeeds speeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            new ChassisSpeeds(
-                xController.calculate(currentPose.getX(), targetPose.getX()),
-                yController.calculate(currentPose.getY(), targetPose.getY()),
-                thetaController.calculate(
-                    currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians())),
-            swerve.getHeading());
+        new ChassisSpeeds(
+            xController.calculate(xform.getX()),
+            yController.calculate(xform.getY()),
+            thetaController.calculate(
+                currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians()));
 
     swerve.setRobotRelativeChassisSpeeds(speeds);
   }
