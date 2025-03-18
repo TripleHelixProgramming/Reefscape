@@ -32,7 +32,7 @@ public interface Util {
   public static Optional<Translation2d> loadTranslation2d(String key) {
     var x = Preferences.systemRoot().getDouble(key + ".x", Double.NaN);
     var y = Preferences.systemRoot().getDouble(key + ".y", Double.NaN);
-    if (x == Double.NaN || y == Double.NaN) {
+    if (Double.isNaN(x) || Double.isNaN(y)) {
       return Optional.empty();
     }
     return Optional.of(new Translation2d(x, y));
@@ -44,7 +44,7 @@ public interface Util {
 
   public static Optional<Rotation2d> loadRotation2d(String key) {
     var w = Preferences.systemRoot().getDouble(key + ".w", Double.NaN);
-    if (w == Double.NaN) {
+    if (Double.isNaN(w)) {
       return Optional.empty();
     }
     return Optional.of(new Rotation2d(w));
