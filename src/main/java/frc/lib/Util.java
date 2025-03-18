@@ -5,9 +5,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.util.Color;
 import java.util.Optional;
-import java.util.prefs.Preferences;
 
 public interface Util {
   /**
@@ -25,13 +25,13 @@ public interface Util {
   }
 
   public static void storeTranslation2d(String key, Translation2d xy) {
-    Preferences.systemRoot().putDouble(key + ".x", xy.getX());
-    Preferences.systemRoot().putDouble(key + ".y", xy.getY());
+    Preferences.setDouble(key + ".x", xy.getX());
+    Preferences.setDouble(key + ".y", xy.getY());
   }
 
   public static Optional<Translation2d> loadTranslation2d(String key) {
-    var x = Preferences.systemRoot().getDouble(key + ".x", Double.NaN);
-    var y = Preferences.systemRoot().getDouble(key + ".y", Double.NaN);
+    var x = Preferences.getDouble(key + ".x", Double.NaN);
+    var y = Preferences.getDouble(key + ".y", Double.NaN);
     if (Double.isNaN(x) || Double.isNaN(y)) {
       return Optional.empty();
     }
@@ -39,11 +39,11 @@ public interface Util {
   }
 
   public static void storeRotation2d(String key, Rotation2d w) {
-    Preferences.systemRoot().putDouble(key + ".w", w.getDegrees());
+    Preferences.setDouble(key + ".w", w.getDegrees());
   }
 
   public static Optional<Rotation2d> loadRotation2d(String key) {
-    var w = Preferences.systemRoot().getDouble(key + ".w", Double.NaN);
+    var w = Preferences.getDouble(key + ".w", Double.NaN);
     if (Double.isNaN(w)) {
       return Optional.empty();
     }
