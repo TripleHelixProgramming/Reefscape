@@ -155,7 +155,8 @@ public class ElevatorConstants {
       L1(125),
       L2(65),
       L3(65),
-      L4(35),
+      // TODO: reevaluate
+      L4(30),
       Intake(125),
       AlgaeMode(90);
 
@@ -242,7 +243,8 @@ public class ElevatorConstants {
       Processor(0),
       L2(-5),
       L3(-5),
-      Barge(60),
+      // TODO: reevaluate
+      Barge(55),
       CoralMode(80);
 
       public Angle angle;

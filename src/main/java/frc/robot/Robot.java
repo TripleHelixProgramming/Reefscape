@@ -280,7 +280,7 @@ public class Robot extends TimedRobot {
     var outtaking = driver.HIn();
     lifter.atProcessorHeight.and(outtaking)
         .whileTrue(algaeRoller.createOuttakeToProcessorCommand());
-    lifter.atBargeHeight.and(outtaking)
+    lifter.atProcessorHeight.negate().and(outtaking)
         .whileTrue(algaeRoller.createOuttakeToBargeCommand());
     outtaking
         .whileTrue(coralRoller.createOuttakeCommand());
@@ -460,7 +460,7 @@ public class Robot extends TimedRobot {
      */
     BooleanSupplier intakeSupplier =
         () -> {
-          return coralRoller.getRollerVelocity() > 0 || algaeRoller.getRollerVelocity() > 0;
+          return coralRoller.getRollerVelocity() > 1 || algaeRoller.getRollerVelocity() > 1;
         };
 
     /*
