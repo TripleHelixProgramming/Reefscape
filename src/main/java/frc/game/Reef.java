@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.AutoAlignTarget;
-import frc.lib.Util;
+import frc.lib.Config;
 import java.util.Optional;
 
 /**
@@ -49,7 +49,7 @@ public enum Reef {
   private Pose2d centerPose;
 
   Reef(Pose2d centerPose) {
-    var adjust = Util.loadTransform("Reef." + this.name());
+    var adjust = Config.getDefault().loadTransform("Reef." + this.name());
     if (adjust.isPresent()) {
       centerPose = centerPose.transformBy(adjust.get());
     }
@@ -165,8 +165,8 @@ public enum Reef {
               new Transform2d(
                   new Translation2d(Meters.of(0), pipeSpacing.div(-2)), Rotation2d.kZero));
 
-      memoLeftPipePose = Util.loadPose2d("Reef.Face." + this.name() + ".leftPipe");
-      memoRightPipePose = Util.loadPose2d("Reef.Face." + this.name() + ".rightPipe");
+      memoLeftPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".leftPipe");
+      memoRightPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".rightPipe");
       SmartDashboard.putString("Reef.Face." + this.name(), centerPose.toString());
     }
 
@@ -242,7 +242,7 @@ public enum Reef {
      */
     public void memoizeLeftPipePose(Pose2d pose) {
       memoLeftPipePose = Optional.of(pose);
-      Util.storePose2d("Reef.Face." + this.toString() + ".leftPipe", pose);
+      Config.getDefault().storePose2d("Reef.Face." + this.toString() + ".leftPipe", pose);
     }
 
     /**
@@ -252,7 +252,7 @@ public enum Reef {
      */
     public void memoizeRightPipePose(Pose2d pose) {
       memoRightPipePose = Optional.of(pose);
-      Util.storePose2d("Reef.Face." + this.toString() + ".rightPipe", pose);
+      Config.getDefault().storePose2d("Reef.Face." + this.toString() + ".rightPipe", pose);
     }
   }
 }
