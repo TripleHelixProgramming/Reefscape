@@ -14,6 +14,12 @@ public class Util {
     return alliance == Alliance.Blue ? Color.kBlue : Color.kRed;
   }
 
+  /**
+   * Returns true if the numbners are within floating point precision 
+   * @param a first value
+   * @param b second value
+   * @return true iff a and b are effectively equal
+   */
   public static boolean nearlyEqual(double a, double b) {
     return Math.abs(a - b) < Math.ulp(1);
   }
