@@ -15,7 +15,8 @@ public class Util {
   }
 
   /**
-   * Returns true if the numbners are within floating point precision 
+   * Returns true if the numbners are within floating point precision
+   *
    * @param a first value
    * @param b second value
    * @return true iff a and b are effectively equal
