@@ -372,18 +372,6 @@ public class LEDs extends SubsystemBase {
   }
 
   /**
-   * Create a command to display pose seeking information on the LEDs.
-   *
-   * @param targetPoseSupplier provides the target pose
-   * @param currentPoseSupplier provides the current pose
-   * @return a command to display pose seeking information
-   */
-  public Command createPoseSeekingCommand(
-      Supplier<Pose2d> targetPoseSupplier, Supplier<Pose2d> currentPoseSupplier) {
-    return newCommand(() -> displayPoseSeek(currentPoseSupplier.get(), targetPoseSupplier.get()));
-  }
-
-  /**
    * Create a pattern to display stacked blocks on the left and right strips.
    *
    * @return a command to display stacked blocks
@@ -446,8 +434,10 @@ public class LEDs extends SubsystemBase {
          */
         auto -> {
           var hasInitialPose = auto.getInitialPose().isPresent();
-          if (hasInitialPose) {
+          if (hasInitialPose && currentPose != null) {
             displayPoseSeek(currentPose, auto.getInitialPose().get());
+          } else if (currentPose == null) {
+            fill(Color.kDarkGray, Segments.ALL);
           }
           displayAutoSelection(
               auto.getAllianceColor(), auto.getOptionNumber(), agreement, hasInitialPose);
