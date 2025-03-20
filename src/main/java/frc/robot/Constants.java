@@ -143,8 +143,7 @@ public final class Constants {
     }
 
     public static final class DriveToPoseControllerGains {
-      public static final double kTraXP = 2.0;
-      public static final double kTraYP = 4.0;
+      public static final double kTraP = 2.0;
       public static final double kTraI = 0.0;
       public static final double kTraD = 0.0;
       public static final double kRotP = 3.0;
