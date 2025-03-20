@@ -377,6 +377,11 @@ public class Robot extends TimedRobot {
      * Left and right D-pad buttons will cause the robot to go to the left/right
      * pipe on the nearest reef face.
      */
+    operator.povLeft().onTrue(new InstantCommand(() -> fixAutoAlign(swerve.getPose())));
+    operator.povRight().onTrue(new InstantCommand(() -> fixAutoAlign(swerve.getPose())));
+    
+       
+      
     // operator.povLeft().whileTrue(
     //   new DriveToPoseCommand(swerve, 
     //   () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));

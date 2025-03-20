@@ -186,8 +186,8 @@ public class ElevatorConstants {
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
     // Found 3/9/2025 that 5V applied at stall will draw ~5A, which is acceptable for motor lifetime
     public static final Voltage kHoldVoltage = Volts.of(5.0);
-    public static final Voltage kOuttakeToProcessorVoltage = Volts.of(-5.0);
-    public static final Voltage kOuttakeToBargeVoltage = Volts.of(-2.5);
+    public static final Voltage kOuttakeToProcessorVoltage = Volts.of(-2.5);
+    public static final Voltage kOuttakeToBargeVoltage = Volts.of(-5);
   }
 
   public static final class AlgaeWristConstants {
