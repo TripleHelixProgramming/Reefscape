@@ -503,8 +503,6 @@ public class LEDs extends SubsystemBase {
   }
 
   public static AddressableLEDBufferView[] intakeBuffers = {
-    // leftStrip,
-    // rightStrip
     Segments.leftTop.bufferView.reversed(),
     Segments.rightTop.bufferView.reversed(),
     Segments.leftBottom.bufferView,
@@ -512,8 +510,6 @@ public class LEDs extends SubsystemBase {
   };
 
   public static AddressableLEDBufferView[] outtakeBuffers = {
-    // leftStrip.reversed(),
-    // rightStrip.reversed()
     Segments.leftTop.bufferView,
     Segments.rightTop.bufferView,
     Segments.leftBottom.bufferView.reversed(),
