@@ -14,7 +14,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.game.FeederStation;
@@ -39,9 +38,6 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final String kAprilTagLayoutPath =
-        Filesystem.getDeployDirectory() + "/" + "stemgym.json";
-
     // Define the standard deviations for the pose estimator, which determine how fast the pose
     // estimate converges to the vision measurement. This should depend on the vision measurement
     // noise and how many or how frequently vision measurements are applied to the pose estimator.
