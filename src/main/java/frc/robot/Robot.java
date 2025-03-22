@@ -40,6 +40,7 @@ import frc.robot.auto.RedL4Auto;
 import frc.robot.auto.RedMoveAuto;
 import frc.robot.auto.RedNoProcess3PieceAuto;
 import frc.robot.auto.RedProcess3PieceAuto;
+import frc.robot.auto.Red2PieceAuto;
 import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
@@ -345,7 +346,7 @@ public class Robot extends TimedRobot {
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
     Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
-    // elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
+    elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
 
     // Actuate climber winch
     // Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
@@ -407,6 +408,8 @@ public class Robot extends TimedRobot {
         new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
+      autoSelector.addAuto(
+        new AutoOption(Alliance.Red, 5, new Red2PieceAuto(swerve, elevator)));
   }
   // spotless:on
 

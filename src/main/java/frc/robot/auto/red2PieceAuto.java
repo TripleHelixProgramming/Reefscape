@@ -12,14 +12,14 @@ import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
 
-public class red2PieceAuto extends AutoMode {
+public class Red2PieceAuto extends AutoMode {
     
     Lifter lifter;
   CoralRoller coralRoller;
   AlgaeRoller algaeRoller;
   Elevator elevator;
 
-  public red2PieceAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
+  public Red2PieceAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
     super(drivetrain);
     elevator = elevatorSystem;
     lifter = elevator.getLifter();
