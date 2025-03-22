@@ -48,9 +48,7 @@ public class BlueL4Auto extends AutoMode {
     blueL4AutoRoutine.active().onTrue(
       Commands.parallel(
         blueCenterToL4G.cmd(),
-        Commands.sequence(
-          Commands.waitSeconds(1.0),
-          elevator.coralL4PositionCG().withTimeout(2.0))));
+        elevator.coralL4PositionCG().withTimeout(2.0)));
 
     blueCenterToL4G.done().onTrue(
         Commands.sequence(

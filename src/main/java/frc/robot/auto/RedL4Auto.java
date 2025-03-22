@@ -48,9 +48,7 @@ public class RedL4Auto extends AutoMode {
     redL4AutoRoutine.active().onTrue(
       Commands.parallel(
         redCenterToL4G.cmd(),
-        Commands.sequence(
-          Commands.waitSeconds(1.0),
-          elevator.coralL4PositionCG().withTimeout(2.0))));
+        elevator.coralL4PositionCG().withTimeout(2.0)));
         
 
     redCenterToL4G.done().onTrue(
