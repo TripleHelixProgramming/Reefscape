@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * to a pose.
  */
 public enum Reef {
-  // TODO remove reef ceter offset
   Blue(new Pose2d(Inches.of(176.75), Inches.of(158.5), Rotation2d.kZero)),
   Red(new Pose2d(Inches.of(514.125), Inches.of(158.5), Rotation2d.kPi));
 
