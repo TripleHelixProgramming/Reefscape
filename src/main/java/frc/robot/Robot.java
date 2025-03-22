@@ -211,7 +211,7 @@ public class Robot extends TimedRobot {
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
 
-    lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
+    lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     // lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
