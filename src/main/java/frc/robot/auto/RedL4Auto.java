@@ -50,12 +50,12 @@ public class RedL4Auto extends AutoMode {
         redCenterToL4G.cmd(),
         Commands.sequence(
           Commands.waitSeconds(1.0),
-          elevator.coralL4PositionCG()).withTimeout(2.0)));
+          elevator.coralL4PositionCG())));
         
 
     redCenterToL4G.done().onTrue(
         Commands.sequence(
-            Commands.waitSeconds(0.1),
+            Commands.waitSeconds(0.1), 
             coralRoller.createOuttakeCommand().withTimeout(0.2),
             Commands.waitSeconds(0.2)));
 
