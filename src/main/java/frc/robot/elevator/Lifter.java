@@ -181,12 +181,16 @@ public class Lifter extends SubsystemBase {
         this);
   }
 
+  public void matchHeight() {
+    feedback.setGoal(encoder.getPosition());
+  }
+
   public Command createRemainAtCurrentHeightCommand() {
     return new FunctionalCommand(
         // initialize
         () -> {
           if (targetState == LifterState.Initial) {
-            feedback.setGoal(encoder.getPosition());
+            matchHeight();
             // Users should call reset() when they first start running the controller to avoid
             // unwanted behavior.
             resetController();

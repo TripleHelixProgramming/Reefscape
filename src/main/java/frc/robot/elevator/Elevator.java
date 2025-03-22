@@ -49,6 +49,7 @@ public class Elevator {
   public Command resetPositionControllers() {
     return new InstantCommand(
         () -> {
+          lifter.matchHeight();
           lifter.resetController();
           coralWrist.resetController();
           algaeWrist.resetController();
