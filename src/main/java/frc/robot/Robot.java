@@ -125,9 +125,6 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
 
-    swerve.setDefaultCommand(
-        new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
-
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
 
@@ -210,7 +207,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     autoSelector.cancelAuto();
-    elevator.coralIntakeCG().schedule();
+    swerve.setDefaultCommand(
+        new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
+
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
     // lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     leds.replaceDefaultCommandImmediately(
