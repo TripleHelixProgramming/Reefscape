@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public enum Reef {
   // TODO remove reef ceter offset
-  Blue(new Pose2d(Inches.of(176.75), Inches.of(158.5 + 4.5), Rotation2d.kZero)),
+  Blue(new Pose2d(Inches.of(176.75), Inches.of(158.5), Rotation2d.kZero)),
   Red(new Pose2d(Inches.of(514.125), Inches.of(158.5), Rotation2d.kPi));
 
   /** The radius of the reef hexagon */
