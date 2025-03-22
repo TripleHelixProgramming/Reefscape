@@ -216,8 +216,8 @@ public class Lifter extends SubsystemBase {
     return new FunctionalCommand(
       // initialize
       () -> { 
-        matchHeight();
-        resetController();
+       // matchHeight();
+       // resetController();
       },
       // execute
       () -> {
