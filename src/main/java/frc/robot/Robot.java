@@ -32,6 +32,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LEDs.LEDs;
+import frc.robot.auto.Blue2PieceAuto;
 import frc.robot.auto.BlueL4Auto;
 import frc.robot.auto.BlueMoveAuto;
 import frc.robot.auto.BlueNoProcess3PieceAuto;
@@ -408,8 +409,10 @@ public class Robot extends TimedRobot {
         new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
-      autoSelector.addAuto(
+    autoSelector.addAuto(
         new AutoOption(Alliance.Red, 5, new Red2PieceAuto(swerve, elevator)));
+    autoSelector.addAuto(
+        new AutoOption(Alliance.Blue, 5, new Blue2PieceAuto(swerve, elevator)));
   }
   // spotless:on
 

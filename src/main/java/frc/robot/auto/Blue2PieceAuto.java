@@ -12,64 +12,62 @@ import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
 
-public class Red2PieceAuto extends AutoMode {
-    
-    Lifter lifter;
-  CoralRoller coralRoller;
-  AlgaeRoller algaeRoller;
-  Elevator elevator;
+public class Blue2PieceAuto extends AutoMode{
 
-  public Red2PieceAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
+Lifter lifter;
+CoralRoller coralRoller;
+Elevator elevator;
+AlgaeRoller algaeRoller;
+
+public Blue2PieceAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
     super(drivetrain);
     elevator = elevatorSystem;
     lifter = elevator.getLifter();
     coralRoller = elevator.getCoralRoller();
-  }
+}
 
-  AutoRoutine red2PieceAutoRoutine = super.getAutoFactory().newRoutine("red2PieceRoutine");
+AutoRoutine blue2PieceAutoRoutine = super.getAutoFactory().newRoutine("blue2PieceRoutine");
 
-  AutoTrajectory redLeftToL4F = red2PieceAutoRoutine.trajectory("redLeftToL4F");
-  AutoTrajectory redL4FToSource = red2PieceAutoRoutine.trajectory("redL4FToSource");
-  AutoTrajectory redSourceToL4C = red2PieceAutoRoutine.trajectory("redSourceToL4C");
-  
+AutoTrajectory blueLeftToL4F = blue2PieceAutoRoutine.trajectory("blueLeftToL4F");
+AutoTrajectory blueL4FToSource = blue2PieceAutoRoutine.trajectory("blueL4FToSource");
+AutoTrajectory blueSourceToL4C = blue2PieceAutoRoutine.trajectory("blueSourceToL4C");
 
-  @Override
-  public String getName() {
-    return "red2PieceAuto";
-  }
+@Override
+public String getName() {
+    return "blue2PieceAuto";
+}
 
-  @Override
-  public Optional<Pose2d> getInitialPose() {
-    return redLeftToL4F.getInitialPose();
-  }
+@Override
+public Optional<Pose2d> getInitialPose(){
+    return blueLeftToL4F.getInitialPose();
+}
 
-  @Override
-  public AutoRoutine getAutoRoutine() {
+@Override
+public AutoRoutine getAutoRoutine() {
 
-    // spotless:off
-    red2PieceAutoRoutine.active().onTrue(
+     blue2PieceAutoRoutine.active().onTrue(
       Commands.parallel(
-        redLeftToL4F.cmd(),
+        blueLeftToL4F.cmd(),
         elevator.coralL4PositionCG().withTimeout(2.0)));
         
 
-    redLeftToL4F.done().onTrue(
+    blueLeftToL4F.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1), 
             coralRoller.createOuttakeCommand().withTimeout(0.2),
             Commands.parallel(
-                redL4FToSource.cmd(),
+                blueL4FToSource.cmd(),
                 elevator.coralIntakeCG().withTimeout(2.0))));
 
-    redL4FToSource.done().onTrue(
+    blueL4FToSource.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(1.0),
             coralRoller.createIntakeCommand().withTimeout(1.0),
             Commands.parallel(
-                redSourceToL4C.cmd(),
+                blueSourceToL4C.cmd(),
                 elevator.coralL4PositionCG().withTimeout(2.0))));
     
-    redSourceToL4C.done().onTrue(
+    blueSourceToL4C.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
             coralRoller.createOuttakeCommand().withTimeout(0.2),
@@ -77,7 +75,7 @@ public class Red2PieceAuto extends AutoMode {
 
     // spotless:on
 
-    return red2PieceAutoRoutine;
+    return blue2PieceAutoRoutine;
   }
 }
 
