@@ -192,6 +192,10 @@ public class Drivetrain extends SubsystemBase {
         fieldRotatedSupplier.getAsBoolean() ? getHeading().rotateBy(Rotation2d.kPi) : getHeading();
   }
 
+  public Command createStopCommand() {
+    return this.run(() -> setRobotRelativeChassisSpeeds(new ChassisSpeeds()));
+  }
+
   /**
    * @return Array of swerve module positions
    */
