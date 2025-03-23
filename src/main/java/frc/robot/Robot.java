@@ -387,8 +387,8 @@ public class Robot extends TimedRobot {
 
     algaeRoller.hasAlgae
         .whileTrue(algaeRoller.createHoldAlgaeCommand());
-    algaeRoller.hasAlgae
-        .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+    // algaeRoller.hasAlgae
+    //     .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
 
