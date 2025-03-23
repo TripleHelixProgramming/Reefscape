@@ -16,7 +16,6 @@ public class Red2PieceAuto extends AutoMode {
     
     Lifter lifter;
   CoralRoller coralRoller;
-  AlgaeRoller algaeRoller;
   Elevator elevator;
 
   public Red2PieceAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
