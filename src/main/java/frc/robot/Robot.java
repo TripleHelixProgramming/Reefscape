@@ -41,7 +41,7 @@ import frc.robot.auto.RedL4Auto;
 import frc.robot.auto.RedMoveAuto;
 import frc.robot.auto.RedNoProcess3PieceAuto;
 import frc.robot.auto.RedProcess3PieceAuto;
-import frc.robot.auto.Red2PieceAuto;
+// import frc.robot.auto.Red2PieceAuto;
 import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
@@ -409,8 +409,8 @@ public class Robot extends TimedRobot {
         new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Red, 4, new RedMoveAuto(swerve)));
-    autoSelector.addAuto(
-        new AutoOption(Alliance.Red, 5, new Red2PieceAuto(swerve, elevator)));
+    // autoSelector.addAuto(
+    //     new AutoOption(Alliance.Red, 5, new Red2PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Blue, 5, new Blue2PieceAuto(swerve, elevator)));
   }
