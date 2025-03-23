@@ -13,7 +13,7 @@ import frc.robot.elevator.Lifter;
 
 public class Red2PieceAuto extends AutoMode {
     
-    Lifter lifter;
+  Lifter lifter;
   CoralRoller coralRoller;
   Elevator elevator;
 
