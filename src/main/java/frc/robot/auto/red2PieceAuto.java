@@ -7,7 +7,6 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.drivetrain.Drivetrain;
-import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
