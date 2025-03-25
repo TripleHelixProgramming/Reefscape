@@ -139,6 +139,7 @@ public class Robot extends TimedRobot {
     DriverStation.startDataLog(DataLogManager.getLog());
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
+    swerve.calibrateOdometry();
   }
 
   @Override
@@ -173,6 +174,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
+    swerve.calibrateOdometry();
     leds.replaceDefaultCommandImmediately(
         leds.createAutoOptionDisplayCommand(
                 autoSelector,
@@ -211,6 +213,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    swerve.calibrateOdometry();
     autoSelector.scheduleAuto();
     swerve.setDefaultCommand(swerve.createStopCommand());
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
@@ -223,6 +226,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    swerve.calibrateOdometry();
     autoSelector.cancelAuto();
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));

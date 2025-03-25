@@ -177,6 +177,14 @@ public class Drivetrain extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  /*
+   * Reset the pose estimator so the underlying odometry
+   * matches our current best guess.
+   */
+  public void calibrateOdometry() {
+    poseEstimator.resetPose(poseEstimator.getEstimatedPosition());
+  }
+
   /**
    * @param pose The robot pose
    */
