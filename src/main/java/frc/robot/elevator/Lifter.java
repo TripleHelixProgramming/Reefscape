@@ -213,14 +213,8 @@ public class Lifter extends SubsystemBase {
   }
 
   public Command createJoystickControlCommand(XboxController gamepad) {
-    return new FunctionalCommand(
-      // initialize
-      () -> { 
-        // matchHeight();
-        // resetController();
-      },
-      // execute
-      () -> {
+    return this.run(
+        () -> {
           Distance targetPosition = Meters.of(feedback.getGoal().position);
 
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
@@ -230,13 +224,7 @@ public class Lifter extends SubsystemBase {
 
           if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
           control();
-        },
-      // end
-      interrupted -> {},
-      // isFinished
-      () -> false,
-      // requirements
-      this);
+        });
   }
 
   public Command createJoystickVoltageCommand(XboxController gamepad) {
