@@ -326,10 +326,10 @@ public class LEDs extends SubsystemBase {
         Segments.MIDDLE);
 
     var x = delta.getTranslation().getMeasureX().in(Centimeters);
-    fill(Math.abs(x) < 3 ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
+    fill(Math.abs(x) < 5 ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
 
     var y = delta.getTranslation().getMeasureY().in(Centimeters);
-    if (Math.abs(y) < 3) {
+    if (Math.abs(y) < 6) {
       fill(Color.kWhite, Segments.BOTTOM);
     } else {
       fill(Color.kGreen, y > 0 ? Segments.leftBottom : Segments.rightBottom);

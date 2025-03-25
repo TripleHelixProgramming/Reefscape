@@ -48,7 +48,6 @@ import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
-import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
 import java.util.HashMap;
@@ -125,9 +124,6 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
 
-    swerve.setDefaultCommand(
-        new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
-
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
 
@@ -199,6 +195,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     autoSelector.scheduleAuto();
+    swerve.setDefaultCommand(swerve.createStopCommand());
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
@@ -210,7 +207,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     autoSelector.cancelAuto();
+    swerve.setDefaultCommand(
+        new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
+
+    lifter.matchHeight();
+    lifter.resetController();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+    // lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
@@ -343,7 +346,7 @@ public class Robot extends TimedRobot {
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
     Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
-    elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
+    // elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
 
     // Actuate climber winch
     // Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
@@ -383,8 +386,8 @@ public class Robot extends TimedRobot {
 
     algaeRoller.hasAlgae
         .whileTrue(algaeRoller.createHoldAlgaeCommand());
-    algaeRoller.hasAlgae
-        .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+    // algaeRoller.hasAlgae
+    //     .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
 
