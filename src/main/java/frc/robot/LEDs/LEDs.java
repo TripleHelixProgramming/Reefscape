@@ -326,10 +326,10 @@ public class LEDs extends SubsystemBase {
         Segments.MIDDLE);
 
     var x = delta.getTranslation().getMeasureX().in(Centimeters);
-    fill(Math.abs(x) < 3 ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
+    fill(Math.abs(x) < 5 ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
 
     var y = delta.getTranslation().getMeasureY().in(Centimeters);
-    if (Math.abs(y) < 3) {
+    if (Math.abs(y) < 6) {
       fill(Color.kWhite, Segments.BOTTOM);
     } else {
       fill(Color.kGreen, y > 0 ? Segments.leftBottom : Segments.rightBottom);
@@ -369,18 +369,6 @@ public class LEDs extends SubsystemBase {
       BooleanSupplier isAlgeMode, Supplier<Gamepiece> gamepiece) {
     return newCommand(
         () -> displayDefaultInfo(isAlgeMode.getAsBoolean(), Optional.ofNullable(gamepiece.get())));
-  }
-
-  /**
-   * Create a command to display pose seeking information on the LEDs.
-   *
-   * @param targetPoseSupplier provides the target pose
-   * @param currentPoseSupplier provides the current pose
-   * @return a command to display pose seeking information
-   */
-  public Command createPoseSeekingCommand(
-      Supplier<Pose2d> targetPoseSupplier, Supplier<Pose2d> currentPoseSupplier) {
-    return newCommand(() -> displayPoseSeek(currentPoseSupplier.get(), targetPoseSupplier.get()));
   }
 
   /**
@@ -446,8 +434,10 @@ public class LEDs extends SubsystemBase {
          */
         auto -> {
           var hasInitialPose = auto.getInitialPose().isPresent();
-          if (hasInitialPose) {
+          if (hasInitialPose && currentPose != null) {
             displayPoseSeek(currentPose, auto.getInitialPose().get());
+          } else if (currentPose == null) {
+            fill(Color.kDarkGray, Segments.ALL);
           }
           displayAutoSelection(
               auto.getAllianceColor(), auto.getOptionNumber(), agreement, hasInitialPose);

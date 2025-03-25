@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -115,7 +117,15 @@ public class Robot extends TimedRobot {
         "Align Encoders",
         new InstantCommand(() -> swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
 
-    addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), 0.1);
+    addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), Seconds.of(0.1));
+    // TODO: see what happens with and without this odometry update
+    // addPeriodic(() -> updateOdometry(), Seconds.of(1));
+  }
+
+  public void updateOdometry() {
+    vision
+        .getEstimatedGlobalPose()
+        .ifPresent(pose -> swerve.resetOdometry(pose.estimatedPose.toPose2d()));
   }
 
   @Override
@@ -124,9 +134,6 @@ public class Robot extends TimedRobot {
     // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html#logging-joystick-data
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
-
-    swerve.setDefaultCommand(
-        new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
   }
@@ -166,7 +173,10 @@ public class Robot extends TimedRobot {
     leds.replaceDefaultCommandImmediately(
         leds.createAutoOptionDisplayCommand(
                 autoSelector,
-                () -> swerve.getPose(),
+                () ->
+                    vision.getEstimatedGlobalPose().isPresent()
+                        ? vision.getEstimatedGlobalPose().get().estimatedPose.toPose2d()
+                        : null,
                 allianceSelector.getAgreementInAllianceColor())
             .ignoringDisable(true));
 
@@ -199,6 +209,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     autoSelector.scheduleAuto();
+    swerve.setDefaultCommand(swerve.createStopCommand());
     lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
@@ -210,7 +221,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     autoSelector.cancelAuto();
+    swerve.setDefaultCommand(
+        new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
+
+    lifter.matchHeight();
+    lifter.resetController();
     lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+    // lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
@@ -343,7 +360,7 @@ public class Robot extends TimedRobot {
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
     Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
-    elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
+    // elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
 
     // Actuate climber winch
     // Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);
@@ -383,8 +400,8 @@ public class Robot extends TimedRobot {
 
     algaeRoller.hasAlgae
         .whileTrue(algaeRoller.createHoldAlgaeCommand());
-    algaeRoller.hasAlgae
-        .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+    // algaeRoller.hasAlgae
+    //     .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
 
@@ -429,6 +446,7 @@ public class Robot extends TimedRobot {
   }
 
   protected void checkVision() {
+
     vision
         .getPoseEstimates()
         .forEach(

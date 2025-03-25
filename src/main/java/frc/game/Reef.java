@@ -18,8 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * to a pose.
  */
 public enum Reef {
-  // TODO remove reef ceter offset
-  Blue(new Pose2d(Inches.of(176.75), Inches.of(158.5 + 4.5), Rotation2d.kZero)),
+  Blue(new Pose2d(Inches.of(176.75), Inches.of(158.5), Rotation2d.kZero)),
   Red(new Pose2d(Inches.of(514.125), Inches.of(158.5), Rotation2d.kPi));
 
   /** The radius of the reef hexagon */
@@ -75,10 +74,10 @@ public enum Reef {
     var delta = centerPose.getTranslation().minus(atPose.getTranslation());
     int vectorAngle = (int) delta.getAngle().getDegrees();
     int rayAngle = (vectorAngle + 30 + 360 + (int) centerPose.getRotation().getDegrees()) % 360;
-    SmartDashboard.putNumber("Sector delta X", delta.getX());
-    SmartDashboard.putNumber("Sector delta Y", delta.getY());
-    SmartDashboard.putNumber("Sector vector delta", vectorAngle);
-    SmartDashboard.putNumber("Sector ray angle", rayAngle);
+    // SmartDashboard.putNumber("Sector delta X", delta.getX());
+    // SmartDashboard.putNumber("Sector delta Y", delta.getY());
+    // SmartDashboard.putNumber("Sector vector delta", vectorAngle);
+    // SmartDashboard.putNumber("Sector ray angle", rayAngle);
     return rayAngle / 60;
   }
 

@@ -7,15 +7,13 @@ import frc.robot.drivetrain.Drivetrain;
 import java.util.Optional;
 
 public abstract class AutoMode {
-  private final Drivetrain drivetrain;
   private final AutoFactory autoFactory;
 
-  public AutoMode(Drivetrain dt) {
-    this.drivetrain = dt;
+  public AutoMode(Drivetrain drivetrain) {
     autoFactory =
         new AutoFactory(
             drivetrain::getPose,
-            drivetrain::setPose,
+            drivetrain::resetOdometry,
             drivetrain::followTrajectory,
             false,
             drivetrain);
