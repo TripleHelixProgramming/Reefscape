@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public enum Camera {
+public enum Camera implements Subsystem {
   FrontRight("OV2311_TH_8", new Translation3d(0.248, -0.318, 0.513), new Rotation3d(0.0, 0.0, 0.0)),
   FrontLeft(
       "OV2311_TH_5", new Translation3d(0.222, 0.331, 0.513), new Rotation3d(0.0, 0, Math.PI / 2.0)),
@@ -32,13 +33,16 @@ public enum Camera {
   public final String name;
   public final Transform3d transform;
   public final PhotonCamera device;
-  public PhotonPoseEstimator pose;
+
+  private Optional<EstimatedRobotPose> pose;
+  private final PhotonPoseEstimator poseEstimator;
   private Matrix<N3, N1> curStdDevs;
 
   private Camera(String name, Translation3d translation, Rotation3d rotation) {
     this.name = name;
     this.transform = new Transform3d(translation, rotation);
     this.device = new PhotonCamera(name);
+    this.pose = Optional.empty();
 
     // // TODO: switch back to official field layout
     // AprilTagFieldLayout tagLayout;
@@ -52,13 +56,30 @@ public enum Camera {
     AprilTagFieldLayout tagLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
-    this.pose =
+    this.poseEstimator =
         new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, transform);
+    register();
+  }
+
+  /** Updates the pose estimate for this camera */
+  @Override
+  public void periodic() {
+    device
+        .getAllUnreadResults()
+        .forEach(
+            change -> {
+              pose = poseEstimator.update(change);
+              updateEstimationStdDevs(pose, change.getTargets());
+            });
+  }
+
+  @Override
+  public String getName() {
+    return "Camera." + toString();
   }
 
   /**
-   * The latest estimated robot pose on the field from vision data. This may be empty. This should
-   * only be called once per loop.
+   * The latest estimated robot pose on the field from vision data. This may be empty.
    *
    * <p>Also includes updates for the standard deviations, which can (optionally) be retrieved with
    * {@link getEstimationStdDevs}
@@ -67,12 +88,17 @@ public enum Camera {
    *     used for estimation.
    */
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-    Optional<EstimatedRobotPose> est = Optional.empty();
-    for (var change : device.getAllUnreadResults()) {
-      est = pose.update(change);
-      updateEstimationStdDevs(est, change.getTargets());
-    }
-    return est;
+    return pose;
+  }
+
+  /**
+   * Returns the latest standard deviations of the estimated pose from {@link
+   * #getEstimatedGlobalPose()}, for use with {@link
+   * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}. This should
+   * only be used when there are targets visible.
+   */
+  public Matrix<N3, N1> getEstimationStdDevs() {
+    return curStdDevs;
   }
 
   /**
@@ -96,7 +122,7 @@ public enum Camera {
 
       // Precalculation - see how many tags we found, and calculate an average-distance metric
       for (var tgt : targets) {
-        var tagPose = pose.getFieldTags().getTagPose(tgt.getFiducialId());
+        var tagPose = poseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
         if (tagPose.isEmpty()) continue;
         numTags++;
         avgDist +=
@@ -122,15 +148,5 @@ public enum Camera {
         curStdDevs = estStdDevs;
       }
     }
-  }
-
-  /**
-   * Returns the latest standard deviations of the estimated pose from {@link
-   * #getEstimatedGlobalPose()}, for use with {@link
-   * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}. This should
-   * only be used when there are targets visible.
-   */
-  public Matrix<N3, N1> getEstimationStdDevs() {
-    return curStdDevs;
   }
 }
