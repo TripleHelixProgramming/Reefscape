@@ -101,6 +101,7 @@ public class AlgaeWrist extends SubsystemBase {
     // SmartDashboard.putNumber("Algae Wrist/Applied Duty Cycle", motor.getAppliedOutput());
     // SmartDashboard.putNumber("Algae Wrist/Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Algae Wrist/At Goal", feedback.atGoal());
+    SmartDashboard.putData("Algae Wrist/Controller", feedback);
   }
 
   private Angle getCurrentAngle() {
