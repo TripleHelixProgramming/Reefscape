@@ -122,13 +122,7 @@ public class Robot extends TimedRobot {
 
     addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), Seconds.of(0.1));
     // TODO: see what happens with and without this odometry update
-    // addPeriodic(() -> updateOdometry(), Seconds.of(1));
-  }
-
-  public void updateOdometry() {
-    vision
-        .getEstimatedGlobalPose()
-        .ifPresent(pose -> swerve.resetOdometry(pose.estimatedPose.toPose2d()));
+    addPeriodic(() -> swerve.calibrateOdometry(), Seconds.of(2));
   }
 
   @Override
