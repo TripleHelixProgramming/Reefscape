@@ -8,12 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants.DriveToPoseControllerGains;
 import frc.robot.drivetrain.Drivetrain;
-import frc.robot.vision.Vision;
 import java.util.function.Supplier;
 
 public class DriveToPoseCommand extends Command {
   public final Drivetrain swerve;
-  public final Vision vision;
   public final Supplier<Pose2d> targetPoseSupplier;
 
   private final ProfiledPIDController xController =
@@ -38,10 +36,8 @@ public class DriveToPoseCommand extends Command {
           new TrapezoidProfile.Constraints(
               DriveConstants.kMaxRotationalVelocity.baseUnitMagnitude(), 9));
 
-  public DriveToPoseCommand(
-      Drivetrain drivetrain, Vision poseEstimator, Supplier<Pose2d> targetPosition) {
+  public DriveToPoseCommand(Drivetrain drivetrain, Supplier<Pose2d> targetPosition) {
     swerve = drivetrain;
-    vision = poseEstimator;
     targetPoseSupplier = targetPosition;
 
     thetaController.enableContinuousInput(-Math.PI, Math.PI);

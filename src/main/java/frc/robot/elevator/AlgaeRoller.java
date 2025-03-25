@@ -29,7 +29,7 @@ public class AlgaeRoller extends SubsystemBase {
 
   private final RelativeEncoder encoder = leaderMotor.getEncoder();
   private final SparkLimitSwitch algaeSensor = leaderMotor.getForwardLimitSwitch();
-  public Trigger hasAlgae = new Trigger(() -> algaeSensor.isPressed());
+  public final Trigger hasAlgae = new Trigger(() -> algaeSensor.isPressed());
   public final Trigger isRolling = new Trigger(() -> Math.abs(encoder.getVelocity()) > 1);
 
   public AlgaeRoller() {
@@ -67,8 +67,8 @@ public class AlgaeRoller extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Algae Roller/Velocity", encoder.getVelocity());
-    // SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
-    // SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putBoolean("Algae Loaded", hasAlgae.getAsBoolean());
     SmartDashboard.putBoolean("Algae isRolling", isRolling.getAsBoolean());
   }
@@ -89,8 +89,12 @@ public class AlgaeRoller extends SubsystemBase {
     return this.run(() -> setVoltage(AlgaeRollerConstants.kIntakeVoltage));
   }
 
-  public Command createOuttakeCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeVoltage));
+  public Command createOuttakeToBargeCommand() {
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToBargeVoltage));
+  }
+
+  public Command createOuttakeToProcessorCommand() {
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToProcessorVoltage));
   }
 
   public Command createHoldAlgaeCommand() {

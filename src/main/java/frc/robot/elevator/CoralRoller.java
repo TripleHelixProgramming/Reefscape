@@ -25,7 +25,7 @@ public class CoralRoller extends SubsystemBase {
   private final RelativeEncoder encoder = motor.getEncoder();
   private final SparkLimitSwitch coralSensor = motor.getForwardLimitSwitch();
   public final Trigger hasCoral = new Trigger(() -> coralSensor.isPressed());
-  public final Trigger isRolling = new Trigger(() -> Math.abs(encoder.getVelocity()) > 1);
+  public final Trigger isRolling = new Trigger(() -> Math.abs(getRollerVelocity()) > 1);
 
   public CoralRoller() {
     // spotless:off

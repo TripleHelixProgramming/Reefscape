@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.LEDWriter;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.game.Gamepiece;
 import frc.lib.AutoOption;
 import frc.robot.Constants.LedConstants;
-import frc.util.Gamepiece;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -326,10 +326,10 @@ public class LEDs extends SubsystemBase {
         Segments.MIDDLE);
 
     var x = delta.getTranslation().getMeasureX().in(Centimeters);
-    fill(Math.abs(x) < 3 ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
+    fill(Math.abs(x) < 5 ? Color.kWhite : x > 0 ? Color.kGreen : Color.kRed, Segments.TOP);
 
     var y = delta.getTranslation().getMeasureY().in(Centimeters);
-    if (Math.abs(y) < 3) {
+    if (Math.abs(y) < 6) {
       fill(Color.kWhite, Segments.BOTTOM);
     } else {
       fill(Color.kGreen, y > 0 ? Segments.leftBottom : Segments.rightBottom);
@@ -493,8 +493,6 @@ public class LEDs extends SubsystemBase {
   }
 
   public static AddressableLEDBufferView[] intakeBuffers = {
-    // leftStrip,
-    // rightStrip
     Segments.leftTop.bufferView.reversed(),
     Segments.rightTop.bufferView.reversed(),
     Segments.leftBottom.bufferView,
@@ -502,8 +500,6 @@ public class LEDs extends SubsystemBase {
   };
 
   public static AddressableLEDBufferView[] outtakeBuffers = {
-    // leftStrip.reversed(),
-    // rightStrip.reversed()
     Segments.leftTop.bufferView,
     Segments.rightTop.bufferView,
     Segments.leftBottom.bufferView.reversed(),

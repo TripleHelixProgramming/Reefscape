@@ -1,5 +1,6 @@
 package frc.robot.elevator;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -16,6 +17,14 @@ public class Elevator {
   AlgaeWrist algaeWrist = new AlgaeWrist(algaeRoller.hasAlgae);
 
   public Elevator() {}
+
+  public void periodic() {
+    SmartDashboard.putData(lifter);
+    SmartDashboard.putData(coralWrist);
+    SmartDashboard.putData(coralRoller);
+    SmartDashboard.putData(algaeRoller);
+    SmartDashboard.putData(algaeWrist);
+  }
 
   public Lifter getLifter() {
     return lifter;
@@ -40,6 +49,7 @@ public class Elevator {
   public Command resetPositionControllers() {
     return new InstantCommand(
         () -> {
+          lifter.matchHeight();
           lifter.resetController();
           coralWrist.resetController();
           algaeWrist.resetController();

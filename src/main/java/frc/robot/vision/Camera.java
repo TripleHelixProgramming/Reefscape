@@ -44,6 +44,7 @@ public enum Camera implements Subsystem {
     this.device = new PhotonCamera(name);
     this.pose = Optional.empty();
 
+    // // TODO: switch back to official field layout
     // AprilTagFieldLayout tagLayout;
     // try {
     //   tagLayout = new AprilTagFieldLayout(VisionConstants.kAprilTagLayoutPath);

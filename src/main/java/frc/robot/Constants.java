@@ -6,7 +6,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
@@ -15,9 +14,10 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.game.FeederStation;
+import frc.game.Reef;
 
 public final class Constants {
 
@@ -38,9 +38,6 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final String kAprilTagLayoutPath =
-        Filesystem.getDeployDirectory() + "/" + "stemgym.json";
-
     // Define the standard deviations for the pose estimator, which determine how fast the pose
     // estimate converges to the vision measurement. This should depend on the vision measurement
     // noise and how many or how frequently vision measurements are applied to the pose estimator.
@@ -105,69 +102,25 @@ public final class Constants {
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(-0.5)) // rear right
             );
 
-    public static final Pose2d blueReefCenter =
-        new Pose2d(Inches.of(176.75), Inches.of(158.5), new Rotation2d());
-
-    public static final Pose2d redReefCenter =
-        new Pose2d(Inches.of(514.125), Inches.of(158.5), new Rotation2d(Math.PI));
-
-    private static double radius = Inches.of(50.25).in(Meters);
-    private static Rotation2d increment = new Rotation2d(Degrees.of(60.0));
-
-    private static Pose2d blueAB = blueReefCenter.plus(offset(0));
-    private static Pose2d blueCD = blueReefCenter.plus(offset(1));
-    private static Pose2d blueEF = blueReefCenter.plus(offset(2));
-    private static Pose2d blueGH = blueReefCenter.plus(offset(3));
-    private static Pose2d blueIJ = blueReefCenter.plus(offset(4));
-    private static Pose2d blueKL = blueReefCenter.plus(offset(5));
-
-    private static Pose2d redAB = redReefCenter.plus(offset(0));
-    private static Pose2d redCD = redReefCenter.plus(offset(1));
-    private static Pose2d redEF = redReefCenter.plus(offset(2));
-    private static Pose2d redGH = redReefCenter.plus(offset(3));
-    private static Pose2d redIJ = redReefCenter.plus(offset(4));
-    private static Pose2d redKL = redReefCenter.plus(offset(5));
-
-    private static Transform2d feederStationOffset =
-        new Transform2d(Inches.of(-18), Inches.of(0), new Rotation2d(0));
-    private static Pose2d blueRightFeeder =
-        new Pose2d(Inches.of(33.51), Inches.of(25.80), new Rotation2d(Degrees.of(54 + 180)))
-            .plus(feederStationOffset);
-    private static Pose2d blueLeftFeeder =
-        new Pose2d(Inches.of(33.51), Inches.of(291.20), new Rotation2d(Degrees.of(306 + 180)))
-            .plus(feederStationOffset);
-    private static Pose2d redRightFeeder =
-        new Pose2d(Inches.of(657.37), Inches.of(291.20), new Rotation2d(Degrees.of(234 + 180)))
-            .plus(feederStationOffset);
-    private static Pose2d redLeftFeeder =
-        new Pose2d(Inches.of(657.37), Inches.of(25.8), new Rotation2d(Degrees.of(126 + 180)))
-            .plus(feederStationOffset);
-
-    private static Transform2d offset(double multiplier) {
-      Rotation2d rotation = increment.times(multiplier);
-      Translation2d translation = new Translation2d(radius, rotation.plus(new Rotation2d(Math.PI)));
-      return new Transform2d(translation, rotation);
-    }
-
     public static final Pose2d[] kReefTargetPoses = {
       new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
       new Pose2d(1.0, 5.0, Rotation2d.fromDegrees(0.0)),
-      blueAB,
-      blueCD,
-      blueEF,
-      blueGH,
-      blueIJ,
-      blueKL,
-      redAB,
-      redCD,
-      redEF,
-      redGH,
-      redIJ,
-      redKL,
-      blueRightFeeder,
-      blueLeftFeeder,
-      redRightFeeder,
-      redLeftFeeder
+      Reef.Face.blueAB.getCenterPose(),
+      Reef.Face.blueCD.getCenterPose(),
+      Reef.Face.blueEF.getCenterPose(),
+      Reef.Face.blueGH.getCenterPose(),
+      Reef.Face.blueIJ.getCenterPose(),
+      Reef.Face.blueKL.getCenterPose(),
+      Reef.Face.redAB.getCenterPose(),
+      Reef.Face.redCD.getCenterPose(),
+      Reef.Face.redEF.getCenterPose(),
+      Reef.Face.redGH.getCenterPose(),
+      Reef.Face.redIJ.getCenterPose(),
+      Reef.Face.redKL.getCenterPose(),
+      FeederStation.blueRight.getPose(),
+      FeederStation.blueLeft.getPose(),
+      FeederStation.redRight.getPose(),
+      FeederStation.redLeft.getPose()
     };
   }
 
@@ -186,10 +139,10 @@ public final class Constants {
     }
 
     public static final class DriveToPoseControllerGains {
-      public static final double kTraP = 1.0;
+      public static final double kTraP = 2.0;
       public static final double kTraI = 0.0;
       public static final double kTraD = 0.0;
-      public static final double kRotP = 1.5;
+      public static final double kRotP = 3.0;
       public static final double kRotI = 0.0;
       public static final double kRotD = 0.0;
     }
@@ -271,8 +224,8 @@ public final class Constants {
   public static final class ClimberConstants {
     public static final int kClimberPort = 17;
     public static final int kRatchetServoPort = 1;
-    public static final double kEngagedPosition = 0 / 1024.0;
-    public static final double kDisengedPosition = 1024.0 / 1024.0;
+    public static final double kEngagedPosition = 800 / 1024.0;
+    public static final double kDisengedPosition = 950 / 1024.0;
 
     public static final int kCageSensorPort = 6;
 

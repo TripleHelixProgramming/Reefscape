@@ -72,8 +72,8 @@ public class ElevatorConstants {
       CoralL4(57.25),
       CoralIntake(11.7),
       AlgaeProcessor(12.0),
-      AlgaeL2(28),
-      AlgaeL3(43.5),
+      AlgaeL2(29.5),
+      AlgaeL3(43),
       AlgaeBarge(67.8),
       Max(68.3);
 
@@ -155,7 +155,8 @@ public class ElevatorConstants {
       L1(125),
       L2(65),
       L3(65),
-      L4(35),
+      // TODO: reevaluate
+      L4(30),
       Intake(125),
       AlgaeMode(90);
 
@@ -185,7 +186,8 @@ public class ElevatorConstants {
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
     // Found 3/9/2025 that 5V applied at stall will draw ~5A, which is acceptable for motor lifetime
     public static final Voltage kHoldVoltage = Volts.of(5.0);
-    public static final Voltage kOuttakeVoltage = kIntakeVoltage.unaryMinus();
+    public static final Voltage kOuttakeToProcessorVoltage = Volts.of(-2.5);
+    public static final Voltage kOuttakeToBargeVoltage = Volts.of(-5);
   }
 
   public static final class AlgaeWristConstants {
@@ -241,7 +243,8 @@ public class ElevatorConstants {
       Processor(0),
       L2(-5),
       L3(-5),
-      Barge(60),
+      // TODO: reevaluate
+      Barge(55),
       CoralMode(80);
 
       public Angle angle;
