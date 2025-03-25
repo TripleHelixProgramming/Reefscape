@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -106,7 +108,15 @@ public class Robot extends TimedRobot {
         "Align Encoders",
         new InstantCommand(() -> swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
 
-    addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), 0.1);
+    addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), Seconds.of(0.1));
+    // TODO: see what happens with and without this odometry update
+    // addPeriodic(() -> updateOdometry(), Seconds.of(1));
+  }
+
+  public void updateOdometry() {
+    vision
+        .getEstimatedGlobalPose()
+        .ifPresent(pose -> swerve.resetOdometry(pose.estimatedPose.toPose2d()));
   }
 
   @Override
@@ -384,6 +394,7 @@ public class Robot extends TimedRobot {
   }
 
   protected void checkVision() {
+
     vision
         .getPoseEstimates()
         .forEach(
