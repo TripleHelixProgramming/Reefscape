@@ -137,13 +137,15 @@ public enum Reef {
 
       @Override
       public void memoize() {
-        getNewPose().ifPresent(pose -> {
-          if (isLeft) {
-            memoizeLeftPipePose(pose);
-          } else {
-            memoizeRightPipePose(pose);
-          }
-        });
+        getNewPose()
+            .ifPresent(
+                pose -> {
+                  if (isLeft) {
+                    memoizeLeftPipePose(pose);
+                  } else {
+                    memoizeRightPipePose(pose);
+                  }
+                });
       }
     }
 

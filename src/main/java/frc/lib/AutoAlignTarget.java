@@ -1,8 +1,7 @@
 package frc.lib;
 
-import java.util.Optional;
-
 import edu.wpi.first.math.geometry.Pose2d;
+import java.util.Optional;
 
 public abstract class AutoAlignTarget {
   private Pose2d newPose;

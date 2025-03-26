@@ -6,7 +6,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.drivetrain.Drivetrain;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -14,26 +13,24 @@ import java.util.stream.Collectors;
 import org.photonvision.EstimatedRobotPose;
 
 public class Vision extends SubsystemBase {
-    private final Drivetrain drivetrain;
+  private final Drivetrain drivetrain;
 
-    public Vision(Drivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-    }
+  public Vision(Drivetrain drivetrain) {
+    this.drivetrain = drivetrain;
+  }
 
-    @Override
-    public void periodic() {
-        getPoseEstimates()
+  @Override
+  public void periodic() {
+    getPoseEstimates()
         .forEach(
-            est -> 
-              drivetrain.addVisionMeasurement(
-                  est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev()));
-    }
+            est ->
+                drivetrain.addVisionMeasurement(
+                    est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev()));
+  }
 
-
-    public Optional<Pose2d> getPose() {
-        return getEstimatedGlobalPose().map(est -> est.estimatedPose.toPose2d());
-    }
-
+  public Optional<Pose2d> getPose() {
+    return getEstimatedGlobalPose().map(est -> est.estimatedPose.toPose2d());
+  }
 
   /** Choose the pose estimate with the lowest maximum stdev. */
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {

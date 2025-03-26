@@ -54,7 +54,6 @@ import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Camera;
 import frc.robot.vision.Vision;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,12 +119,39 @@ public class Robot extends TimedRobot {
     addPeriodic(() -> swerve.calibrateOdometry(), Seconds.of(2));
 
     var logger = PoseLogger.getDefault();
-    logger.monitor("visionEstimate", () -> { return vision.getPose(); });
-    logger.monitor("swerveEstimate", () -> { return Optional.of(swerve.getPose()); });
-    logger.monitor("swerveOdometry", () -> { return Optional.of(swerve.getPoseRawOdometry()); });
-    logger.monitor("nearestLeftPipe", () -> { return Optional.ofNullable(nearestLeftPipe); });
-    logger.monitor("nearestRightPipe", () -> { return Optional.ofNullable(nearestRightPipe); });
-    Arrays.stream(Camera.values()).forEach(cam -> logger.monitor(cam.getName(), () -> { return cam.getPose(); }));
+    logger.monitor(
+        "visionEstimate",
+        () -> {
+          return vision.getPose();
+        });
+    logger.monitor(
+        "swerveEstimate",
+        () -> {
+          return Optional.of(swerve.getPose());
+        });
+    logger.monitor(
+        "swerveOdometry",
+        () -> {
+          return Optional.of(swerve.getPoseRawOdometry());
+        });
+    logger.monitor(
+        "nearestLeftPipe",
+        () -> {
+          return Optional.ofNullable(nearestLeftPipe);
+        });
+    logger.monitor(
+        "nearestRightPipe",
+        () -> {
+          return Optional.ofNullable(nearestRightPipe);
+        });
+    Arrays.stream(Camera.values())
+        .forEach(
+            cam ->
+                logger.monitor(
+                    cam.getName(),
+                    () -> {
+                      return cam.getPose();
+                    }));
   }
 
   @Override
@@ -272,7 +298,6 @@ public class Robot extends TimedRobot {
     currentAutoAlignTarget = Optional.of(target);
     return () -> target.getPose();
   }
-
 
   protected void rememberOutputPose(Pose2d pose) {
     currentAutoAlignTarget.ifPresent(target -> target.setPose(pose));

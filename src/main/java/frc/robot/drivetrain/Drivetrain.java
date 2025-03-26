@@ -191,7 +191,6 @@ public class Drivetrain extends SubsystemBase {
     return odometry.getPoseMeters();
   }
 
-
   /*
    * Reset the pose estimator so the underlying odometry
    * matches our current best guess.
