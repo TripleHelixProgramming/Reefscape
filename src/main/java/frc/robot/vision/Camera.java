@@ -11,6 +11,9 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -45,16 +48,16 @@ public enum Camera implements Subsystem {
     this.pose = Optional.empty();
 
     // // TODO: switch back to official field layout
-    // AprilTagFieldLayout tagLayout;
-    // try {
-    //   tagLayout = new AprilTagFieldLayout(VisionConstants.kAprilTagLayoutPath);
-    // } catch (IOException e) {
-    //   System.err.println("Error loading custom AprilTag layout: " + e.getMessage());
-    //   tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    // }
+    AprilTagFieldLayout tagLayout;
+    try {
+      tagLayout = new AprilTagFieldLayout(VisionConstants.kStemGymAprilTagLayoutPath);
+    } catch (IOException e) {
+      System.err.println("Error loading custom AprilTag layout: " + e.getMessage());
+      tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    }
 
-    AprilTagFieldLayout tagLayout =
-        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+    // AprilTagFieldLayout tagLayout =
+    //     AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     this.poseEstimator =
         new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, transform);
