@@ -101,6 +101,7 @@ public class CoralWrist extends SubsystemBase {
     // SmartDashboard.putNumber("Coral Wrist/Applied Duty Cycle", motor.getAppliedOutput());
     // SmartDashboard.putNumber("Coral Wrist/Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Coral Wrist/At Goal", feedback.atGoal());
+    SmartDashboard.putData("Coral Wrist/Controller", feedback);
   }
 
   private Angle getCurrentAngle() {
