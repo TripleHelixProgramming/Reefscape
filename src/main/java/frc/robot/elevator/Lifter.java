@@ -168,8 +168,9 @@ public class Lifter extends SubsystemBase {
   }
 
   public Command setHeight(LifterState state) {
-    targetState = state;
-    return setHeight(() -> targetState.height).withName("Set angle to " + targetState.toString());
+    return setHeight(() -> state.height)
+        .withName("Set angle to " + state.toString())
+        .beforeStarting(new InstantCommand(() -> targetState = state));
   }
 
   public Command setHeight(Supplier<Distance> heightSupplier) {

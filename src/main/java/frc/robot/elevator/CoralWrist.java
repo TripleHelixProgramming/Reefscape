@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorConstants.NEO550Constants;
 import frc.robot.Constants.RobotConstants;
@@ -138,8 +139,9 @@ public class CoralWrist extends SubsystemBase {
   }
 
   public Command setAngle(CoralWristState state) {
-    targetState = state;
-    return setAngle(() -> targetState.angle).withName("Set angle to " + targetState.toString());
+    return setAngle(() -> state.angle)
+        .withName("Set angle to " + state.toString())
+        .beforeStarting(new InstantCommand(() -> targetState = state));
   }
 
   public Command setAngle(Supplier<Angle> angleSupplier) {
