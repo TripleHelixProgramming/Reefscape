@@ -27,6 +27,7 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class AlgaeWrist extends SubsystemBase {
 
@@ -84,7 +85,7 @@ public class AlgaeWrist extends SubsystemBase {
     feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // feedback.setIntegratorRange();
 
-    setDefaultCommand(createRemainAtCurrentAngleCommand());
+    setDefaultCommand(createSetAngleCommand(() -> getCurrentAngle()).withName("Maintain current angle"));
   }
 
   @Override
@@ -136,33 +137,15 @@ public class AlgaeWrist extends SubsystemBase {
   }
 
   public Command createSetAngleCommand(AlgaeWristState state) {
-    return new FunctionalCommand(
-        // initialize
-        () -> {
-          targetState = state;
-          feedback.setGoal(targetState.angle.in(Radians));
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> feedback.atGoal(),
-        // requirements
-        this);
+    targetState = state;
+    return createSetAngleCommand(() -> targetState.angle).withName("Set angle to " + state.toString());
   }
 
-  public Command createRemainAtCurrentAngleCommand() {
+  public Command createSetAngleCommand(Supplier<Angle> angleSupplier) {
     return new FunctionalCommand(
         // initialize
         () -> {
-          if (targetState == AlgaeWristState.Initial) {
-            targetState = AlgaeWristState.CoralMode;
-            feedback.setGoal(targetState.angle.in(Radians));
-            // Users should call reset() when they first start running the controller to avoid
-            // unwanted behavior.
-            resetController();
-          }
+          feedback.setGoal(angleSupplier.get().in(Radians));
         },
         // execute
         () -> control(),
