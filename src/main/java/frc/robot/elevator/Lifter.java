@@ -169,8 +169,8 @@ public class Lifter extends SubsystemBase {
 
   public Command setHeight(LifterState state) {
     return setHeight(() -> state.height)
-        .withName("Set angle to " + state.toString())
-        .beforeStarting(new InstantCommand(() -> targetState = state));
+        .beforeStarting(new InstantCommand(() -> targetState = state))
+        .withName("Set height to " + state.toString());
   }
 
   public Command setHeight(Supplier<Distance> heightSupplier) {
@@ -182,7 +182,7 @@ public class Lifter extends SubsystemBase {
         // end
         interrupted -> {},
         // isFinished
-        () -> false,
+        () -> feedback.atGoal(),
         // requirements
         this);
   }
@@ -218,7 +218,7 @@ public class Lifter extends SubsystemBase {
         // isFinished
         () -> false,
         // requirements
-        this);
+        this).withName("Joystick velocity control");
   }
 
   public Command joystickVoltageControl(XboxController gamepad) {
@@ -226,6 +226,6 @@ public class Lifter extends SubsystemBase {
         () -> {
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
           leaderMotor.setVoltage(joystickInput * 2.0);
-        });
+        }).withName("Joystick voltage control");
   }
 }

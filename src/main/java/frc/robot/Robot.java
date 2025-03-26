@@ -313,26 +313,26 @@ public class Robot extends TimedRobot {
 
     // Configure to either score coral on L1 or score algae in processor
     operator.a().onTrue(new ConditionalCommand(
-        elevator.algaeProcessorPositionCG(), elevator.coralL1PositionCG(), algaeMode));
+        elevator.algaeProcessorPositionCG().asProxy(), elevator.coralL1PositionCG().asProxy(), algaeMode));
 
     // Configure to either score coral on L2 or intake algae from L2
     operator.b().onTrue(new ConditionalCommand(
-        elevator.algaeL2IntakeCG(), elevator.coralL2PositionCG(), algaeMode));
+        elevator.algaeL2IntakeCG().asProxy(), elevator.coralL2PositionCG().asProxy(), algaeMode));
 
     // Configure to either score coral on L3 or intake algae from L3
     operator.x().onTrue(new ConditionalCommand(
-        elevator.algaeL3IntakeCG(), elevator.coralL3PositionCG(), algaeMode));
+        elevator.algaeL3IntakeCG().asProxy(), elevator.coralL3PositionCG().asProxy(), algaeMode));
 
     // Configure to either score coral on L4 or score algae in barge
     operator.y().onTrue(new ConditionalCommand(
-        elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
+        elevator.algaeBargePositionCG().asProxy(), elevator.coralL4PositionCG().asProxy(), algaeMode));
 
     // Configure to either intake coral from source or intake algae from floor
     // operator.start().whileTrue(new ConditionalCommand(
     //     elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     operator.rightTrigger().whileTrue(new ConditionalCommand(
-        elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
+        elevator.algaeFloorIntakeCG().asProxy(), elevator.coralIntakeCG().asProxy(), algaeMode));
 
     // Intake coral and algae
     operator.rightBumper()
@@ -341,8 +341,8 @@ public class Robot extends TimedRobot {
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
-    Trigger elevatorTriggerLow = operator.axisGreaterThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
-    // elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.createJoystickControlCommand(operator.getHID()));
+    Trigger elevatorTriggerLow = operator.axisLessThan(Axis.kLeftY.value, -0.9, loop).debounce(0.1);
+    elevatorTriggerHigh.or(elevatorTriggerLow).onTrue(lifter.joystickVelocityControl(operator.getHID()));
 
     // Actuate climber winch
     // Trigger climbTrigger = operator.axisGreaterThan(Axis.kRightY.value, -0.9, loop).debounce(0.1);

@@ -144,8 +144,8 @@ public class AlgaeWrist extends SubsystemBase {
 
   public Command setAngle(AlgaeWristState state) {
     return setAngle(() -> state.angle)
-        .withName("Set angle to " + state.toString())
-        .beforeStarting(new InstantCommand(() -> targetState = state));
+        .beforeStarting(new InstantCommand(() -> targetState = state))
+        .withName("Set angle to " + state.toString());
   }
 
   public Command setAngle(Supplier<Angle> angleSupplier) {
