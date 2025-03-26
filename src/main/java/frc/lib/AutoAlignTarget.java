@@ -1,12 +1,24 @@
 package frc.lib;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 
-public interface AutoAlignTarget {
+public abstract class AutoAlignTarget {
+  private Pose2d newPose;
 
   /** Return the pose associated with this target */
-  public Pose2d getPose();
+  public abstract Pose2d getPose();
 
-  /** Store the supplied pose as an override for future uses of the target pose. */
-  public void memoize(Pose2d pose);
+  /** Set the pose associated with this target */
+  public void setNewPose(Pose2d pose) {
+    newPose = pose;
+  }
+
+  public Optional<Pose2d> getNewPose() {
+    return Optional.ofNullable(newPose);
+  }
+
+  /** Store the set pose as an override for future uses of the target pose. */
+  public abstract void memoize();
 }

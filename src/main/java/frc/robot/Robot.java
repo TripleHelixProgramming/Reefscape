@@ -275,13 +275,18 @@ public class Robot extends TimedRobot {
     return () -> target.getPose();
   }
 
+
+  protected void rememberOutputPose(Pose2d pose) {
+    currentAutoAlignTarget.ifPresent(target -> target.setNewPose(pose));
+  }
+
   /**
    * Fix the most recent auto-align target by ammending its position with the one suppliked.
    *
    * @param newPose new pose to use for this target
    */
   protected void fixAutoAlign(Pose2d newPose) {
-    currentAutoAlignTarget.ifPresent(target -> target.memoize(newPose));
+    currentAutoAlignTarget.ifPresent(target -> target.memoize());
     currentAutoAlignTarget = Optional.empty();
   }
 
@@ -312,7 +317,8 @@ public class Robot extends TimedRobot {
     lifter.atProcessorHeight.negate().and(outtaking)
         .whileTrue(algaeRoller.createOuttakeToBargeCommand());
     outtaking
-        .whileTrue(coralRoller.createOuttakeCommand());
+        .whileTrue(coralRoller.createOuttakeCommand()
+        .alongWith(new InstantCommand(() -> rememberOutputPose(swerve.getPose()))));
   }
 
   private void configureOperatorButtonBindings() {

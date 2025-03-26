@@ -127,7 +127,7 @@ public enum Reef {
     private Optional<Pose2d> memoLeftPipePose;
     private Optional<Pose2d> memoRightPipePose;
 
-    class PipeTarget implements AutoAlignTarget {
+    class PipeTarget extends AutoAlignTarget {
       private final boolean isLeft;
 
       public PipeTarget(boolean isLeft) {
@@ -140,12 +140,14 @@ public enum Reef {
       }
 
       @Override
-      public void memoize(Pose2d pose) {
-        if (isLeft) {
-          memoizeLeftPipePose(pose);
-        } else {
-          memoizeRightPipePose(pose);
-        }
+      public void memoize() {
+        getNewPose().ifPresent(pose -> {
+          if (isLeft) {
+            memoizeLeftPipePose(pose);
+          } else {
+            memoizeRightPipePose(pose);
+          }
+        });
       }
     }
 
