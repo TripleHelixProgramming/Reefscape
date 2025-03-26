@@ -314,19 +314,19 @@ public class Robot extends TimedRobot {
     // operator.start().whileTrue(coralRoller.createOuttakeCommand());
 
     // Configure to either score coral on L1 or score algae in processor
-    operator.a().whileTrue(new ConditionalCommand(
+    operator.a().onTrue(new ConditionalCommand(
         elevator.algaeProcessorPositionCG(), elevator.coralL1PositionCG(), algaeMode));
 
     // Configure to either score coral on L2 or intake algae from L2
-    operator.b().whileTrue(new ConditionalCommand(
+    operator.b().onTrue(new ConditionalCommand(
         elevator.algaeL2IntakeCG(), elevator.coralL2PositionCG(), algaeMode));
 
     // Configure to either score coral on L3 or intake algae from L3
-    operator.x().whileTrue(new ConditionalCommand(
+    operator.x().onTrue(new ConditionalCommand(
         elevator.algaeL3IntakeCG(), elevator.coralL3PositionCG(), algaeMode));
 
     // Configure to either score coral on L4 or score algae in barge
-    operator.y().whileTrue(new ConditionalCommand(
+    operator.y().onTrue(new ConditionalCommand(
         elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
 
     // Configure to either intake coral from source or intake algae from floor
