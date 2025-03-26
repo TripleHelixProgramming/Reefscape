@@ -15,7 +15,8 @@ public class PoseLogger extends SubsystemBase {
     private static final PoseLogger defaultPosePublisher = new PoseLogger("Poses");
 
     private record Info (Supplier<Optional<Pose2d>> supplier, StructPublisher<Pose2d> topic) {}
-    private final Map<String, Info> posePublishers = new HashMap<>();
+    private final Map<String, Info> monitorPublishers = new HashMap<>();
+    private final Map<String, StructPublisher<Pose2d>> publishers = new HashMap<>();
     private final NetworkTable table;
 
 
@@ -28,17 +29,26 @@ public class PoseLogger extends SubsystemBase {
     }
 
     public void monitor(String name, Supplier<Optional<Pose2d>> poseSupplier) {
-        posePublishers.put(name, 
+        monitorPublishers.put(name, 
             new Info(poseSupplier, 
                 table.getStructTopic(name, Pose2d.struct).publish()));
     }
 
+    public synchronized void publish(String name, Pose2d pose) {
+        var publisher = publishers.get(name);
+        if (publisher == null) {
+            publisher = table.getStructTopic(name, Pose2d.struct).publish();
+            publishers.put(name, publisher);
+        }
+        publisher.set(pose);
+    }
+
     public void cancel(String name) {
-        posePublishers.remove(name);
+        monitorPublishers.remove(name);
     }
 
     @Override
     public void periodic() {
-        posePublishers.forEach( (name, info) -> info.supplier.get().ifPresent(pose -> info.topic.set(pose)));
+        monitorPublishers.forEach( (name, info) -> info.supplier.get().ifPresent(pose -> info.topic.set(pose)));
     }
 }

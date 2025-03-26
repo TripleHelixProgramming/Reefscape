@@ -52,7 +52,10 @@ import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
+import frc.robot.vision.Camera;
 import frc.robot.vision.Vision;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -117,11 +120,12 @@ public class Robot extends TimedRobot {
     addPeriodic(() -> swerve.calibrateOdometry(), Seconds.of(2));
 
     var logger = PoseLogger.getDefault();
-    logger.monitor("vision", () -> { return vision.getPose(); });
+    logger.monitor("visionEstimate", () -> { return vision.getPose(); });
     logger.monitor("swerveEstimate", () -> { return Optional.of(swerve.getPose()); });
     logger.monitor("swerveOdometry", () -> { return Optional.of(swerve.getPoseRawOdometry()); });
     logger.monitor("nearestLeftPipe", () -> { return Optional.ofNullable(nearestLeftPipe); });
     logger.monitor("nearestRightPipe", () -> { return Optional.ofNullable(nearestRightPipe); });
+    Arrays.stream(Camera.values()).forEach(cam -> logger.monitor(cam.getName(), () -> { return cam.getPose(); }));
   }
 
   @Override
@@ -451,15 +455,6 @@ public class Robot extends TimedRobot {
    */
   public double getPDHCurrent(int CANBusPort) {
     return powerDistribution.getCurrent(CANBusPort - 10);
-  }
-
-  private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {
-    var publisher = posePublishers.get(name);
-    if (publisher == null) {
-      publisher = NetworkTableInstance.getDefault().getStructTopic(name, Pose2d.struct).publish();
-      posePublishers.put(name, publisher);
-    }
-    return publisher;
   }
 
   /**

@@ -4,6 +4,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -79,6 +80,10 @@ public enum Camera implements Subsystem {
   @Override
   public String getName() {
     return "Camera." + toString();
+  }
+
+  public Optional<Pose2d> getPose() {
+    return getEstimatedGlobalPose().map(est -> est.estimatedPose.toPose2d());
   }
 
   /**
