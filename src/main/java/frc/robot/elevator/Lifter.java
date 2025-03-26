@@ -199,33 +199,35 @@ public class Lifter extends SubsystemBase {
 
   public Command joystickVelocityControl(XboxController gamepad) {
     return new FunctionalCommand(
-        // initialize
-        () -> {},
-        // execute
-        () -> {
-          Distance targetPosition = Meters.of(feedback.getGoal().position);
+            // initialize
+            () -> {},
+            // execute
+            () -> {
+              Distance targetPosition = Meters.of(feedback.getGoal().position);
 
-          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          Distance adder =
-              LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
-          targetPosition = targetPosition.plus(adder);
+              double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+              Distance adder =
+                  LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
+              targetPosition = targetPosition.plus(adder);
 
-          if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
-          control();
-        },
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> false,
-        // requirements
-        this).withName("Joystick velocity control");
+              if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
+              control();
+            },
+            // end
+            interrupted -> {},
+            // isFinished
+            () -> false,
+            // requirements
+            this)
+        .withName("Joystick velocity control");
   }
 
   public Command joystickVoltageControl(XboxController gamepad) {
     return this.run(
-        () -> {
-          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          leaderMotor.setVoltage(joystickInput * 2.0);
-        }).withName("Joystick voltage control");
+            () -> {
+              double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+              leaderMotor.setVoltage(joystickInput * 2.0);
+            })
+        .withName("Joystick voltage control");
   }
 }
