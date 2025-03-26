@@ -194,11 +194,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    autoSelector.scheduleAuto();
     swerve.setDefaultCommand(swerve.createStopCommand());
     lifter.setDefaultCommand(lifter.remainAtCurrentHeight());
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
+    autoSelector.scheduleAuto();
   }
 
   @Override

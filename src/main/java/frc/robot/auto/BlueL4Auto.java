@@ -48,11 +48,10 @@ public class BlueL4Auto extends AutoMode {
     blueL4AutoRoutine.active().onTrue(
       Commands.parallel(
         blueCenterToL4G.cmd(),
-        elevator.coralL4PositionCG().withTimeout(2.0)));
+        elevator.coralL4PositionCG()));
 
-    blueCenterToL4G.done().onTrue(
+    blueCenterToL4G.doneFor(1.0).onTrue(
         Commands.sequence(
-            Commands.waitSeconds(0.1),
             coralRoller.createOuttakeCommand().withTimeout(0.2),
             Commands.waitSeconds(0.2)));
 
