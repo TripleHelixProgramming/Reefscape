@@ -5,6 +5,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Preferences;
+
+import static edu.wpi.first.units.Units.Degrees;
+
 import java.util.Optional;
 
 public class Config {
@@ -65,7 +68,7 @@ public class Config {
     if (w.isEmpty()) {
       return Optional.empty();
     }
-    return Optional.of(new Rotation2d(w.get()));
+    return Optional.of(new Rotation2d(Degrees.of(w.get())));
   }
 
   public void storeTransform(String key, Transform2d value) {
