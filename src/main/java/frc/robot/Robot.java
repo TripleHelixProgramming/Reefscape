@@ -47,6 +47,7 @@ import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.AlgaeWrist;
 import frc.robot.elevator.CoralRoller;
+import frc.robot.elevator.CoralWrist;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Vision;
@@ -66,6 +67,7 @@ public class Robot extends TimedRobot {
   private final Elevator elevator = new Elevator();
   private final Lifter lifter = elevator.getLifter();
   private final CoralRoller coralRoller = elevator.getCoralRoller();
+  private final CoralWrist coralWrist = elevator.getCoralWrist();
   private final AlgaeRoller algaeRoller = elevator.getAlgaeRoller();
   private final AlgaeWrist algaeWrist = elevator.getAlgaeWrist();
 
@@ -196,7 +198,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     autoSelector.scheduleAuto();
     swerve.setDefaultCommand(swerve.createStopCommand());
-    lifter.setDefaultCommand(lifter.createRemainAtCurrentHeightCommand());
+    lifter.setDefaultCommand(lifter.remainAtCurrentHeight());
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
   }
@@ -209,11 +211,7 @@ public class Robot extends TimedRobot {
     autoSelector.cancelAuto();
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
-
-    lifter.matchHeight();
-    lifter.resetController();
-    lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
-    // lifter.setDefaultCommand(lifter.createJoystickControlCommand(operator.getHID()));
+    lifter.setDefaultCommand(lifter.joystickVelocityControl(operator.getHID()));
     leds.replaceDefaultCommandImmediately(
         leds.createStandardDisplayCommand(algaeModeSupplier, gamepieceSupplier));
 
@@ -375,13 +373,15 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
-    RobotModeTriggers.autonomous()
-        .onTrue(elevator.resetPositionControllers()
-        .andThen(climber.lockRatchet()));
-    RobotModeTriggers.teleop()
-        .onTrue(swerve.resetHeadingOffset()
-        .andThen(elevator.resetPositionControllers())
-        .andThen(climber.lockRatchet())
+    var autonomous = RobotModeTriggers.autonomous();
+    autonomous.onTrue(elevator.resetPositionControllers());
+    autonomous.onTrue(climber.lockRatchet());
+    
+    var teleop = RobotModeTriggers.teleop();
+    teleop.onTrue(swerve.resetHeadingOffset());
+    teleop.onTrue(lifter.remainAtCurrentHeight());
+    teleop.onTrue(elevator.resetPositionControllers());
+    teleop.onTrue(climber.lockRatchet()
         .andThen(climber.resetEncoder()));
 
     algaeRoller.hasAlgae

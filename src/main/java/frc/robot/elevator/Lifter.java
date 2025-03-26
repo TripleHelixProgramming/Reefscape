@@ -30,6 +30,7 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterController;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
+import java.util.function.Supplier;
 
 public class Lifter extends SubsystemBase {
 
@@ -99,7 +100,6 @@ public class Lifter extends SubsystemBase {
     feedback.setTolerance(LifterConstants.kAllowableHeightError.in(Meters));
     feedback.setIZone(LifterController.kIzone.in(Inches));
     // controller.setIntegratorRange();
-    resetController();
   }
 
   @Override
@@ -157,45 +157,24 @@ public class Lifter extends SubsystemBase {
   public Trigger atProcessorHeight = new Trigger(() -> inState(LifterState.AlgaeProcessor));
   public Trigger atBargeHeight = new Trigger(() -> inState(LifterState.AlgaeBarge));
   public Trigger atFloorIntakingHeight = new Trigger(() -> inState(LifterState.AlgaeIntakeFloor));
-  public Trigger tooHighForCoralWrist =
-      new Trigger(() -> getCurrentHeight().gt(LifterState.CoralL3.height.plus(Inches.of(2.0))));
 
   private void resetEncoder() {
     encoder.setPosition(LifterState.EncoderReset.height.in(Meters));
   }
 
-  public Command createSetHeightCommand(LifterState state) {
-    return new FunctionalCommand(
-        // initialize
-        () -> {
-          targetState = state;
-          feedback.setGoal(targetState.height.in(Meters));
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> feedback.atGoal(),
-        // requirements
-        this);
+  public Command remainAtCurrentHeight() {
+    return setHeight(() -> getCurrentHeight()).withName("Maintain current height");
   }
 
-  public void matchHeight() {
-    feedback.setGoal(encoder.getPosition());
+  public Command setHeight(LifterState state) {
+    targetState = state;
+    return setHeight(() -> targetState.height).withName("Set angle to " + targetState.toString());
   }
 
-  public Command createRemainAtCurrentHeightCommand() {
+  public Command setHeight(Supplier<Distance> heightSupplier) {
     return new FunctionalCommand(
         // initialize
-        () -> {
-          if (targetState == LifterState.Initial) {
-            matchHeight();
-            // Users should call reset() when they first start running the controller to avoid
-            // unwanted behavior.
-            resetController();
-          }
-        },
+        () -> feedback.setGoal(heightSupplier.get().in(Meters)),
         // execute
         () -> control(),
         // end
@@ -212,13 +191,10 @@ public class Lifter extends SubsystemBase {
     return true;
   }
 
-  public Command createJoystickControlCommand(XboxController gamepad) {
+  public Command joystickVelocityControl(XboxController gamepad) {
     return new FunctionalCommand(
         // initialize
-        () -> {
-          // matchHeight();
-          // resetController();
-        },
+        () -> {},
         // execute
         () -> {
           Distance targetPosition = Meters.of(feedback.getGoal().position);
@@ -239,7 +215,7 @@ public class Lifter extends SubsystemBase {
         this);
   }
 
-  public Command createJoystickVoltageCommand(XboxController gamepad) {
+  public Command joystickVoltageControl(XboxController gamepad) {
     return this.run(
         () -> {
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);

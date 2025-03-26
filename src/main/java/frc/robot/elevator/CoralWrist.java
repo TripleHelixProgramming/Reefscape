@@ -5,8 +5,6 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 
-import java.util.function.Supplier;
-
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -28,6 +26,7 @@ import frc.robot.Constants.MotorConstants.NEO550Constants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
+import java.util.function.Supplier;
 
 public class CoralWrist extends SubsystemBase {
 
@@ -84,7 +83,7 @@ public class CoralWrist extends SubsystemBase {
     feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // controller.setIntegratorRange();
 
-    setDefaultCommand(createSetAngleCommand(() -> getCurrentAngle()).withName("Maintain current angle"));
+    setDefaultCommand(remainAtCurrentAngle());
   }
 
   @Override
@@ -134,17 +133,19 @@ public class CoralWrist extends SubsystemBase {
     return this.targetState.equals(state);
   }
 
-  public Command createSetAngleCommand(CoralWristState state) {
-    targetState = state;
-    return createSetAngleCommand(() -> targetState.angle).withName("Set angle to " + state.toString());
+  public Command remainAtCurrentAngle() {
+    return setAngle(() -> getCurrentAngle()).withName("Maintain current angle");
   }
 
-  public Command createSetAngleCommand(Supplier<Angle> angleSupplier) {
+  public Command setAngle(CoralWristState state) {
+    targetState = state;
+    return setAngle(() -> targetState.angle).withName("Set angle to " + targetState.toString());
+  }
+
+  public Command setAngle(Supplier<Angle> angleSupplier) {
     return new FunctionalCommand(
         // initialize
-        () -> {
-          feedback.setGoal(angleSupplier.get().in(Radians));
-        },
+        () -> feedback.setGoal(angleSupplier.get().in(Radians)),
         // execute
         () -> control(),
         // end
@@ -155,7 +156,7 @@ public class CoralWrist extends SubsystemBase {
         this);
   }
 
-  public Command createJoystickControlCommand(XboxController gamepad) {
+  public Command joystickVoltageControl(XboxController gamepad) {
     return this.run(
         () -> {
           double joystickInput = 2.0 * MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);

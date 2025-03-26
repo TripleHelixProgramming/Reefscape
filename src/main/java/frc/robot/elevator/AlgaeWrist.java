@@ -85,7 +85,7 @@ public class AlgaeWrist extends SubsystemBase {
     feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // feedback.setIntegratorRange();
 
-    setDefaultCommand(createSetAngleCommand(() -> getCurrentAngle()).withName("Maintain current angle"));
+    setDefaultCommand(remainAtCurrentAngle());
   }
 
   @Override
@@ -137,17 +137,19 @@ public class AlgaeWrist extends SubsystemBase {
     return this.targetState;
   }
 
-  public Command createSetAngleCommand(AlgaeWristState state) {
-    targetState = state;
-    return createSetAngleCommand(() -> targetState.angle).withName("Set angle to " + state.toString());
+  public Command remainAtCurrentAngle() {
+    return setAngle(() -> getCurrentAngle()).withName("Maintain current angle");
   }
 
-  public Command createSetAngleCommand(Supplier<Angle> angleSupplier) {
+  public Command setAngle(AlgaeWristState state) {
+    targetState = state;
+    return setAngle(() -> targetState.angle).withName("Set angle to " + targetState.toString());
+  }
+
+  public Command setAngle(Supplier<Angle> angleSupplier) {
     return new FunctionalCommand(
         // initialize
-        () -> {
-          feedback.setGoal(angleSupplier.get().in(Radians));
-        },
+        () -> feedback.setGoal(angleSupplier.get().in(Radians)),
         // execute
         () -> control(),
         // end
@@ -158,7 +160,7 @@ public class AlgaeWrist extends SubsystemBase {
         this);
   }
 
-  public Command createJoystickControlCommand(XboxController gamepad) {
+  public Command joystickVoltageControl(XboxController gamepad) {
     return this.run(
         () -> {
           double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
