@@ -379,7 +379,7 @@ public class Robot extends TimedRobot {
     
     var teleop = RobotModeTriggers.teleop();
     teleop.onTrue(swerve.resetHeadingOffset());
-    teleop.onTrue(lifter.remainAtCurrentHeight());
+    teleop.onTrue(lifter.matchHeight());
     teleop.onTrue(elevator.resetPositionControllers());
     teleop.onTrue(climber.lockRatchet()
         .andThen(climber.resetEncoder()));
