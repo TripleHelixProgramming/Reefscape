@@ -31,6 +31,7 @@ import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
+import frc.lib.PoseLogger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -75,7 +76,7 @@ public class Robot extends TimedRobot {
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
   private final Climber climber = new Climber();
   private final LEDs leds = LEDs.getInstance();
-  private final Vision vision = new Vision();
+  private final Vision vision = new Vision(swerve);
   private final EventLoop loop = new EventLoop();
 
   private CommandZorroController driver;
@@ -85,18 +86,12 @@ public class Robot extends TimedRobot {
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
   private Optional<AutoAlignTarget> currentAutoAlignTarget = Optional.empty();
+  private Pose2d nearestLeftPipe;
+  private Pose2d nearestRightPipe;
 
   private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
           .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
-          .publish();
-  private StructPublisher<Pose2d> leftCoralPipeTargetPositionsPublisher =
-      NetworkTableInstance.getDefault()
-          .getStructTopic("Sector left pipe target", Pose2d.struct)
-          .publish();
-  private StructPublisher<Pose2d> rightCoralPipeTargetPositionsPublisher =
-      NetworkTableInstance.getDefault()
-          .getStructTopic("Sector right pipe target", Pose2d.struct)
           .publish();
 
   public Robot() {
@@ -120,6 +115,13 @@ public class Robot extends TimedRobot {
     addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), Seconds.of(0.1));
     // TODO: see what happens with and without this odometry update
     addPeriodic(() -> swerve.calibrateOdometry(), Seconds.of(2));
+
+    var logger = PoseLogger.getDefault();
+    logger.monitor("vision", () -> { return vision.getPose(); });
+    logger.monitor("swerveEstimate", () -> { return Optional.of(swerve.getPose()); });
+    logger.monitor("swerveOdometry", () -> { return Optional.of(swerve.getPoseRawOdometry()); });
+    logger.monitor("nearestLeftPipe", () -> { return Optional.ofNullable(nearestLeftPipe); });
+    logger.monitor("nearestRightPipe", () -> { return Optional.ofNullable(nearestRightPipe); });
   }
 
   @Override
@@ -137,7 +139,6 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     loop.poll();
     CommandScheduler.getInstance().run();
-    checkVision();
     SmartDashboard.putData("Driver Controller", driver.getHID());
     SmartDashboard.putData("Operator Controller", operator.getHID());
     SmartDashboard.putData(CommandScheduler.getInstance());
@@ -151,15 +152,8 @@ public class Robot extends TimedRobot {
 
     var nearestReef = Reef.getNearestReef(swerve.getPose());
     var nearestReefFace = nearestReef.getNearestFace(swerve.getPose());
-    var nearestLeftPipe = nearestReefFace.getLeftPipePose();
-    var nearestRightPipe = nearestReefFace.getRightPipePose();
-    var nearestRedReefFace = Reef.Red.getNearestFace(swerve.getPose());
-
-    SmartDashboard.putString("Sector nearest reef", nearestReef.toString());
-    SmartDashboard.putString("Sector nearest reef face", nearestReefFace.toString());
-    SmartDashboard.putString("Sector nearest red reef face", nearestRedReefFace.toString());
-    leftCoralPipeTargetPositionsPublisher.set(nearestLeftPipe);
-    rightCoralPipeTargetPositionsPublisher.set(nearestRightPipe);
+    nearestLeftPipe = nearestReefFace.getLeftPipePose();
+    nearestRightPipe = nearestReefFace.getRightPipePose();
   }
 
   @Override
@@ -277,7 +271,7 @@ public class Robot extends TimedRobot {
 
 
   protected void rememberOutputPose(Pose2d pose) {
-    currentAutoAlignTarget.ifPresent(target -> target.setNewPose(pose));
+    currentAutoAlignTarget.ifPresent(target -> target.setPose(pose));
   }
 
   /**
@@ -466,18 +460,6 @@ public class Robot extends TimedRobot {
       posePublishers.put(name, publisher);
     }
     return publisher;
-  }
-
-  protected void checkVision() {
-
-    vision
-        .getPoseEstimates()
-        .forEach(
-            est -> {
-              swerve.addVisionMeasurement(
-                  est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
-              getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
-            });
   }
 
   /**

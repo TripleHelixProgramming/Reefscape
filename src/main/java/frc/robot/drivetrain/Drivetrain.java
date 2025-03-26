@@ -171,11 +171,26 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * @return The robot pose
+   * @return The vision-corrected odometry pose
    */
   public Pose2d getPose() {
+    return getPoseVisionCorrected();
+  }
+
+  /**
+   * @return The vision-corrected odometry pose
+   */
+  public Pose2d getPoseVisionCorrected() {
     return poseEstimator.getEstimatedPosition();
   }
+
+  /**
+   * @return The raw odometry pose
+   */
+  public Pose2d getPoseRawOdometry() {
+    return odometry.getPoseMeters();
+  }
+
 
   /*
    * Reset the pose estimator so the underlying odometry

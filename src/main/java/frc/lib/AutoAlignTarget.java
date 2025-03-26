@@ -11,7 +11,7 @@ public abstract class AutoAlignTarget {
   public abstract Pose2d getPose();
 
   /** Set the pose associated with this target */
-  public void setNewPose(Pose2d pose) {
+  public void setPose(Pose2d pose) {
     newPose = pose;
   }
 
