@@ -331,7 +331,7 @@ public class Robot extends TimedRobot {
     // operator.start().whileTrue(new ConditionalCommand(
     //     elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
-    operator.rightTrigger().whileTrue(new ConditionalCommand(
+    operator.rightTrigger().onTrue(new ConditionalCommand(
         elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     // Intake coral and algae
@@ -381,9 +381,7 @@ public class Robot extends TimedRobot {
         .onTrue(elevator.resetPositionControllers())
         .onTrue(climber.lockRatchet().andThen(climber.resetEncoder()));
 
-    algaeRoller.hasAlgae
-        .whileTrue(algaeRoller.createHoldAlgaeCommand());
-        // .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+    algaeRoller.hasAlgae.onTrue(elevator.holdAlgaeCG());
 
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
