@@ -49,8 +49,9 @@ public class RedL4Auto extends AutoMode {
         .onTrue(redCenterToL4G.cmd())
         .onTrue(elevator.coralL4PositionCG());
 
-    redCenterToL4G.doneFor(1.0).onTrue(
+    redCenterToL4G.done().onTrue(
         Commands.sequence(
+            Commands.waitSeconds(1.0),
             coralRoller.createOuttakeCommand().withTimeout(0.2),
             Commands.waitSeconds(0.2)));
 
