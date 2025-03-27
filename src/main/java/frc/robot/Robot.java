@@ -313,26 +313,26 @@ public class Robot extends TimedRobot {
 
     // Configure to either score coral on L1 or score algae in processor
     operator.a().onTrue(new ConditionalCommand(
-        elevator.algaeProcessorPositionCG().asProxy(), elevator.coralL1PositionCG().asProxy(), algaeMode));
+        elevator.algaeProcessorPositionCG(), elevator.coralL1PositionCG(), algaeMode));
 
     // Configure to either score coral on L2 or intake algae from L2
     operator.b().onTrue(new ConditionalCommand(
-        elevator.algaeL2IntakeCG().asProxy(), elevator.coralL2PositionCG().asProxy(), algaeMode));
+        elevator.algaeL2IntakeCG(), elevator.coralL2PositionCG(), algaeMode));
 
     // Configure to either score coral on L3 or intake algae from L3
     operator.x().onTrue(new ConditionalCommand(
-        elevator.algaeL3IntakeCG().asProxy(), elevator.coralL3PositionCG().asProxy(), algaeMode));
+        elevator.algaeL3IntakeCG(), elevator.coralL3PositionCG(), algaeMode));
 
     // Configure to either score coral on L4 or score algae in barge
     operator.y().onTrue(new ConditionalCommand(
-        elevator.algaeBargePositionCG().asProxy(), elevator.coralL4PositionCG().asProxy(), algaeMode));
+        elevator.algaeBargePositionCG(), elevator.coralL4PositionCG(), algaeMode));
 
     // Configure to either intake coral from source or intake algae from floor
     // operator.start().whileTrue(new ConditionalCommand(
     //     elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     operator.rightTrigger().whileTrue(new ConditionalCommand(
-        elevator.algaeFloorIntakeCG().asProxy(), elevator.coralIntakeCG().asProxy(), algaeMode));
+        elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     // Intake coral and algae
     operator.rightBumper()
@@ -371,21 +371,20 @@ public class Robot extends TimedRobot {
   }
 
   private void configureEventBindings() {
-    var autonomous = RobotModeTriggers.autonomous();
-    autonomous.onTrue(elevator.resetPositionControllers());
-    autonomous.onTrue(climber.lockRatchet());
+    RobotModeTriggers.autonomous()
+        .onTrue(elevator.resetPositionControllers())
+        .onTrue(climber.lockRatchet());
     
-    var teleop = RobotModeTriggers.teleop();
-    teleop.onTrue(swerve.resetHeadingOffset());
-    teleop.onTrue(lifter.matchHeight());
-    teleop.onTrue(elevator.resetPositionControllers());
-    teleop.onTrue(climber.lockRatchet()
-        .andThen(climber.resetEncoder()));
+    RobotModeTriggers.teleop()
+        .onTrue(swerve.resetHeadingOffset())
+        .onTrue(lifter.matchHeight())
+        .onTrue(elevator.resetPositionControllers())
+        .onTrue(climber.lockRatchet().andThen(climber.resetEncoder()));
 
     algaeRoller.hasAlgae
         .whileTrue(algaeRoller.createHoldAlgaeCommand());
-    // algaeRoller.hasAlgae
-    //     .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+        // .onTrue(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
 

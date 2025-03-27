@@ -45,10 +45,9 @@ public class BlueL4Auto extends AutoMode {
   public AutoRoutine getAutoRoutine() {
 
     // spotless:off
-    blueL4AutoRoutine.active().onTrue(
-      Commands.parallel(
-        blueCenterToL4G.cmd(),
-        elevator.coralL4PositionCG()));
+    blueL4AutoRoutine.active()
+        .onTrue(blueCenterToL4G.cmd())
+        .onTrue(elevator.coralL4PositionCG());
 
     blueCenterToL4G.doneFor(1.0).onTrue(
         Commands.sequence(

@@ -45,10 +45,9 @@ public class RedL4Auto extends AutoMode {
   public AutoRoutine getAutoRoutine() {
 
     // spotless:off
-    redL4AutoRoutine.active().onTrue(
-      Commands.parallel(
-        redCenterToL4G.cmd(),
-        elevator.coralL4PositionCG()));
+    redL4AutoRoutine.active()
+        .onTrue(redCenterToL4G.cmd())
+        .onTrue(elevator.coralL4PositionCG());
 
     redCenterToL4G.doneFor(1.0).onTrue(
         Commands.sequence(
