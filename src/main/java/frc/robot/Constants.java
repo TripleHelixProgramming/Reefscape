@@ -224,8 +224,8 @@ public final class Constants {
   public static final class ClimberConstants {
     public static final int kClimberPort = 17;
     public static final int kRatchetServoPort = 1;
-    public static final double kEngagedPosition = 800 / 1024.0;
-    public static final double kDisengedPosition = 950 / 1024.0;
+    public static final double kEngagedPosition = 550 / 1024.0;
+    public static final double kDisengedPosition = 800 / 1024.0;
 
     public static final int kCageSensorPort = 6;
 
