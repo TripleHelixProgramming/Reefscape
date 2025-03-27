@@ -46,18 +46,19 @@ public enum Camera implements Subsystem {
     this.transform = new Transform3d(translation, rotation);
     this.device = new PhotonCamera(name);
     this.pose = Optional.empty();
+    this.curStdDevs = VisionConstants.kMultiTagStdDevs;
 
     // // TODO: switch back to official field layout
-    AprilTagFieldLayout tagLayout;
-    try {
-      tagLayout = new AprilTagFieldLayout(VisionConstants.kStemGymAprilTagLayoutPath);
-    } catch (IOException e) {
-      System.err.println("Error loading custom AprilTag layout: " + e.getMessage());
-      tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    }
+    // AprilTagFieldLayout tagLayout;
+    // try {
+    //   tagLayout = new AprilTagFieldLayout(VisionConstants.kStemGymAprilTagLayoutPath);
+    // } catch (IOException e) {
+    //   System.err.println("Error loading custom AprilTag layout: " + e.getMessage());
+    //   tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    // }
 
-    // AprilTagFieldLayout tagLayout =
-    //     AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+    AprilTagFieldLayout tagLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     this.poseEstimator =
         new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, transform);

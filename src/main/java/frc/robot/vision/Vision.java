@@ -34,6 +34,7 @@ public class Vision extends SubsystemBase {
 
   /** Choose the pose estimate with the lowest maximum stdev. */
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+    
     return Arrays.stream(Camera.values())
         .sorted(
             (lhs, rhs) ->
