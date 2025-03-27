@@ -190,6 +190,7 @@ public class Robot extends TimedRobot {
 
     allianceSelector.disabledPeriodic();
     autoSelector.disabledPeriodic();
+    elevator.resetPositionControllers();
   }
 
   @Override
@@ -372,13 +373,11 @@ public class Robot extends TimedRobot {
 
   private void configureEventBindings() {
     RobotModeTriggers.autonomous()
-        .onTrue(elevator.resetPositionControllers())
         .onTrue(climber.lockRatchet());
     
     RobotModeTriggers.teleop()
         .onTrue(swerve.resetHeadingOffset())
         .onTrue(lifter.matchHeight())
-        .onTrue(elevator.resetPositionControllers())
         .onTrue(climber.lockRatchet().andThen(climber.resetEncoder()));
 
     algaeRoller.hasAlgae.onTrue(elevator.holdAlgaeCG());

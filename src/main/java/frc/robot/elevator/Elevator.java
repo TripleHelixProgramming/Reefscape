@@ -45,13 +45,10 @@ public class Elevator {
     return algaeWrist;
   }
 
-  public Command resetPositionControllers() {
-    return new InstantCommand(
-        () -> {
-          lifter.resetController();
-          coralWrist.resetController();
-          algaeWrist.resetController();
-        });
+  public void resetPositionControllers() {
+      lifter.resetController();
+      coralWrist.resetController();
+      algaeWrist.resetController();
   }
 
   public Command coralL4PositionCG() {
