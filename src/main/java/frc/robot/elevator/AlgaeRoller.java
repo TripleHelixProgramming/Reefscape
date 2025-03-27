@@ -82,22 +82,24 @@ public class AlgaeRoller extends SubsystemBase {
   }
 
   public Command createStopCommand() {
-    return this.startEnd(() -> leaderMotor.set(0.0), () -> {});
+    return this.startEnd(() -> leaderMotor.set(0.0), () -> {}).withName("Stop");
   }
 
   public Command createIntakeCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kIntakeVoltage));
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kIntakeVoltage)).withName("Intake");
   }
 
   public Command createOuttakeToBargeCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToBargeVoltage));
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToBargeVoltage))
+        .withName("Outtake to barge");
   }
 
   public Command createOuttakeToProcessorCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToProcessorVoltage));
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToProcessorVoltage))
+        .withName("Outtake to processor");
   }
 
   public Command createHoldAlgaeCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kHoldVoltage));
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kHoldVoltage)).withName("Hold");
   }
 }

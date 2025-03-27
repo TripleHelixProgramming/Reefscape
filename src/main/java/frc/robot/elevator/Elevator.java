@@ -2,7 +2,6 @@ package frc.robot.elevator;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.elevator.ElevatorConstants.AlgaeWristConstants.AlgaeWristState;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
@@ -46,89 +45,116 @@ public class Elevator {
     return algaeWrist;
   }
 
-  public Command resetPositionControllers() {
-    return new InstantCommand(
-        () -> {
-          lifter.matchHeight();
-          lifter.resetController();
-          coralWrist.resetController();
-          algaeWrist.resetController();
-        });
+  public void resetPositionControllers() {
+    lifter.resetController();
+    coralWrist.resetController();
+    algaeWrist.resetController();
   }
 
   public Command coralL4PositionCG() {
-    return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralL4),
-        coralWrist.createSetAngleCommand(CoralWristState.L4),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.CoralL4).schedule();
+          coralWrist.setAngle(CoralWristState.L4).schedule();
+          algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
+          algaeRoller.getCurrentCommand().cancel();
+        });
   }
 
   public Command coralL3PositionCG() {
-    return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralL3),
-        coralWrist.createSetAngleCommand(CoralWristState.L3),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.CoralL3).schedule();
+          coralWrist.setAngle(CoralWristState.L3).schedule();
+          algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
+          algaeRoller.getCurrentCommand().cancel();
+        });
   }
 
   public Command coralL2PositionCG() {
-    return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralL2),
-        coralWrist.createSetAngleCommand(CoralWristState.L2),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.CoralL2).schedule();
+          coralWrist.setAngle(CoralWristState.L2).schedule();
+          algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
+          algaeRoller.getCurrentCommand().cancel();
+        });
   }
 
   public Command coralL1PositionCG() {
-    return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralL1),
-        coralWrist.createSetAngleCommand(CoralWristState.L1),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.CoralL1).schedule();
+          coralWrist.setAngle(CoralWristState.L1).schedule();
+          algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
+          algaeRoller.getCurrentCommand().cancel();
+        });
   }
 
   public Command coralIntakeCG() {
-    return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.CoralIntake),
-        coralWrist.createSetAngleCommand(CoralWristState.Intake),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.CoralMode));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.CoralIntake).schedule();
+          coralWrist.setAngle(CoralWristState.Intake).schedule();
+          algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
+          algaeRoller.getCurrentCommand().cancel();
+        });
   }
 
   public Command algaeBargePositionCG() {
-    return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.AlgaeBarge),
-        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.AlgaeBarge).schedule();
+          coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
+          algaeWrist.setAngle(AlgaeWristState.Barge).schedule();
+        });
   }
 
   public Command algaeL3IntakeCG() {
-    return Commands.parallel(
-            lifter.createSetHeightCommand(LifterState.AlgaeL3),
-            coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-            algaeWrist.createSetAngleCommand(AlgaeWristState.L3),
-            algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae))
-        .andThen(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.AlgaeL3).schedule();
+          coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
+          algaeWrist.setAngle(AlgaeWristState.L3).schedule();
+          algaeRoller.createIntakeCommand().schedule();
+        });
   }
 
   public Command algaeL2IntakeCG() {
-    return Commands.parallel(
-            lifter.createSetHeightCommand(LifterState.AlgaeL2),
-            coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-            algaeWrist.createSetAngleCommand(AlgaeWristState.L2),
-            algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae))
-        .andThen(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.AlgaeL2).schedule();
+          coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
+          algaeWrist.setAngle(AlgaeWristState.L2).schedule();
+          algaeRoller.createIntakeCommand().schedule();
+        });
   }
 
   public Command algaeProcessorPositionCG() {
-    return Commands.parallel(
-        lifter.createSetHeightCommand(LifterState.AlgaeProcessor),
-        coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-        algaeWrist.createSetAngleCommand(AlgaeWristState.Processor));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.AlgaeProcessor).schedule();
+          coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
+          algaeWrist.setAngle(AlgaeWristState.Processor).schedule();
+        });
   }
 
   public Command algaeFloorIntakeCG() {
-    return Commands.parallel(
-            lifter.createSetHeightCommand(LifterState.AlgaeIntakeFloor),
-            coralWrist.createSetAngleCommand(CoralWristState.AlgaeMode),
-            algaeWrist.createSetAngleCommand(AlgaeWristState.Floor),
-            algaeRoller.createIntakeCommand().until(algaeRoller.hasAlgae))
-        .andThen(algaeWrist.createSetAngleCommand(AlgaeWristState.Barge));
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.AlgaeIntakeFloor).schedule();
+          coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
+          algaeWrist.setAngle(AlgaeWristState.Floor).schedule();
+          algaeRoller.createIntakeCommand().schedule();
+        });
+  }
+
+  public Command holdAlgaeCG() {
+    return new InstantCommand(
+        () -> {
+          algaeRoller.createHoldAlgaeCommand().schedule();
+          coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
+          algaeWrist.setAngle(AlgaeWristState.Barge).schedule();
+        });
   }
 }
