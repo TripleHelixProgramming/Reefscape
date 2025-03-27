@@ -52,8 +52,7 @@ public class RedL4Auto extends AutoMode {
     redCenterToL4G.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(1.0),
-            coralRoller.createOuttakeCommand().withTimeout(0.2),
-            Commands.waitSeconds(0.2)));
+            coralRoller.createOuttakeCommand().withTimeout(0.2)));
 
     // spotless:on
 
