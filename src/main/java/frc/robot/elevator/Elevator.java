@@ -46,9 +46,9 @@ public class Elevator {
   }
 
   public void resetPositionControllers() {
-      lifter.resetController();
-      coralWrist.resetController();
-      algaeWrist.resetController();
+    lifter.resetController();
+    coralWrist.resetController();
+    algaeWrist.resetController();
   }
 
   public Command coralL4PositionCG() {
