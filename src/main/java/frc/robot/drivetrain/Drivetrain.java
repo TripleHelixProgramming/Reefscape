@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -47,6 +48,7 @@ public class Drivetrain extends SubsystemBase {
 
   // The robot pose estimator for tracking swerve odometry and applying vision corrections.
   private final SwerveDrivePoseEstimator poseEstimator;
+  private final SwerveDriveOdometry odometry;
 
   private final PIDController xController =
       new PIDController(TranslationControllerGains.kP, 0.0, 0.0);
@@ -58,8 +60,10 @@ public class Drivetrain extends SubsystemBase {
   private final Canandgyro canandgyro = new Canandgyro(0);
   private Rotation2d headingOffset = Rotation2d.kZero;
 
-  private StructPublisher<Pose2d> m_visionPosePublisher =
+  private StructPublisher<Pose2d> visionPosePublisher =
       NetworkTableInstance.getDefault().getStructTopic("Vision", Pose2d.struct).publish();
+  private StructPublisher<Pose2d> odometryPosePublisher =
+      NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
 
   public Drivetrain(BooleanSupplier fieldRotated, Supplier<Dimensionless> elevatorHeight) {
     this.fieldRotatedSupplier = fieldRotated;
@@ -81,6 +85,11 @@ public class Drivetrain extends SubsystemBase {
             Pose2d.kZero,
             DriveConstants.kStateStdDevs,
             VisionConstants.kMultiTagStdDevs);
+    odometry =
+        new SwerveDriveOdometry(
+            DriveConstants.kDriveKinematics,
+            canandgyro.getRotation2d(),
+            getSwerveModulePositions());
 
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
   }
@@ -88,7 +97,9 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     poseEstimator.update(canandgyro.getRotation2d(), getSwerveModulePositions());
-    m_visionPosePublisher.set(poseEstimator.getEstimatedPosition());
+    odometry.update(canandgyro.getRotation2d(), getSwerveModulePositions());
+    visionPosePublisher.set(poseEstimator.getEstimatedPosition());
+    odometryPosePublisher.set(odometry.getPoseMeters());
 
     for (SwerveModule module : SwerveModule.values()) {
       SmartDashboard.putNumber(
@@ -160,17 +171,51 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * @return The robot pose
+   * @return The vision-corrected odometry pose
    */
   public Pose2d getPose() {
+    return getPoseVisionCorrected();
+  }
+
+  /**
+   * @return The vision-corrected odometry pose
+   */
+  public Pose2d getPoseVisionCorrected() {
     return poseEstimator.getEstimatedPosition();
+  }
+
+  /**
+   * @return The raw odometry pose
+   */
+  public Pose2d getPoseRawOdometry() {
+    return odometry.getPoseMeters();
+  }
+
+  /*
+   * Reset the pose estimator so the underlying odometry
+   * matches our current best guess.
+   */
+  public void calibrateOdometry() {
+    poseEstimator.resetPose(poseEstimator.getEstimatedPosition());
   }
 
   /**
    * @param pose The robot pose
    */
-  public void setPose(Pose2d pose) {
+  public void resetOdometry(Pose2d pose) {
+    resetOdometry(pose, false);
+  }
+
+  /**
+   * Reset the swerve drive's field pose.
+   *
+   * @param pose New robot pose.
+   * @param resetSimPose If the simulated robot pose should also be reset. This effectively
+   *     teleports the robot and should only be used during the setup of the simulation world.
+   */
+  public void resetOdometry(Pose2d pose, boolean resetSimPose) {
     poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
+    odometry.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
   public void initializeRelativeTurningEncoder() {
@@ -234,17 +279,6 @@ public class Drivetrain extends SubsystemBase {
   public void addVisionMeasurement(
       Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
     poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
-  }
-
-  /**
-   * Reset the estimated pose of the swerve drive on the field.
-   *
-   * @param pose New robot pose.
-   * @param resetSimPose If the simulated robot pose should also be reset. This effectively
-   *     teleports the robot and should only be used during the setup of the simulation world.
-   */
-  public void resetPose(Pose2d pose, boolean resetSimPose) {
-    poseEstimator.resetPosition(canandgyro.getRotation2d(), getSwerveModulePositions(), pose);
   }
 
   public void followTrajectory(SwerveSample sample) {

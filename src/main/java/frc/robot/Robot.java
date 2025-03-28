@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -24,10 +26,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.game.Gamepiece;
 import frc.game.Reef;
 import frc.lib.AllianceSelector;
+import frc.lib.AutoAlignTarget;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
+import frc.lib.PoseLogger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -48,9 +52,12 @@ import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
+import frc.robot.vision.Camera;
 import frc.robot.vision.Vision;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -73,7 +80,7 @@ public class Robot extends TimedRobot {
       new Drivetrain(allianceSelector::fieldRotated, lifter::getProportionOfMaxHeight);
   private final Climber climber = new Climber();
   private final LEDs leds = LEDs.getInstance();
-  private final Vision vision = new Vision();
+  private final Vision vision = new Vision(swerve);
   private final EventLoop loop = new EventLoop();
 
   private CommandZorroController driver;
@@ -82,18 +89,13 @@ public class Robot extends TimedRobot {
   private Supplier<Gamepiece> gamepieceSupplier;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
+  private Optional<AutoAlignTarget> currentAutoAlignTarget = Optional.empty();
+  private Pose2d nearestLeftPipe;
+  private Pose2d nearestRightPipe;
 
   private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
       NetworkTableInstance.getDefault()
           .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
-          .publish();
-  private StructPublisher<Pose2d> leftCoralPipeTargetPositionsPublisher =
-      NetworkTableInstance.getDefault()
-          .getStructTopic("Sector left pipe target", Pose2d.struct)
-          .publish();
-  private StructPublisher<Pose2d> rightCoralPipeTargetPositionsPublisher =
-      NetworkTableInstance.getDefault()
-          .getStructTopic("Sector right pipe target", Pose2d.struct)
           .publish();
 
   public Robot() {
@@ -114,7 +116,44 @@ public class Robot extends TimedRobot {
         "Align Encoders",
         new InstantCommand(() -> swerve.zeroAbsTurningEncoderOffsets()).ignoringDisable(true));
 
-    addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), 0.1);
+    addPeriodic(() -> swerve.refreshRelativeTurningEncoder(), Seconds.of(0.1));
+    // TODO: see what happens with and without this odometry update
+    addPeriodic(() -> swerve.calibrateOdometry(), Seconds.of(2));
+
+    var logger = PoseLogger.getDefault();
+    logger.monitor(
+        "visionEstimate",
+        () -> {
+          return vision.getPose();
+        });
+    logger.monitor(
+        "swerveEstimate",
+        () -> {
+          return Optional.of(swerve.getPose());
+        });
+    logger.monitor(
+        "swerveOdometry",
+        () -> {
+          return Optional.of(swerve.getPoseRawOdometry());
+        });
+    logger.monitor(
+        "nearestLeftPipe",
+        () -> {
+          return Optional.ofNullable(nearestLeftPipe);
+        });
+    logger.monitor(
+        "nearestRightPipe",
+        () -> {
+          return Optional.ofNullable(nearestRightPipe);
+        });
+    Arrays.stream(Camera.values())
+        .forEach(
+            cam ->
+                logger.monitor(
+                    cam.getName(),
+                    () -> {
+                      return cam.getPose();
+                    }));
   }
 
   @Override
@@ -125,14 +164,13 @@ public class Robot extends TimedRobot {
     DriverStation.startDataLog(DataLogManager.getLog());
 
     reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
+    swerve.calibrateOdometry();
   }
 
   @Override
   public void robotPeriodic() {
     loop.poll();
-    SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     CommandScheduler.getInstance().run();
-    checkVision();
     SmartDashboard.putData("Driver Controller", driver.getHID());
     SmartDashboard.putData("Operator Controller", operator.getHID());
     SmartDashboard.putData(CommandScheduler.getInstance());
@@ -146,23 +184,20 @@ public class Robot extends TimedRobot {
 
     var nearestReef = Reef.getNearestReef(swerve.getPose());
     var nearestReefFace = nearestReef.getNearestFace(swerve.getPose());
-    var nearestLeftPipe = nearestReefFace.getLeftPipePose();
-    var nearestRightPipe = nearestReefFace.getRightPipePose();
-    var nearestRedReefFace = Reef.Red.getNearestFace(swerve.getPose());
-
-    SmartDashboard.putString("Sector nearest reef", nearestReef.toString());
-    SmartDashboard.putString("Sector nearest reef face", nearestReefFace.toString());
-    SmartDashboard.putString("Sector nearest red reef face", nearestRedReefFace.toString());
-    leftCoralPipeTargetPositionsPublisher.set(nearestLeftPipe);
-    rightCoralPipeTargetPositionsPublisher.set(nearestRightPipe);
+    nearestLeftPipe = nearestReefFace.getLeftPipePose();
+    nearestRightPipe = nearestReefFace.getRightPipePose();
   }
 
   @Override
   public void disabledInit() {
+    swerve.calibrateOdometry();
     leds.replaceDefaultCommandImmediately(
         leds.createAutoOptionDisplayCommand(
                 autoSelector,
-                () -> swerve.getPose(),
+                () ->
+                    vision.getEstimatedGlobalPose().isPresent()
+                        ? vision.getEstimatedGlobalPose().get().estimatedPose.toPose2d()
+                        : null,
                 allianceSelector.getAgreementInAllianceColor())
             .ignoringDisable(true));
 
@@ -195,6 +230,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    swerve.calibrateOdometry();
     swerve.setDefaultCommand(swerve.createStopCommand());
     lifter.setDefaultCommand(lifter.remainAtCurrentHeight());
     leds.replaceDefaultCommandImmediately(
@@ -207,6 +243,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    swerve.calibrateOdometry();
     autoSelector.cancelAuto();
     swerve.setDefaultCommand(
         new ZorroDriveCommand(swerve, DriveConstants.kDriveKinematics, driver.getHID()));
@@ -255,6 +292,26 @@ public class Robot extends TimedRobot {
     configureOperatorButtonBindings();
   }
 
+  /** Store the supplied auto-align target for possible fixing. */
+  protected Supplier<Pose2d> startAutoAlign(AutoAlignTarget target) {
+    currentAutoAlignTarget = Optional.of(target);
+    return () -> target.getPose();
+  }
+
+  protected void rememberOutputPose(Pose2d pose) {
+    currentAutoAlignTarget.ifPresent(target -> target.setPose(pose));
+  }
+
+  /**
+   * Fix the most recent auto-align target by ammending its position with the one suppliked.
+   *
+   * @param newPose new pose to use for this target
+   */
+  protected void fixAutoAlign(Pose2d newPose) {
+    currentAutoAlignTarget.ifPresent(target -> target.memoize());
+    currentAutoAlignTarget = Optional.empty();
+  }
+
   // spotless:off
   private void configureDriverButtonBindings() {
 
@@ -269,12 +326,11 @@ public class Robot extends TimedRobot {
     // driver.AIn()
     //     .whileTrue(new DriveToPoseCommand(swerve, () -> swerve.getNearestPose()));
 
-    driver.AIn().whileTrue(
-        new DriveToPoseCommand(swerve, 
-          () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));
-    driver.DIn().whileTrue(
-        new DriveToPoseCommand(swerve, 
-          () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipePose()));
+    //TODO: add a button binding to call fixAutoAlign(swerve.getPose())
+    driver.AIn().whileTrue(new DriveToPoseCommand(swerve, 
+      () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipe()).get()));
+    driver.DIn().whileTrue(new DriveToPoseCommand(swerve, 
+      () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipe()).get()));
 
     // Outtake grippers
     var outtaking = driver.HIn();
@@ -283,7 +339,8 @@ public class Robot extends TimedRobot {
     lifter.atProcessorHeight.negate().and(outtaking)
         .whileTrue(algaeRoller.createOuttakeToBargeCommand());
     outtaking
-        .whileTrue(coralRoller.createOuttakeCommand());
+        .whileTrue(coralRoller.createOuttakeCommand()
+        .alongWith(new InstantCommand(() -> rememberOutputPose(swerve.getPose()))));
   }
 
   private void configureOperatorButtonBindings() {
@@ -359,6 +416,11 @@ public class Robot extends TimedRobot {
      * Left and right D-pad buttons will cause the robot to go to the left/right
      * pipe on the nearest reef face.
      */
+    operator.povLeft().onTrue(new InstantCommand(() -> fixAutoAlign(swerve.getPose())));
+    operator.povRight().onTrue(new InstantCommand(() -> fixAutoAlign(swerve.getPose())));
+    
+       
+      
     // operator.povLeft().whileTrue(
     //   new DriveToPoseCommand(swerve, 
     //   () -> Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipePose()));
@@ -381,6 +443,7 @@ public class Robot extends TimedRobot {
         .onTrue(climber.lockRatchet().andThen(climber.resetEncoder()));
 
     algaeRoller.hasAlgae.onTrue(elevator.holdAlgaeCG());
+    coralRoller.hasCoral.onTrue(coralRoller.createStopCommand());
 
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
@@ -414,26 +477,6 @@ public class Robot extends TimedRobot {
    */
   public double getPDHCurrent(int CANBusPort) {
     return powerDistribution.getCurrent(CANBusPort - 10);
-  }
-
-  private synchronized StructPublisher<Pose2d> getPose2dPublisher(String name) {
-    var publisher = posePublishers.get(name);
-    if (publisher == null) {
-      publisher = NetworkTableInstance.getDefault().getStructTopic(name, Pose2d.struct).publish();
-      posePublishers.put(name, publisher);
-    }
-    return publisher;
-  }
-
-  protected void checkVision() {
-    vision
-        .getPoseEstimates()
-        .forEach(
-            est -> {
-              swerve.addVisionMeasurement(
-                  est.pose().estimatedPose.toPose2d(), est.pose().timestampSeconds, est.stdev());
-              getPose2dPublisher(est.name()).set(est.pose().estimatedPose.toPose2d());
-            });
   }
 
   /**

@@ -3,7 +3,7 @@ package frc.lib;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 
-public class Util {
+public interface Util {
   /**
    * Map alliance object to corresponding color.
    *

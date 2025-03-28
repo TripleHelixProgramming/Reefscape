@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.game.FeederStation;
@@ -43,6 +44,8 @@ public final class Constants {
     // noise and how many or how frequently vision measurements are applied to the pose estimator.
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    public static String kStemGymAprilTagLayoutPath =
+        Filesystem.getDeployDirectory() + "/stemgym.json";
   }
 
   public static final class RobotConstants {
@@ -90,6 +93,7 @@ public final class Constants {
     public static final AngularVelocity kMaxRotationalVelocity =
         RadiansPerSecond.of(5.0); // max 5.0
     public static final LinearVelocity kMinTranslationVelocity = MetersPerSecond.of(1.0);
+    public static final LinearVelocity kMaxDriveToPoseTranslationVelocity = MetersPerSecond.of(1.0);
 
     // The locations for the modules must be relative to the center of the robot.
     // Positive x values represent moving toward the front of the robot
@@ -250,7 +254,7 @@ public final class Constants {
     public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
 
     public static final double kDeployPosition = 7.0; // inches
-    public static final double kRetractPosition = 1.25; // inches
+    public static final double kRetractPosition = 2.25; // inches
   }
 
   public static final class LedConstants {
