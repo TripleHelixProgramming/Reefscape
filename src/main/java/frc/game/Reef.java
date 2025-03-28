@@ -123,6 +123,14 @@ public enum Reef {
     private Optional<Pose2d> memoLeftPipePose;
     private Optional<Pose2d> memoRightPipePose;
 
+    public static PipeTarget getNearestPipe(Pose2d atPose) {
+      var face = getNearestReef(atPose).getNearestFace(atPose);
+      var leftDelta = atPose.getTranslation().minus(face.getLeftPipePose().getTranslation()).getNorm();
+      var rightDelta =
+          atPose.getTranslation().minus(face.getRightPipePose().getTranslation()).getNorm();
+      return leftDelta < rightDelta ? face.getLeftPipe() : face.getRightPipe();
+    }
+
     class PipeTarget extends AutoAlignTarget {
       private final boolean isLeft;
 
@@ -192,7 +200,7 @@ public enum Reef {
      *
      * @return left pipe target
      */
-    public AutoAlignTarget getLeftPipe() {
+    public PipeTarget getLeftPipe() {
       return new PipeTarget(true);
     }
 
@@ -201,7 +209,7 @@ public enum Reef {
      *
      * @return right pipe target
      */
-    public AutoAlignTarget getRightPipe() {
+    public PipeTarget getRightPipe() {
       return new PipeTarget(false);
     }
 

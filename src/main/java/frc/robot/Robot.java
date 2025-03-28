@@ -88,8 +88,8 @@ public class Robot extends TimedRobot {
   private BooleanSupplier algaeModeSupplier;
   private Supplier<Gamepiece> gamepieceSupplier;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
-  private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
   private Optional<AutoAlignTarget> currentAutoAlignTarget = Optional.empty();
+  private Optional<Pose2d> recentOuttakePose = Optional.empty();
   private Pose2d nearestLeftPipe;
   private Pose2d nearestRightPipe;
 
@@ -300,6 +300,7 @@ public class Robot extends TimedRobot {
 
   protected void rememberOutputPose(Pose2d pose) {
     currentAutoAlignTarget.ifPresent(target -> target.setPose(pose));
+    recentOuttakePose = Optional.of(pose);
   }
 
   /**
@@ -322,11 +323,6 @@ public class Robot extends TimedRobot {
           // swerve.initializeRelativeTurningEncoder();
         }).ignoringDisable(true));
 
-    // Drive to nearest pose
-    // driver.AIn()
-    //     .whileTrue(new DriveToPoseCommand(swerve, () -> swerve.getNearestPose()));
-
-    //TODO: add a button binding to call fixAutoAlign(swerve.getPose())
     driver.AIn().whileTrue(new DriveToPoseCommand(swerve, 
       () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipe()).get()));
     driver.DIn().whileTrue(new DriveToPoseCommand(swerve, 
