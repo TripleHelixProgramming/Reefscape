@@ -78,7 +78,19 @@ public class CoralRoller extends SubsystemBase {
     return this.run(() -> setVoltage(CoralRollerConstants.kIntakeVoltage));
   }
 
-  public Command createOuttakeCommand() {
-    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeVoltage));
+  public Command createOuttakeToL1Command() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL1Voltage));
+  }
+
+  public Command createOuttakeToL2Command() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL2Voltage));
+  }
+
+  public Command createOuttakeToL3Command() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL3Voltage));
+  }
+
+  public Command createOuttakeToL4Command() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL4Voltage));
   }
 }
