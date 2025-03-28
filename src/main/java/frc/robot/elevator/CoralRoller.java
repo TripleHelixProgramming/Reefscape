@@ -50,7 +50,7 @@ public class CoralRoller extends SubsystemBase {
 
     motor.configureAsync(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    setDefaultCommand(createStopCommand());
+    setDefaultCommand(stop());
   }
 
   @Override
@@ -70,27 +70,27 @@ public class CoralRoller extends SubsystemBase {
     return encoder.getVelocity();
   }
 
-  public Command createStopCommand() {
-    return this.startEnd(() -> motor.set(0.0), () -> {});
+  public Command stop() {
+    return this.startEnd(() -> motor.set(0.0), () -> {}).withName("Stop");
   }
 
-  public Command createIntakeCommand() {
-    return this.run(() -> setVoltage(CoralRollerConstants.kIntakeVoltage));
+  public Command intake() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kIntakeVoltage)).withName("Intake");
   }
 
-  public Command createOuttakeToL1Command() {
-    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL1Voltage));
+  public Command outtakeToL1() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL1Voltage)).withName("Outtake to L1");
   }
 
-  public Command createOuttakeToL2Command() {
-    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL2Voltage));
+  public Command outtakeToL2() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL2Voltage)).withName("Outtake to L2");
   }
 
-  public Command createOuttakeToL3Command() {
-    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL3Voltage));
+  public Command outtakeToL3() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL3Voltage)).withName("Outtake to L3");
   }
 
-  public Command createOuttakeToL4Command() {
-    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL4Voltage));
+  public Command outtakeToL4() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL4Voltage)).withName("Outtake to L4");
   }
 }

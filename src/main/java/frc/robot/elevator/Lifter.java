@@ -154,10 +154,19 @@ public class Lifter extends SubsystemBase {
     return this.targetState.equals(state);
   }
 
-  public Trigger atIntakingHeight = new Trigger(() -> inState(LifterState.CoralIntake));
-  public Trigger atProcessorHeight = new Trigger(() -> inState(LifterState.AlgaeProcessor));
-  public Trigger atBargeHeight = new Trigger(() -> inState(LifterState.AlgaeBarge));
-  public Trigger atFloorIntakingHeight = new Trigger(() -> inState(LifterState.AlgaeIntakeFloor));
+  // Algae state triggers
+  public Trigger atProcessor = new Trigger(() -> inState(LifterState.AlgaeProcessor));
+  public Trigger atAlgaeElse = atProcessor.negate();
+  // public Trigger atBarge = new Trigger(() -> inState(LifterState.AlgaeBarge));
+  // public Trigger atFloor = new Trigger(() -> inState(LifterState.AlgaeIntakeFloor));
+
+  // Coral state triggers
+  // public Trigger atFeederStation = new Trigger(() -> inState(LifterState.CoralIntake));
+  public Trigger atCoralL1 = new Trigger(() -> inState(LifterState.CoralL1));
+  public Trigger atCoralL2 = new Trigger(() -> inState(LifterState.CoralL2));
+  public Trigger atCoralL3 = new Trigger(() -> inState(LifterState.CoralL3));
+  public Trigger atCoralElse = atCoralL1.negate().and(atCoralL2.negate()).and(atCoralL3.negate());
+  // public Trigger atCoralL4 = new Trigger(() -> inState(LifterState.CoralL4));
 
   private void resetEncoder() {
     encoder.setPosition(LifterState.EncoderReset.height.in(Meters));

@@ -101,7 +101,7 @@ public class Elevator {
           lifter.setHeight(LifterState.CoralIntake).schedule();
           coralWrist.setAngle(CoralWristState.Intake).schedule();
           algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
-          coralRoller.createIntakeCommand().schedule();
+          coralRoller.intake().schedule();
           algaeRoller.getCurrentCommand().cancel();
         });
   }
