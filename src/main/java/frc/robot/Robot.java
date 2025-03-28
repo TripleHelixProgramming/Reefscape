@@ -443,6 +443,7 @@ public class Robot extends TimedRobot {
         .onTrue(climber.lockRatchet().andThen(climber.resetEncoder()));
 
     algaeRoller.hasAlgae.onTrue(elevator.holdAlgaeCG());
+    coralRoller.hasCoral.onTrue(coralRoller.createStopCommand());
 
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
