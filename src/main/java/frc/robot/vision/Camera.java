@@ -13,7 +13,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
