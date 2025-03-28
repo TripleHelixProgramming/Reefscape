@@ -51,7 +51,7 @@ public class BlueNoProcess3PieceAuto extends AutoMode {
     blueNoProcessToL4I.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
-            coralRoller.createOuttakeCommand().withTimeout(0.2),
+            coralRoller.outtakeToL4().withTimeout(0.2),
             Commands.parallel(
                 blueL4IToSource.cmd(),
                 elevator.coralIntakeCG())));
@@ -66,7 +66,7 @@ public class BlueNoProcess3PieceAuto extends AutoMode {
     blueSourceToL4L.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
-            coralRoller.createOuttakeCommand().withTimeout(0.2),
+            coralRoller.outtakeToL4().withTimeout(0.2),
             Commands.parallel(
                 elevator.coralIntakeCG(),
                 blueL4LToSource.cmd())));
@@ -81,7 +81,7 @@ public class BlueNoProcess3PieceAuto extends AutoMode {
     blueSourceToL4K.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
-            coralRoller.createOuttakeCommand()));
+            coralRoller.outtakeToL4()));
     // spotless:on
 
     return blueNoProcess3PieceRoutine;
