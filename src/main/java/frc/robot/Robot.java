@@ -499,7 +499,7 @@ public class Robot extends TimedRobot {
      */
     BooleanSupplier intakeSupplier =
         () -> {
-          return coralRoller.getRollerVelocity() > 1 || algaeRoller.getRollerVelocity() > 1;
+          return coralRoller.getRollerVelocity() < 1 || algaeRoller.getRollerVelocity() < 1;
         };
 
     /*
