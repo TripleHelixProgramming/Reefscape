@@ -20,14 +20,14 @@ public class DriveToPoseCommand extends Command {
           DriveToPoseControllerGains.kTraI,
           DriveToPoseControllerGains.kTraD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kMaxTranslationalVelocity.baseUnitMagnitude(), 5));
+              DriveConstants.kMaxDriveToPoseTranslationVelocity.baseUnitMagnitude(), 5));
   private final ProfiledPIDController yController =
       new ProfiledPIDController(
           DriveToPoseControllerGains.kTraP,
           DriveToPoseControllerGains.kTraI,
           DriveToPoseControllerGains.kTraD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kMaxTranslationalVelocity.baseUnitMagnitude(), 5));
+              DriveConstants.kMaxDriveToPoseTranslationVelocity.baseUnitMagnitude(), 5));
   private final ProfiledPIDController thetaController =
       new ProfiledPIDController(
           DriveToPoseControllerGains.kRotP,

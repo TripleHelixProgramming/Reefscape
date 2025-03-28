@@ -45,18 +45,14 @@ public class BlueL4Auto extends AutoMode {
   public AutoRoutine getAutoRoutine() {
 
     // spotless:off
-    blueL4AutoRoutine.active().onTrue(
-      Commands.parallel(
-        blueCenterToL4G.cmd(),
-        Commands.sequence(
-          Commands.waitSeconds(1.0),
-          elevator.coralL4PositionCG())));
+    blueL4AutoRoutine.active()
+        .onTrue(blueCenterToL4G.cmd())
+        .onTrue(elevator.coralL4PositionCG());
 
     blueCenterToL4G.done().onTrue(
         Commands.sequence(
-            Commands.waitSeconds(0.1),
-            coralRoller.createOuttakeCommand().withTimeout(0.2),
-            Commands.waitSeconds(0.2)));
+            Commands.waitSeconds(1.0),
+            coralRoller.createOuttakeCommand().withTimeout(0.2)));
 
     // spotless:on
 

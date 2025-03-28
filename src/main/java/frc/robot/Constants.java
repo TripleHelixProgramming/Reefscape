@@ -30,7 +30,7 @@ public final class Constants {
 
     public static final class NEO550Constants {
       public static final AngularVelocity kFreeSpeed = RPM.of(11000);
-      public static final int kDefaultCurrentLimit = 30;
+      public static final int kDefaultCurrentLimit = 20;
     }
 
     public static final class NEOVortexConstants {
@@ -39,14 +39,13 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final String kAprilTagLayoutPath =
-        Filesystem.getDeployDirectory() + "/" + "stemgym.json";
-
     // Define the standard deviations for the pose estimator, which determine how fast the pose
     // estimate converges to the vision measurement. This should depend on the vision measurement
     // noise and how many or how frequently vision measurements are applied to the pose estimator.
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    public static String kStemGymAprilTagLayoutPath =
+        Filesystem.getDeployDirectory() + "/stemgym.json";
   }
 
   public static final class RobotConstants {
@@ -94,6 +93,7 @@ public final class Constants {
     public static final AngularVelocity kMaxRotationalVelocity =
         RadiansPerSecond.of(5.0); // max 5.0
     public static final LinearVelocity kMinTranslationVelocity = MetersPerSecond.of(1.0);
+    public static final LinearVelocity kMaxDriveToPoseTranslationVelocity = MetersPerSecond.of(1.0);
 
     // The locations for the modules must be relative to the center of the robot.
     // Positive x values represent moving toward the front of the robot
@@ -228,8 +228,8 @@ public final class Constants {
   public static final class ClimberConstants {
     public static final int kClimberPort = 17;
     public static final int kRatchetServoPort = 1;
-    public static final double kEngagedPosition = 0 / 1024.0;
-    public static final double kDisengedPosition = 1024.0 / 1024.0;
+    public static final double kEngagedPosition = 550 / 1024.0;
+    public static final double kDisengedPosition = 800 / 1024.0;
 
     public static final int kCageSensorPort = 6;
 
@@ -253,8 +253,8 @@ public final class Constants {
         kMaxVelocityInchesPerSecond / kVelocityConversionFactor;
     public static final double kMaxAccelerationRPMPerSecond = kMaxVelocityRPM; // 100% accel in 1s
 
-    public static final double kDeployPosition = 8.0; // inches
-    public static final double kRetractPosition = 2.5; // inches
+    public static final double kDeployPosition = 7.0; // inches
+    public static final double kRetractPosition = 2.25; // inches
   }
 
   public static final class LedConstants {

@@ -67,8 +67,8 @@ public class AlgaeRoller extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Algae Roller/Velocity", encoder.getVelocity());
-    // SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
-    // SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Algae Roller/Applied Duty Cycle", leaderMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Algae Roller/Current", leaderMotor.getOutputCurrent());
     SmartDashboard.putBoolean("Algae Loaded", hasAlgae.getAsBoolean());
     SmartDashboard.putBoolean("Algae isRolling", isRolling.getAsBoolean());
   }
@@ -82,22 +82,24 @@ public class AlgaeRoller extends SubsystemBase {
   }
 
   public Command createStopCommand() {
-    return this.startEnd(() -> leaderMotor.set(0.0), () -> {});
+    return this.startEnd(() -> leaderMotor.set(0.0), () -> {}).withName("Stop");
   }
 
   public Command createIntakeCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kIntakeVoltage));
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kIntakeVoltage)).withName("Intake");
   }
 
   public Command createOuttakeToBargeCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToBargeVoltage));
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToBargeVoltage))
+        .withName("Outtake to barge");
   }
 
   public Command createOuttakeToProcessorCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToProcessorVoltage));
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToProcessorVoltage))
+        .withName("Outtake to processor");
   }
 
   public Command createHoldAlgaeCommand() {
-    return this.run(() -> setVoltage(AlgaeRollerConstants.kHoldVoltage));
+    return this.run(() -> setVoltage(AlgaeRollerConstants.kHoldVoltage)).withName("Hold");
   }
 }

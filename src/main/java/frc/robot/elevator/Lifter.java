@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.MotorConstants.NEOConstants;
@@ -30,6 +31,7 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterController;
 import frc.robot.elevator.ElevatorConstants.LifterConstants.LifterState;
+import java.util.function.Supplier;
 
 public class Lifter extends SubsystemBase {
 
@@ -99,7 +101,6 @@ public class Lifter extends SubsystemBase {
     feedback.setTolerance(LifterConstants.kAllowableHeightError.in(Meters));
     feedback.setIZone(LifterController.kIzone.in(Inches));
     // controller.setIntegratorRange();
-    resetController();
   }
 
   @Override
@@ -157,20 +158,25 @@ public class Lifter extends SubsystemBase {
   public Trigger atProcessorHeight = new Trigger(() -> inState(LifterState.AlgaeProcessor));
   public Trigger atBargeHeight = new Trigger(() -> inState(LifterState.AlgaeBarge));
   public Trigger atFloorIntakingHeight = new Trigger(() -> inState(LifterState.AlgaeIntakeFloor));
-  public Trigger tooHighForCoralWrist =
-      new Trigger(() -> getCurrentHeight().gt(LifterState.CoralL3.height.plus(Inches.of(2.0))));
 
   private void resetEncoder() {
     encoder.setPosition(LifterState.EncoderReset.height.in(Meters));
   }
 
-  public Command createSetHeightCommand(LifterState state) {
+  public Command remainAtCurrentHeight() {
+    return setHeight(() -> getCurrentHeight()).withName("Maintain current height");
+  }
+
+  public Command setHeight(LifterState state) {
+    return setHeight(() -> state.height)
+        .beforeStarting(new InstantCommand(() -> targetState = state))
+        .withName("Set height to " + state.toString());
+  }
+
+  public Command setHeight(Supplier<Distance> heightSupplier) {
     return new FunctionalCommand(
         // initialize
-        () -> {
-          targetState = state;
-          feedback.setGoal(targetState.height.in(Meters));
-        },
+        () -> feedback.setGoal(heightSupplier.get().in(Meters)),
         // execute
         () -> control(),
         // end
@@ -181,25 +187,8 @@ public class Lifter extends SubsystemBase {
         this);
   }
 
-  public Command createRemainAtCurrentHeightCommand() {
-    return new FunctionalCommand(
-        // initialize
-        () -> {
-          if (targetState == LifterState.Initial) {
-            feedback.setGoal(encoder.getPosition());
-            // Users should call reset() when they first start running the controller to avoid
-            // unwanted behavior.
-            resetController();
-          }
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> false,
-        // requirements
-        this);
+  public Command matchHeight() {
+    return new InstantCommand(() -> feedback.setGoal(encoder.getPosition()));
   }
 
   private Boolean isInRange(Distance height) {
@@ -208,26 +197,37 @@ public class Lifter extends SubsystemBase {
     return true;
   }
 
-  public Command createJoystickControlCommand(XboxController gamepad) {
-    return this.run(
-        () -> {
-          Distance targetPosition = Meters.of(feedback.getGoal().position);
+  public Command joystickVelocityControl(XboxController gamepad) {
+    return new FunctionalCommand(
+            // initialize
+            () -> {},
+            // execute
+            () -> {
+              Distance targetPosition = Meters.of(feedback.getGoal().position);
 
-          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          Distance adder =
-              LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
-          targetPosition = targetPosition.plus(adder);
+              double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+              Distance adder =
+                  LifterConstants.kFineVelocity.times(joystickInput).times(RobotConstants.kPeriod);
+              targetPosition = targetPosition.plus(adder);
 
-          if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
-          control();
-        });
+              if (isInRange(targetPosition)) feedback.setGoal(targetPosition.in(Meters));
+              control();
+            },
+            // end
+            interrupted -> {},
+            // isFinished
+            () -> false,
+            // requirements
+            this)
+        .withName("Joystick velocity control");
   }
 
-  public Command createJoystickVoltageCommand(XboxController gamepad) {
+  public Command joystickVoltageControl(XboxController gamepad) {
     return this.run(
-        () -> {
-          double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
-          leaderMotor.setVoltage(joystickInput * 2.0);
-        });
+            () -> {
+              double joystickInput = MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);
+              leaderMotor.setVoltage(joystickInput * 2.0);
+            })
+        .withName("Joystick voltage control");
   }
 }

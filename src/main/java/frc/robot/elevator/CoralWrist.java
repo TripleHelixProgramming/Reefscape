@@ -21,12 +21,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.MotorConstants.NEO550Constants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants;
 import frc.robot.elevator.ElevatorConstants.CoralWristConstants.CoralWristState;
+import java.util.function.Supplier;
 
 public class CoralWrist extends SubsystemBase {
 
@@ -83,7 +84,7 @@ public class CoralWrist extends SubsystemBase {
     feedback.enableContinuousInput(0, 2.0 * Math.PI); // TODO: determine if has any effect
     // controller.setIntegratorRange();
 
-    setDefaultCommand(createRemainAtCurrentAngleCommand());
+    setDefaultCommand(remainAtCurrentAngle());
   }
 
   @Override
@@ -100,6 +101,7 @@ public class CoralWrist extends SubsystemBase {
     // SmartDashboard.putNumber("Coral Wrist/Applied Duty Cycle", motor.getAppliedOutput());
     // SmartDashboard.putNumber("Coral Wrist/Current", motor.getOutputCurrent());
     SmartDashboard.putBoolean("Coral Wrist/At Goal", feedback.atGoal());
+    SmartDashboard.putData("Coral Wrist/Controller", feedback);
   }
 
   private Angle getCurrentAngle() {
@@ -132,38 +134,20 @@ public class CoralWrist extends SubsystemBase {
     return this.targetState.equals(state);
   }
 
-  public Trigger atRiskOfDamage =
-      new Trigger(
-          () -> getCurrentAngle().gt(CoralWristState.AlgaeMode.angle.plus(Degrees.of(3.0))));
-
-  public Command createSetAngleCommand(CoralWristState state) {
-    return new FunctionalCommand(
-        // initialize
-        () -> {
-          targetState = state;
-          feedback.setGoal(targetState.angle.in(Radians));
-        },
-        // execute
-        () -> control(),
-        // end
-        interrupted -> {},
-        // isFinished
-        () -> feedback.atGoal(),
-        // requirements
-        this);
+  public Command remainAtCurrentAngle() {
+    return setAngle(() -> getCurrentAngle()).withName("Maintain current angle");
   }
 
-  public Command createRemainAtCurrentAngleCommand() {
+  public Command setAngle(CoralWristState state) {
+    return setAngle(() -> state.angle)
+        .beforeStarting(new InstantCommand(() -> targetState = state))
+        .withName("Set angle to " + state.toString());
+  }
+
+  public Command setAngle(Supplier<Angle> angleSupplier) {
     return new FunctionalCommand(
         // initialize
-        () -> {
-          if (targetState == CoralWristState.Initial) {
-            feedback.setGoal(encoder.getPosition());
-            // Users should call reset() when they first start running the controller to avoid
-            // unwanted behavior.
-            resetController();
-          }
-        },
+        () -> feedback.setGoal(angleSupplier.get().in(Radians)),
         // execute
         () -> control(),
         // end
@@ -174,7 +158,7 @@ public class CoralWrist extends SubsystemBase {
         this);
   }
 
-  public Command createJoystickControlCommand(XboxController gamepad) {
+  public Command joystickVoltageControl(XboxController gamepad) {
     return this.run(
         () -> {
           double joystickInput = 2.0 * MathUtil.applyDeadband(-gamepad.getLeftY(), 0.05);

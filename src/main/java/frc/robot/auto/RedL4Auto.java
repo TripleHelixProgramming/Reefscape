@@ -45,15 +45,14 @@ public class RedL4Auto extends AutoMode {
   public AutoRoutine getAutoRoutine() {
 
     // spotless:off
-    redL4AutoRoutine.active().onTrue(redCenterToL4G.cmd());
+    redL4AutoRoutine.active()
+        .onTrue(redCenterToL4G.cmd())
+        .onTrue(elevator.coralL4PositionCG());
 
     redCenterToL4G.done().onTrue(
         Commands.sequence(
-            Commands.waitSeconds(0.1),
-            elevator.coralL4PositionCG(),
-            Commands.waitSeconds(0.1),
-            coralRoller.createOuttakeCommand().withTimeout(0.2),
-            Commands.waitSeconds(0.2)));
+            Commands.waitSeconds(1.0),
+            coralRoller.createOuttakeCommand().withTimeout(0.2)));
 
     // spotless:on
 
