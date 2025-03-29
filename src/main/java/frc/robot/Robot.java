@@ -336,9 +336,9 @@ public class Robot extends TimedRobot {
     var outtaking = driver.HIn();
     outtaking.onTrue(new InstantCommand(() -> rememberOutputPose(swerve.getPose())));
     lifter.atProcessor.and(outtaking)
-        .whileTrue(algaeRoller.createOuttakeToProcessorCommand());
+        .whileTrue(algaeRoller.outtakeToProcessor());
     lifter.atAlgaeElse.and(outtaking)
-        .whileTrue(algaeRoller.createOuttakeToBargeCommand());
+        .whileTrue(algaeRoller.outtakeToBarge());
     lifter.atCoralL1.and(outtaking)
         .whileTrue(coralRoller.outtakeToL1());
     lifter.atCoralL2.and(outtaking)
@@ -400,8 +400,9 @@ public class Robot extends TimedRobot {
 
     // Intake coral and algae
     operator.rightBumper()
-        .whileTrue(algaeRoller.createIntakeCommand()
-        .alongWith(coralRoller.intake()));
+        .whileTrue(algaeRoller.intake());
+    operator.rightBumper()
+        .whileTrue(coralRoller.intake());
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
