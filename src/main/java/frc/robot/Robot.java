@@ -405,7 +405,7 @@ public class Robot extends TimedRobot {
         .whileTrue(coralRoller.intake());
 
     // Jiggle coral
-    operator.start().onTrue(coralRoller.jiggle());
+    operator.start().whileTrue(coralRoller.jiggle().repeatedly());
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);

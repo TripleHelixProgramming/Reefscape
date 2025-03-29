@@ -100,6 +100,7 @@ public class CoralRoller extends SubsystemBase {
   }
 
   public Command jiggle() {
-    return Commands.parallel(outtakeToL1().withTimeout(0.1),intake().withTimeout(0.1));
+    return Commands.sequence(outtakeToL1().withTimeout(0.05), intake().withTimeout(0.3))
+        .withName("Jiggle");
   }
 }
