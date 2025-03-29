@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import choreo.trajectory.SwerveSample;
 
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
@@ -136,6 +137,10 @@ public class Drivetrain extends SubsystemBase {
    * @param chassisSpeeds Robot-relative chassis speeds (x, y, theta)
    */
   public void setRobotRelativeChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    setRobotRelativeChassisSpeeds(chassisSpeeds, DriveConstants.kDriveKinematics);
+  }
+
+  public void setRobotRelativeChassisSpeedsWithFF(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
     setRobotRelativeChassisSpeeds(chassisSpeeds, DriveConstants.kDriveKinematics);
   }
 
