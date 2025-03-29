@@ -3,8 +3,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -87,11 +85,6 @@ public class Robot extends TimedRobot {
   private Pose2d nearestLeftPipe;
   private Pose2d nearestRightPipe;
 
-  private StructArrayPublisher<Pose2d> reefTargetPositionsPublisher =
-      NetworkTableInstance.getDefault()
-          .getStructArrayTopic("Reef Target Positions", Pose2d.struct)
-          .publish();
-
   public Robot() {
     gamepieceSupplier =
         new Supplier<Gamepiece>() {
@@ -134,7 +127,6 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
 
-    reefTargetPositionsPublisher.set(DriveConstants.kReefTargetPoses);
     swerve.calibrateOdometry();
   }
 
