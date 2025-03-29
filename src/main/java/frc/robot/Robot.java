@@ -301,6 +301,7 @@ public class Robot extends TimedRobot {
     var face = Reef.getNearestReef(pose).getNearestFace(pose);
     var target = isLeftPipe ? face.getLeftPipe() : face.getRightPipe();
     currentAutoAlignTarget = Optional.of(target);
+    PoseLogger.getDefault().publish("autoAlignTarget", target.getPose());
     return () -> target.getPose();
   }
 
@@ -311,6 +312,7 @@ public class Robot extends TimedRobot {
    */
   protected void rememberOutputPose() {
     recentOuttakePose = Optional.of(swerve.getPose());
+    PoseLogger.getDefault().publish("recentOuttakePose", recentOuttakePose.get());
   }
 
   /**

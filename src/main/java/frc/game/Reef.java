@@ -12,6 +12,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.AutoAlignTarget;
 import frc.lib.Config;
+import frc.lib.PoseLogger;
+
 import java.util.Optional;
 
 /**
@@ -250,8 +252,11 @@ public enum Reef {
      */
     public void memoizeLeftPipePose(Pose2d pose) {
       memoLeftPipePose = Optional.of(pose);
-      Config.getDefault().storePose2d("Reef.Face." + this.toString() + ".leftPipe", pose);
-    }
+      var tag = "Reef.Face." + name() + ".leftPipe";
+      Config.getDefault().storePose2d(tag, pose);
+      PoseLogger.getDefault().publish(tag +".old", leftPipePose);
+      PoseLogger.getDefault().publish(tag +".new", pose);
+}
 
     /**
      * Store the specified pose as an override for the derived value for the left pipe.
@@ -260,7 +265,10 @@ public enum Reef {
      */
     public void memoizeRightPipePose(Pose2d pose) {
       memoRightPipePose = Optional.of(pose);
-      Config.getDefault().storePose2d("Reef.Face." + this.toString() + ".rightPipe", pose);
+      var tag = "Reef.Face." + name() + ".rightPipe";
+      Config.getDefault().storePose2d(tag, pose);
+      PoseLogger.getDefault().publish(tag +".old", leftPipePose);
+      PoseLogger.getDefault().publish(tag +".new", pose);
     }
   }
 }
