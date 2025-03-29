@@ -125,7 +125,8 @@ public enum Reef {
 
     public static PipeTarget getNearestPipe(Pose2d atPose) {
       var face = getNearestReef(atPose).getNearestFace(atPose);
-      var leftDelta = atPose.getTranslation().minus(face.getLeftPipePose().getTranslation()).getNorm();
+      var leftDelta =
+          atPose.getTranslation().minus(face.getLeftPipePose().getTranslation()).getNorm();
       var rightDelta =
           atPose.getTranslation().minus(face.getRightPipePose().getTranslation()).getNorm();
       return leftDelta < rightDelta ? face.getLeftPipe() : face.getRightPipe();

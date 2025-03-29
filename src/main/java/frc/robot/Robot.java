@@ -291,9 +291,11 @@ public class Robot extends TimedRobot {
     configureOperatorButtonBindings();
   }
 
-  /** Store the supplied auto-align target for possible fixing. 
+  /**
+   * Store the supplied auto-align target for possible fixing.
+   *
    * @return a supplier that will return the target pose
-  */
+   */
   protected Supplier<Pose2d> startAutoAlign(boolean isLeftPipe) {
     var pose = swerve.getPose();
     var face = Reef.getNearestReef(pose).getNearestFace(pose);
@@ -304,6 +306,7 @@ public class Robot extends TimedRobot {
 
   /**
    * Remember the last outtake pose for potential recording.
+   *
    * @param pose
    */
   protected void rememberOutputPose() {
@@ -312,28 +315,31 @@ public class Robot extends TimedRobot {
 
   /**
    * Note that the last outtake was done at a good position.
-   * 
-   * If the outtake command occurred within five inches of a coral pipe,
-   * or if the outtake followed an auto-align command, then we will remember
-   * the outtake location for the corresponding target.
+   *
+   * <p>If the outtake command occurred within five inches of a coral pipe, or if the outtake
+   * followed an auto-align command, then we will remember the outtake location for the
+   * corresponding target.
    *
    * @param newPose new pose to use for this target
    */
   protected void lastOuttakeWasAtGoodLocation() {
-    recentOuttakePose.ifPresent(pose -> {
-      var target = Reef.Face.getNearestPipe(pose);
-      var deltaInches = Meters.of(pose.getTranslation().minus(target.getPose().getTranslation()).getNorm()).in(Inches);
-      if (deltaInches < 6) {
-        target.setPose(pose);
-        target.memoize();
-      }
-      else {
-        currentAutoAlignTarget.ifPresent(autoTarget -> {
-          autoTarget.setPose(pose);
-          autoTarget.memoize();
+    recentOuttakePose.ifPresent(
+        pose -> {
+          var target = Reef.Face.getNearestPipe(pose);
+          var deltaInches =
+              Meters.of(pose.getTranslation().minus(target.getPose().getTranslation()).getNorm())
+                  .in(Inches);
+          if (deltaInches < 6) {
+            target.setPose(pose);
+            target.memoize();
+          } else {
+            currentAutoAlignTarget.ifPresent(
+                autoTarget -> {
+                  autoTarget.setPose(pose);
+                  autoTarget.memoize();
+                });
+          }
         });
-      }
-    });
     recentOuttakePose = Optional.empty();
     currentAutoAlignTarget = Optional.empty();
   }
