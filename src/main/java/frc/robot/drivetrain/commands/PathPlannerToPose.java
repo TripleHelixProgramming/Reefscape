@@ -1,5 +1,7 @@
 package frc.robot.drivetrain.commands;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -19,7 +21,7 @@ public class PathPlannerToPose {
     public static Command driveToPoseCommand(Pose2d currentPose, Pose2d targetPose) {
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
             currentPose,
-            targetPose.transformBy(new Transform2d(-0.5, 0.0, Rotation2d.kZero)),
+            targetPose.transformBy(new Transform2d(Meters.of(-0.5), Meters.of(0.0), Rotation2d.kZero)),
             targetPose);
         
         PathConstraints constraints = DriveToPoseConstants.kAlignConstraints;
