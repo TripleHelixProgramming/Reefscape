@@ -47,6 +47,7 @@ import frc.robot.auto.RedProcess3PieceAuto;
 import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
+import frc.robot.drivetrain.commands.PathPlannerToPose;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
@@ -327,10 +328,17 @@ public class Robot extends TimedRobot {
     //     .whileTrue(new DriveToPoseCommand(swerve, () -> swerve.getNearestPose()));
 
     //TODO: add a button binding to call fixAutoAlign(swerve.getPose())
-    driver.AIn().whileTrue(new DriveToPoseCommand(swerve, 
-      () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipe()).get()));
-    driver.DIn().whileTrue(new DriveToPoseCommand(swerve, 
-      () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipe()).get()));
+    // driver.AIn().whileTrue(new DriveToPoseCommand(swerve, 
+    //   () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipe()).get()));
+    // driver.DIn().whileTrue(new DriveToPoseCommand(swerve, 
+    //   () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipe()).get()));
+
+    driver.AIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
+      swerve.getPose(), 
+      Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipe().getPose()));
+    driver.DIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
+      swerve.getPose(), 
+      Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipe().getPose()));
 
     // Outtake grippers
     var outtaking = driver.HIn();
