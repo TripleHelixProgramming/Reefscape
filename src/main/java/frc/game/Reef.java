@@ -12,7 +12,6 @@ import edu.wpi.first.units.measure.Distance;
 import frc.lib.AutoAlignTarget;
 import frc.lib.Config;
 import frc.lib.PoseLogger;
-
 import java.util.Optional;
 
 /**
@@ -253,9 +252,9 @@ public enum Reef {
       memoLeftPipePose = Optional.of(pose);
       var tag = "Reef.Face." + name() + ".leftPipe";
       Config.getDefault().storePose2d(tag, pose);
-      PoseLogger.getDefault().publish(tag +".old", leftPipePose);
-      PoseLogger.getDefault().publish(tag +".new", pose);
-}
+      PoseLogger.getDefault().publish(tag + ".old", leftPipePose);
+      PoseLogger.getDefault().publish(tag + ".new", pose);
+    }
 
     /**
      * Store the specified pose as an override for the derived value for the left pipe.
@@ -266,8 +265,8 @@ public enum Reef {
       memoRightPipePose = Optional.of(pose);
       var tag = "Reef.Face." + name() + ".rightPipe";
       Config.getDefault().storePose2d(tag, pose);
-      PoseLogger.getDefault().publish(tag +".old", leftPipePose);
-      PoseLogger.getDefault().publish(tag +".new", pose);
+      PoseLogger.getDefault().publish(tag + ".old", leftPipePose);
+      PoseLogger.getDefault().publish(tag + ".new", pose);
     }
   }
 }
