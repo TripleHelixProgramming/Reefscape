@@ -360,8 +360,15 @@ public class Robot extends TimedRobot {
           // swerve.initializeRelativeTurningEncoder();
         }).ignoringDisable(true));
 
-    driver.AIn().whileTrue(new DriveToPoseCommand(swerve, () -> startAutoAlign(true).get()));
-    driver.DIn().whileTrue(new DriveToPoseCommand(swerve, () -> startAutoAlign(false).get()));
+    // driver.AIn().whileTrue(new DriveToPoseCommand(swerve, () -> startAutoAlign(true).get()));
+    // driver.DIn().whileTrue(new DriveToPoseCommand(swerve, () -> startAutoAlign(false).get()));
+
+    driver.AIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
+      swerve.getPose(), 
+      startAutoAlign(true).get()));
+    driver.DIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
+      swerve.getPose(), 
+      startAutoAlign(false).get()));
 
     // Outtake grippers
     var outtaking = driver.HIn();
