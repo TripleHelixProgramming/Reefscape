@@ -9,9 +9,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.AutoAlignTarget;
 import frc.lib.Config;
+import frc.lib.PoseLogger;
 import java.util.Optional;
 
 /**
@@ -48,7 +48,7 @@ public enum Reef {
   private Pose2d centerPose;
 
   Reef(Pose2d centerPose) {
-    var adjust = Config.getDefault().loadTransform("Reef." + this.name());
+    var adjust = Config.getDefault().loadTransform("Reef." + name() + ".adjust");
     if (adjust.isPresent()) {
       centerPose = centerPose.transformBy(adjust.get());
     }
@@ -123,7 +123,17 @@ public enum Reef {
     private Optional<Pose2d> memoLeftPipePose;
     private Optional<Pose2d> memoRightPipePose;
 
-    class PipeTarget extends AutoAlignTarget {
+    public static PipeTarget getNearestPipe(Pose2d atPose) {
+      var face = getNearestReef(atPose).getNearestFace(atPose);
+      var leftDelta =
+          atPose.getTranslation().minus(face.getLeftPipePose().getTranslation()).getNorm();
+      var rightDelta =
+          atPose.getTranslation().minus(face.getRightPipePose().getTranslation()).getNorm();
+      return leftDelta < rightDelta ? face.getLeftPipe() : face.getRightPipe();
+    }
+
+    public class PipeTarget extends AutoAlignTarget {
+
       private final boolean isLeft;
 
       public PipeTarget(boolean isLeft) {
@@ -166,7 +176,6 @@ public enum Reef {
 
       memoLeftPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".leftPipe");
       memoRightPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".rightPipe");
-      SmartDashboard.putString("Reef.Face." + this.name(), centerPose.toString());
     }
 
     /**
@@ -192,7 +201,7 @@ public enum Reef {
      *
      * @return left pipe target
      */
-    public AutoAlignTarget getLeftPipe() {
+    public PipeTarget getLeftPipe() {
       return new PipeTarget(true);
     }
 
@@ -201,7 +210,8 @@ public enum Reef {
      *
      * @return right pipe target
      */
-    public AutoAlignTarget getRightPipe() {
+    public PipeTarget getRightPipe() {
+
       return new PipeTarget(false);
     }
 
@@ -241,7 +251,10 @@ public enum Reef {
      */
     public void memoizeLeftPipePose(Pose2d pose) {
       memoLeftPipePose = Optional.of(pose);
-      Config.getDefault().storePose2d("Reef.Face." + this.toString() + ".leftPipe", pose);
+      var tag = "Reef.Face." + name() + ".leftPipe";
+      Config.getDefault().storePose2d(tag, pose);
+      PoseLogger.getDefault().publish(tag + ".old", leftPipePose);
+      PoseLogger.getDefault().publish(tag + ".new", pose);
     }
 
     /**
@@ -251,7 +264,10 @@ public enum Reef {
      */
     public void memoizeRightPipePose(Pose2d pose) {
       memoRightPipePose = Optional.of(pose);
-      Config.getDefault().storePose2d("Reef.Face." + this.toString() + ".rightPipe", pose);
+      var tag = "Reef.Face." + name() + ".rightPipe";
+      Config.getDefault().storePose2d(tag, pose);
+      PoseLogger.getDefault().publish(tag + ".old", leftPipePose);
+      PoseLogger.getDefault().publish(tag + ".new", pose);
     }
   }
 }
