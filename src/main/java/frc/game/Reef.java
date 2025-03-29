@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.AutoAlignTarget;
 import frc.lib.Config;
 import frc.lib.PoseLogger;
@@ -50,7 +49,7 @@ public enum Reef {
   private Pose2d centerPose;
 
   Reef(Pose2d centerPose) {
-    var adjust = Config.getDefault().loadTransform("Reef." + this.name());
+    var adjust = Config.getDefault().loadTransform("Reef." + name() + ".adjust");
     if (adjust.isPresent()) {
       centerPose = centerPose.transformBy(adjust.get());
     }
@@ -177,7 +176,7 @@ public enum Reef {
 
       memoLeftPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".leftPipe");
       memoRightPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".rightPipe");
-      SmartDashboard.putString("Reef.Face." + this.name(), centerPose.toString());
+      // SmartDashboard.putString("Reef.Face." + this.name(), centerPose.toString());
     }
 
     /**
