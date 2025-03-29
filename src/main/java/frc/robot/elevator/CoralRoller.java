@@ -11,6 +11,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.MotorConstants.NEO550Constants;
@@ -96,5 +97,9 @@ public class CoralRoller extends SubsystemBase {
   public Command outtakeToL4() {
     return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL4Voltage))
         .withName("Outtake to L4");
+  }
+
+  public Command jiggle() {
+    return Commands.parallel(outtakeToL1().withTimeout(0.1),intake().withTimeout(0.1));
   }
 }
