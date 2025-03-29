@@ -27,6 +27,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.PoseLogger;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.DriveToPoseConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -42,6 +43,8 @@ public class PathPlannerToPose {
 
         var pose = currentPose.get();
         var endPose = targetPose.get();
+
+        PoseLogger.getDefault().publish("endPose for PathPlanner", endPose);
 
         AutoBuilder.configureCustom(AutoBuilder::followPath, currentPose, swerve::resetOdometry, true);
 
