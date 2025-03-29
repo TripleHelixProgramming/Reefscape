@@ -361,11 +361,11 @@ public class Robot extends TimedRobot {
     driver.AIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
       swerve,
       () -> swerve.getPose(), 
-      startAutoAlign(true)));
+      () -> startAutoAlign(true).get()));
     driver.DIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
       swerve,
       () -> swerve.getPose(), 
-      startAutoAlign(false)));
+      () -> startAutoAlign(false).get()));
 
     // Outtake grippers
     var outtaking = driver.HIn();
