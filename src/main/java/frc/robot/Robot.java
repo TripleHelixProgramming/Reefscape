@@ -352,13 +352,12 @@ public class Robot extends TimedRobot {
 
     // Outtake grippers
     var outtaking = driver.HIn();
-    lifter.atProcessorHeight.and(outtaking)
-        .whileTrue(algaeRoller.createOuttakeToProcessorCommand());
-    lifter.atProcessorHeight.negate().and(outtaking)
-        .whileTrue(algaeRoller.createOuttakeToBargeCommand());
+    lifter.atProcessor.and(outtaking)
+        .whileTrue(algaeRoller.outtakeToProcessor());
+    lifter.atProcessor.negate().and(outtaking)
+        .whileTrue(algaeRoller.outtakeToBarge());
     outtaking
-        .whileTrue(coralRoller.createOuttakeCommand()
-        .alongWith(new InstantCommand(() -> rememberOutputPose())));
+        .onTrue(new InstantCommand(() -> rememberOutputPose()));
   }
 
   private void configureOperatorButtonBindings() {
@@ -465,7 +464,7 @@ public class Robot extends TimedRobot {
         .onTrue(climber.lockRatchet().andThen(climber.resetEncoder()));
 
     algaeRoller.hasAlgae.onTrue(elevator.holdAlgaeCG());
-    coralRoller.hasCoral.onTrue(coralRoller.createStopCommand());
+    coralRoller.hasCoral.onTrue(coralRoller.stop());
 
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }

@@ -176,7 +176,6 @@ public enum Reef {
 
       memoLeftPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".leftPipe");
       memoRightPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".rightPipe");
-      SmartDashboard.putString("Reef.Face." + this.name(), centerPose.toString());
     }
 
     /**
@@ -256,7 +255,6 @@ public enum Reef {
       Config.getDefault().storePose2d(tag, pose);
       PoseLogger.getDefault().publish(tag + ".old", leftPipePose);
       PoseLogger.getDefault().publish(tag + ".new", pose);
-
     }
 
     /**
