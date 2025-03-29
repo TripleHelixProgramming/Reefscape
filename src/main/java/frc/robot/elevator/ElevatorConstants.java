@@ -100,7 +100,10 @@ public class ElevatorConstants {
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
-    public static final Voltage kOuttakeVoltage = kIntakeVoltage.unaryMinus();
+    public static final Voltage kOuttakeToL1Voltage = Volts.of(-2.5);
+    public static final Voltage kOuttakeToL2Voltage = Volts.of(-5.0);
+    public static final Voltage kOuttakeToL3Voltage = Volts.of(-5.0);
+    public static final Voltage kOuttakeToL4Voltage = Volts.of(-5.0);
   }
 
   public static final class CoralWristConstants {

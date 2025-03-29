@@ -51,7 +51,7 @@ public class RedProcess3PieceAuto extends AutoMode {
     redCenterToL4F.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
-            coralRoller.createOuttakeCommand().withTimeout(0.2),
+            coralRoller.outtakeToL4().withTimeout(0.2),
             Commands.parallel(
                 redL4FToSource.cmd(),
                 elevator.coralIntakeCG())));
@@ -66,7 +66,7 @@ public class RedProcess3PieceAuto extends AutoMode {
     redSourceToL4D.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
-            coralRoller.createOuttakeCommand().withTimeout(0.2),
+            coralRoller.outtakeToL4().withTimeout(0.2),
             Commands.parallel(
                 elevator.coralIntakeCG(),
                 redL4DToSource.cmd())));
@@ -81,7 +81,7 @@ public class RedProcess3PieceAuto extends AutoMode {
     redSourceToL4C.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(0.1),
-            coralRoller.createOuttakeCommand()));
+            coralRoller.outtakeToL4()));
     // spotless:on
 
     return redProcess3PieceRoutine;

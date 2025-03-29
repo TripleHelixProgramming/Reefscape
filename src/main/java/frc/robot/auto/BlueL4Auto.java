@@ -52,7 +52,7 @@ public class BlueL4Auto extends AutoMode {
     blueCenterToL4G.done().onTrue(
         Commands.sequence(
             Commands.waitSeconds(1.0),
-            coralRoller.createOuttakeCommand().withTimeout(0.2)));
+            coralRoller.outtakeToL4().withTimeout(0.2)));
 
     // spotless:on
 

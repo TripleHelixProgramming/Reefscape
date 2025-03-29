@@ -61,7 +61,7 @@ public class AlgaeRoller extends SubsystemBase {
     followerMotor.configureAsync(
         followerConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    setDefaultCommand(createStopCommand());
+    setDefaultCommand(stop());
   }
 
   @Override
@@ -81,25 +81,25 @@ public class AlgaeRoller extends SubsystemBase {
     return encoder.getVelocity();
   }
 
-  public Command createStopCommand() {
+  public Command stop() {
     return this.startEnd(() -> leaderMotor.set(0.0), () -> {}).withName("Stop");
   }
 
-  public Command createIntakeCommand() {
+  public Command intake() {
     return this.run(() -> setVoltage(AlgaeRollerConstants.kIntakeVoltage)).withName("Intake");
   }
 
-  public Command createOuttakeToBargeCommand() {
+  public Command outtakeToBarge() {
     return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToBargeVoltage))
         .withName("Outtake to barge");
   }
 
-  public Command createOuttakeToProcessorCommand() {
+  public Command outtakeToProcessor() {
     return this.run(() -> setVoltage(AlgaeRollerConstants.kOuttakeToProcessorVoltage))
         .withName("Outtake to processor");
   }
 
-  public Command createHoldAlgaeCommand() {
+  public Command holdAlgae() {
     return this.run(() -> setVoltage(AlgaeRollerConstants.kHoldVoltage)).withName("Hold");
   }
 }

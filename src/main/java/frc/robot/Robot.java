@@ -334,13 +334,19 @@ public class Robot extends TimedRobot {
 
     // Outtake grippers
     var outtaking = driver.HIn();
-    lifter.atProcessorHeight.and(outtaking)
-        .whileTrue(algaeRoller.createOuttakeToProcessorCommand());
-    lifter.atProcessorHeight.negate().and(outtaking)
-        .whileTrue(algaeRoller.createOuttakeToBargeCommand());
-    outtaking
-        .whileTrue(coralRoller.createOuttakeCommand()
-        .alongWith(new InstantCommand(() -> rememberOutputPose(swerve.getPose()))));
+    outtaking.onTrue(new InstantCommand(() -> rememberOutputPose(swerve.getPose())));
+    lifter.atProcessor.and(outtaking)
+        .whileTrue(algaeRoller.outtakeToProcessor());
+    lifter.atAlgaeElse.and(outtaking)
+        .whileTrue(algaeRoller.outtakeToBarge());
+    lifter.atCoralL1.and(outtaking)
+        .whileTrue(coralRoller.outtakeToL1());
+    lifter.atCoralL2.and(outtaking)
+        .whileTrue(coralRoller.outtakeToL2());
+    lifter.atCoralL3.and(outtaking)
+        .whileTrue(coralRoller.outtakeToL3());
+    lifter.atCoralElse.and(outtaking)
+        .whileTrue(coralRoller.outtakeToL4());
   }
 
   private void configureOperatorButtonBindings() {
@@ -394,8 +400,9 @@ public class Robot extends TimedRobot {
 
     // Intake coral and algae
     operator.rightBumper()
-        .whileTrue(algaeRoller.createIntakeCommand()
-        .alongWith(coralRoller.createIntakeCommand()));
+        .whileTrue(algaeRoller.intake());
+    operator.rightBumper()
+        .whileTrue(coralRoller.intake());
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
@@ -443,7 +450,7 @@ public class Robot extends TimedRobot {
         .onTrue(climber.lockRatchet().andThen(climber.resetEncoder()));
 
     algaeRoller.hasAlgae.onTrue(elevator.holdAlgaeCG());
-    coralRoller.hasCoral.onTrue(coralRoller.createStopCommand());
+    coralRoller.hasCoral.onTrue(coralRoller.stop());
 
     coralRoller.isRolling.or(algaeRoller.isRolling).whileTrue(createRollerAnimationCommand());
   }
