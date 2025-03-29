@@ -28,12 +28,10 @@ import frc.game.Gamepiece;
 import frc.game.Reef;
 import frc.lib.AllianceSelector;
 import frc.lib.AutoAlignTarget;
-import frc.lib.AutoAlignTarget;
 import frc.lib.AutoOption;
 import frc.lib.AutoSelector;
 import frc.lib.CommandZorroController;
 import frc.lib.ControllerPatroller;
-import frc.lib.PoseLogger;
 import frc.lib.PoseLogger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -57,11 +55,8 @@ import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
 import frc.robot.vision.Camera;
-import frc.robot.vision.Camera;
 import frc.robot.vision.Vision;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -364,11 +359,13 @@ public class Robot extends TimedRobot {
     // driver.DIn().whileTrue(new DriveToPoseCommand(swerve, () -> startAutoAlign(false).get()));
 
     driver.AIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
-      swerve.getPose(), 
-      startAutoAlign(true).get()));
+      swerve,
+      () -> swerve.getPose(), 
+      startAutoAlign(true)));
     driver.DIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
-      swerve.getPose(), 
-      startAutoAlign(false).get()));
+      swerve,
+      () -> swerve.getPose(), 
+      startAutoAlign(false)));
 
     // Outtake grippers
     var outtaking = driver.HIn();
