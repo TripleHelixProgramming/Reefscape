@@ -131,7 +131,7 @@ public enum Reef {
       return leftDelta < rightDelta ? face.getLeftPipe() : face.getRightPipe();
     }
 
-    class PipeTarget extends AutoAlignTarget {
+    public class PipeTarget extends AutoAlignTarget {
       private final boolean isLeft;
 
       public PipeTarget(boolean isLeft) {
