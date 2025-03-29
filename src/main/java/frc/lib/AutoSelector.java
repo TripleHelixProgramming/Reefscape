@@ -1,8 +1,6 @@
 package frc.lib;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -23,10 +21,6 @@ public class AutoSelector implements Supplier<Optional<AutoOption>> {
   private List<AutoOption> autoOptions = new ArrayList<>();
   private EventLoop eventLoop = new EventLoop();
   private BooleanEvent autoSelectionChanged;
-  private StructPublisher<Pose2d> initialPosePublisher =
-      NetworkTableInstance.getDefault()
-          .getStructTopic("AutonomousInitialPose", Pose2d.struct)
-          .publish();
 
   /**
    * Constructs an autonomous selector switch
@@ -44,6 +38,13 @@ public class AutoSelector implements Supplier<Optional<AutoOption>> {
     }
 
     autoSelectionChanged = new BooleanEvent(eventLoop, () -> updateAuto());
+
+    PoseLogger.getDefault()
+        .monitor(
+            "autonomousStart",
+            () -> {
+              return getInitialPose();
+            });
   }
 
   public void addAuto(AutoOption newAuto) {
@@ -125,14 +126,10 @@ public class AutoSelector implements Supplier<Optional<AutoOption>> {
     currentAutoOption.ifPresentOrElse(
         ao -> {
           SmartDashboard.putString("SelectedAutonomousMode", ao.getName());
-          ao.getInitialPose()
-              .ifPresentOrElse(
-                  initialPosePublisher::set, () -> initialPosePublisher.set(Pose2d.kZero));
         },
         () -> {
           SmartDashboard.putString(
               "SelectedAutonomousMode", "None; no auto mode assigned to this slot");
-          initialPosePublisher.set(Pose2d.kZero);
         });
   }
 

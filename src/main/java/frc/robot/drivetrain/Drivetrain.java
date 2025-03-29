@@ -25,12 +25,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.PoseLogger;
 import frc.robot.Constants.AutoConstants.RotationControllerGains;
 import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.VisionConstants;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -92,6 +94,18 @@ public class Drivetrain extends SubsystemBase {
             getSwerveModulePositions());
 
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    var logger = PoseLogger.getDefault();
+    logger.monitor(
+        "swerveEstimate",
+        () -> {
+          return Optional.of(getPose());
+        });
+    logger.monitor(
+        "swerveOdometry",
+        () -> {
+          return Optional.of(getPoseRawOdometry());
+        });
   }
 
   @Override

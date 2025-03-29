@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Seconds;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -52,11 +51,7 @@ import frc.robot.elevator.AlgaeRoller;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import frc.robot.elevator.Lifter;
-import frc.robot.vision.Camera;
 import frc.robot.vision.Vision;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -88,7 +83,6 @@ public class Robot extends TimedRobot {
   private BooleanSupplier algaeModeSupplier;
   private Supplier<Gamepiece> gamepieceSupplier;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
-  private Map<String, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
   private Optional<AutoAlignTarget> currentAutoAlignTarget = Optional.empty();
   private Pose2d nearestLeftPipe;
   private Pose2d nearestRightPipe;
@@ -122,21 +116,6 @@ public class Robot extends TimedRobot {
 
     var logger = PoseLogger.getDefault();
     logger.monitor(
-        "visionEstimate",
-        () -> {
-          return vision.getPose();
-        });
-    logger.monitor(
-        "swerveEstimate",
-        () -> {
-          return Optional.of(swerve.getPose());
-        });
-    logger.monitor(
-        "swerveOdometry",
-        () -> {
-          return Optional.of(swerve.getPoseRawOdometry());
-        });
-    logger.monitor(
         "nearestLeftPipe",
         () -> {
           return Optional.ofNullable(nearestLeftPipe);
@@ -146,14 +125,6 @@ public class Robot extends TimedRobot {
         () -> {
           return Optional.ofNullable(nearestRightPipe);
         });
-    Arrays.stream(Camera.values())
-        .forEach(
-            cam ->
-                logger.monitor(
-                    cam.getName(),
-                    () -> {
-                      return cam.getPose();
-                    }));
   }
 
   @Override
