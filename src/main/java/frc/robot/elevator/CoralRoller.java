@@ -11,6 +11,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.MotorConstants.NEO550Constants;
@@ -50,7 +51,7 @@ public class CoralRoller extends SubsystemBase {
 
     motor.configureAsync(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    setDefaultCommand(createStopCommand());
+    setDefaultCommand(stop());
   }
 
   @Override
@@ -70,15 +71,36 @@ public class CoralRoller extends SubsystemBase {
     return encoder.getVelocity();
   }
 
-  public Command createStopCommand() {
-    return this.startEnd(() -> motor.set(0.0), () -> {});
+  public Command stop() {
+    return this.startEnd(() -> motor.set(0.0), () -> {}).withName("Stop");
   }
 
-  public Command createIntakeCommand() {
-    return this.run(() -> setVoltage(CoralRollerConstants.kIntakeVoltage));
+  public Command intake() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kIntakeVoltage)).withName("Intake");
   }
 
-  public Command createOuttakeCommand() {
-    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeVoltage));
+  public Command outtakeToL1() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL1Voltage))
+        .withName("Outtake to L1");
+  }
+
+  public Command outtakeToL2() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL2Voltage))
+        .withName("Outtake to L2");
+  }
+
+  public Command outtakeToL3() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL3Voltage))
+        .withName("Outtake to L3");
+  }
+
+  public Command outtakeToL4() {
+    return this.run(() -> setVoltage(CoralRollerConstants.kOuttakeToL4Voltage))
+        .withName("Outtake to L4");
+  }
+
+  public Command jiggle() {
+    return Commands.sequence(outtakeToL1().withTimeout(0.05), intake().withTimeout(0.3))
+        .withName("Jiggle");
   }
 }

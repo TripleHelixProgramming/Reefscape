@@ -133,6 +133,7 @@ public enum Reef {
     }
 
     public class PipeTarget extends AutoAlignTarget {
+
       private final boolean isLeft;
 
       public PipeTarget(boolean isLeft) {
@@ -175,7 +176,7 @@ public enum Reef {
 
       memoLeftPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".leftPipe");
       memoRightPipePose = Config.getDefault().loadPose2d("Reef.Face." + this.name() + ".rightPipe");
-      // SmartDashboard.putString("Reef.Face." + this.name(), centerPose.toString());
+      SmartDashboard.putString("Reef.Face." + this.name(), centerPose.toString());
     }
 
     /**
@@ -211,6 +212,7 @@ public enum Reef {
      * @return right pipe target
      */
     public PipeTarget getRightPipe() {
+
       return new PipeTarget(false);
     }
 
@@ -254,6 +256,7 @@ public enum Reef {
       Config.getDefault().storePose2d(tag, pose);
       PoseLogger.getDefault().publish(tag + ".old", leftPipePose);
       PoseLogger.getDefault().publish(tag + ".new", pose);
+
     }
 
     /**

@@ -162,7 +162,7 @@ public class Elevator {
   public Command holdAlgaeCG() {
     return new InstantCommand(
         () -> {
-          algaeRoller.createHoldAlgaeCommand().schedule();
+          algaeRoller.holdAlgae().schedule();
           coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
           algaeWrist.setAngle(AlgaeWristState.Barge).schedule();
         });
