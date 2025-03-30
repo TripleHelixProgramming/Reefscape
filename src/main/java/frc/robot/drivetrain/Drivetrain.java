@@ -3,7 +3,6 @@ package frc.robot.drivetrain;
 import static edu.wpi.first.units.Units.Seconds;
 
 import choreo.trajectory.SwerveSample;
-
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 import edu.wpi.first.math.Matrix;
@@ -32,7 +31,6 @@ import frc.robot.Constants.AutoConstants.TranslationControllerGains;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.VisionConstants;
-
 import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -140,7 +138,8 @@ public class Drivetrain extends SubsystemBase {
     setRobotRelativeChassisSpeeds(chassisSpeeds, DriveConstants.kDriveKinematics);
   }
 
-  public void setRobotRelativeChassisSpeedsWithFF(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
+  public void setRobotRelativeChassisSpeedsWithFF(
+      ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
     setRobotRelativeChassisSpeeds(chassisSpeeds, DriveConstants.kDriveKinematics);
   }
 

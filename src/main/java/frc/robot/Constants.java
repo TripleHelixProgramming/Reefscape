@@ -3,7 +3,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.path.PathConstraints;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -271,10 +270,11 @@ public final class Constants {
   }
 
   public static final class DriveToPoseConstants {
-    public static final PathConstraints kAlignConstraints = new PathConstraints(
-      DriveConstants.kMaxDriveToPoseTranslationVelocity, 
-      MetersPerSecondPerSecond.of(1.0),
-      DriveConstants.kMaxRotationalVelocity,
-      RadiansPerSecondPerSecond.of(0.5));
+    public static final PathConstraints kAlignConstraints =
+        new PathConstraints(
+            DriveConstants.kMaxDriveToPoseTranslationVelocity,
+            MetersPerSecondPerSecond.of(1.0),
+            DriveConstants.kMaxRotationalVelocity,
+            RadiansPerSecondPerSecond.of(0.5));
   }
 }

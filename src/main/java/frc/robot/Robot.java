@@ -47,7 +47,6 @@ import frc.robot.auto.RedNoProcess3PieceAuto;
 import frc.robot.auto.RedProcess3PieceAuto;
 import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
-import frc.robot.drivetrain.commands.DriveToPoseCommand;
 import frc.robot.drivetrain.commands.PathPlannerToPose;
 import frc.robot.drivetrain.commands.ZorroDriveCommand;
 import frc.robot.elevator.AlgaeRoller;
@@ -355,17 +354,9 @@ public class Robot extends TimedRobot {
           // swerve.initializeRelativeTurningEncoder();
         }).ignoringDisable(true));
 
-    // driver.AIn().whileTrue(new DriveToPoseCommand(swerve, () -> startAutoAlign(true).get()));
-    // driver.DIn().whileTrue(new DriveToPoseCommand(swerve, () -> startAutoAlign(false).get()));
-
-    driver.AIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
-      swerve,
-      () -> swerve.getPose(), 
-      () -> startAutoAlign(true).get()));
-    driver.DIn().whileTrue(PathPlannerToPose.driveToPoseCommand(
-      swerve,
-      () -> swerve.getPose(), 
-      () -> startAutoAlign(false).get()));
+    var pathPlanner = PathPlannerToPose.getInstance(swerve, swerve::getPose);
+    driver.AIn().whileTrue(pathPlanner.driveTo(() -> startAutoAlign(true).get()));
+    driver.DIn().whileTrue(pathPlanner.driveTo(() -> startAutoAlign(false).get()));
 
     // Outtake grippers
     var outtaking = driver.HIn();
