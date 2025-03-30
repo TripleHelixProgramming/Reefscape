@@ -25,32 +25,27 @@ public class PathPlannerToPose {
   private static PathPlannerToPose instance;
 
   private final Drivetrain drivetrain;
-  private final Supplier<Pose2d> robotPoseSupplier;
 
   /**
    * Get the singleton instance of PathPlannerToPose.
    *
    * @param drivetrain the drivetrain to use
-   * @param robotPoseSupplier the supplier of the current robot pose
    * @return the singleton instance of PathPlannerToPose
    */
-  public static synchronized PathPlannerToPose getInstance(
-      Drivetrain drivetrain, Supplier<Pose2d> robotPoseSupplier) {
+  public static synchronized PathPlannerToPose getInstance(Drivetrain drivetrain) {
     if (instance == null) {
-      instance = new PathPlannerToPose(drivetrain, robotPoseSupplier);
-    } else if (instance.drivetrain != drivetrain
-        || instance.robotPoseSupplier != robotPoseSupplier) {
+      instance = new PathPlannerToPose(drivetrain);
+    } else if (instance.drivetrain != drivetrain) {
       throw new IllegalStateException(
           "PathPlannerToPose already initialized with different drivetrain or currentPoseSupplier");
     }
     return instance;
   }
 
-  private PathPlannerToPose(Drivetrain drivetrain, Supplier<Pose2d> currentPoseSupplier) {
+  private PathPlannerToPose(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
-    this.robotPoseSupplier = currentPoseSupplier;
     AutoBuilder.configureCustom(
-        AutoBuilder::followPath, currentPoseSupplier, drivetrain::resetOdometry, true);
+        AutoBuilder::followPath, drivetrain::getPose, drivetrain::resetOdometry, true);
   }
 
   /**
@@ -61,13 +56,13 @@ public class PathPlannerToPose {
    */
   private FollowPathCommand createCommand(Supplier<Pose2d> targetPoseSupplier) {
     var targetPose = targetPoseSupplier.get();
-    var fromPose = robotPoseSupplier.get();
+    var fromPose = drivetrain.getPose();
     PoseLogger.getDefault().publish("FollowPath.targetPose", targetPose);
     PoseLogger.getDefault().publish("FollowPath.fromPose", fromPose);
     var waypoints =
         PathPlannerPath.waypointsFromPoses(
             fromPose,
-            // endPose.transformBy(new Transform2d(Meters.of(-0.5), Meters.of(0.0),
+            // targetPose.transformBy(new Transform2d(Meters.of(-0.5), Meters.of(0.0),
             // Rotation2d.kZero)),
             targetPose);
     var constraints = TrajectoryFollowingConstants.kPathFollowingConstraints;
@@ -79,7 +74,7 @@ public class PathPlannerToPose {
 
     return new FollowPathCommand(
         path,
-        robotPoseSupplier,
+        drivetrain::getPose,
         drivetrain::getChassisSpeeds,
         drivetrain::setRobotRelativeChassisSpeedsWithFF,
         TrajectoryFollowingConstants.kPathFollowingController,

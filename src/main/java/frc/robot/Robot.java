@@ -354,7 +354,7 @@ public class Robot extends TimedRobot {
           // swerve.initializeRelativeTurningEncoder();
         }).ignoringDisable(true));
 
-    var pathPlanner = PathPlannerToPose.getInstance(swerve, swerve::getPose);
+    var pathPlanner = PathPlannerToPose.getInstance(swerve);
     driver.AIn().whileTrue(pathPlanner.driveTo(() -> startAutoAlign(true).get()));
     driver.DIn().whileTrue(pathPlanner.driveTo(() -> startAutoAlign(false).get()));
 
