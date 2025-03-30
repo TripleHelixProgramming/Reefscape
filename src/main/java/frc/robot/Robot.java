@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -82,8 +84,9 @@ public class Robot extends TimedRobot {
   private Supplier<Gamepiece> gamepieceSupplier;
   private int usbCheckDelay = OIConstants.kUSBCheckNumLoops;
   private Optional<AutoAlignTarget> currentAutoAlignTarget = Optional.empty();
-  private Pose2d nearestLeftPipe;
-  private Pose2d nearestRightPipe;
+  private Optional<Pose2d> recentOuttakePose = Optional.empty();
+  private Optional<Pose2d> nearestLeftPipe = Optional.empty();
+  private Optional<Pose2d> nearestRightPipe = Optional.empty();
 
   public Robot() {
     gamepieceSupplier =
@@ -111,12 +114,12 @@ public class Robot extends TimedRobot {
     logger.monitor(
         "nearestLeftPipe",
         () -> {
-          return Optional.ofNullable(nearestLeftPipe);
+          return nearestLeftPipe;
         });
     logger.monitor(
         "nearestRightPipe",
         () -> {
-          return Optional.ofNullable(nearestRightPipe);
+          return nearestRightPipe;
         });
   }
 
@@ -147,8 +150,8 @@ public class Robot extends TimedRobot {
 
     var nearestReef = Reef.getNearestReef(swerve.getPose());
     var nearestReefFace = nearestReef.getNearestFace(swerve.getPose());
-    nearestLeftPipe = nearestReefFace.getLeftPipePose();
-    nearestRightPipe = nearestReefFace.getRightPipePose();
+    nearestLeftPipe = Optional.of(nearestReefFace.getLeftPipePose());
+    nearestRightPipe = Optional.of(nearestReefFace.getRightPipePose());
   }
 
   @Override
@@ -255,23 +258,58 @@ public class Robot extends TimedRobot {
     configureOperatorButtonBindings();
   }
 
-  /** Store the supplied auto-align target for possible fixing. */
-  protected Supplier<Pose2d> startAutoAlign(AutoAlignTarget target) {
+  /**
+   * Store the supplied auto-align target for possible fixing.
+   *
+   * @return a supplier that will return the target pose
+   */
+  protected Supplier<Pose2d> startAutoAlign(boolean isLeftPipe) {
+    var pose = swerve.getPose();
+    var face = Reef.getNearestReef(pose).getNearestFace(pose);
+    var target = isLeftPipe ? face.getLeftPipe() : face.getRightPipe();
     currentAutoAlignTarget = Optional.of(target);
+    PoseLogger.getDefault().publish("autoAlignTarget", target.getPose());
     return () -> target.getPose();
   }
 
-  protected void rememberOutputPose(Pose2d pose) {
-    currentAutoAlignTarget.ifPresent(target -> target.setPose(pose));
+  /**
+   * Remember the last outtake pose for potential recording.
+   *
+   * @param pose
+   */
+  protected void rememberOutputPose() {
+    recentOuttakePose = Optional.of(swerve.getPose());
+    PoseLogger.getDefault().publish("recentOuttakePose", recentOuttakePose.get());
   }
 
   /**
-   * Fix the most recent auto-align target by ammending its position with the one suppliked.
+   * Note that the last outtake was done at a good position.
+   *
+   * <p>If the outtake command occurred within five inches of a coral pipe, or if the outtake
+   * followed an auto-align command, then we will remember the outtake location for the
+   * corresponding target.
    *
    * @param newPose new pose to use for this target
    */
-  protected void fixAutoAlign(Pose2d newPose) {
-    currentAutoAlignTarget.ifPresent(target -> target.memoize());
+  protected void lastOuttakeWasAtGoodLocation() {
+    recentOuttakePose.ifPresent(
+        pose -> {
+          var target = Reef.Face.getNearestPipe(pose);
+          var deltaInches =
+              Meters.of(pose.getTranslation().minus(target.getPose().getTranslation()).getNorm())
+                  .in(Inches);
+          if (deltaInches < 6) {
+            target.setPose(pose);
+            target.memoize();
+          } else {
+            currentAutoAlignTarget.ifPresent(
+                autoTarget -> {
+                  autoTarget.setPose(pose);
+                  autoTarget.memoize();
+                });
+          }
+        });
+    recentOuttakePose = Optional.empty();
     currentAutoAlignTarget = Optional.empty();
   }
 
@@ -285,31 +323,17 @@ public class Robot extends TimedRobot {
           // swerve.initializeRelativeTurningEncoder();
         }).ignoringDisable(true));
 
-    // Drive to nearest pose
-    // driver.AIn()
-    //     .whileTrue(new DriveToPoseCommand(swerve, () -> swerve.getNearestPose()));
-
-    //TODO: add a button binding to call fixAutoAlign(swerve.getPose())
-    driver.AIn().whileTrue(new DriveToPoseCommand(swerve, 
-      () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getLeftPipe()).get()));
-    driver.DIn().whileTrue(new DriveToPoseCommand(swerve, 
-      () -> startAutoAlign(Reef.getNearestReef(swerve.getPose()).getNearestFace(swerve.getPose()).getRightPipe()).get()));
+    driver.AIn().whileTrue(new DriveToPoseCommand(swerve, () -> startAutoAlign(true).get()));
+    driver.DIn().whileTrue(new DriveToPoseCommand(swerve, () -> startAutoAlign(false).get()));
 
     // Outtake grippers
     var outtaking = driver.HIn();
-    outtaking.onTrue(new InstantCommand(() -> rememberOutputPose(swerve.getPose())));
     lifter.atProcessor.and(outtaking)
         .whileTrue(algaeRoller.outtakeToProcessor());
-    lifter.atAlgaeElse.and(outtaking)
+    lifter.atProcessor.negate().and(outtaking)
         .whileTrue(algaeRoller.outtakeToBarge());
-    lifter.atCoralL1.and(outtaking)
-        .whileTrue(coralRoller.outtakeToL1());
-    lifter.atCoralL2.and(outtaking)
-        .whileTrue(coralRoller.outtakeToL2());
-    lifter.atCoralL3.and(outtaking)
-        .whileTrue(coralRoller.outtakeToL3());
-    lifter.atCoralElse.and(outtaking)
-        .whileTrue(coralRoller.outtakeToL4());
+    outtaking
+        .onTrue(new InstantCommand(() -> rememberOutputPose()));
   }
 
   private void configureOperatorButtonBindings() {
@@ -389,8 +413,8 @@ public class Robot extends TimedRobot {
      * Left and right D-pad buttons will cause the robot to go to the left/right
      * pipe on the nearest reef face.
      */
-    operator.povLeft().onTrue(new InstantCommand(() -> fixAutoAlign(swerve.getPose())));
-    operator.povRight().onTrue(new InstantCommand(() -> fixAutoAlign(swerve.getPose())));
+    operator.povLeft().onTrue(new InstantCommand(() -> lastOuttakeWasAtGoodLocation()));
+    operator.povRight().onTrue(new InstantCommand(() -> lastOuttakeWasAtGoodLocation()));
     
        
       
@@ -473,7 +497,7 @@ public class Robot extends TimedRobot {
      */
     BooleanSupplier intakeSupplier =
         () -> {
-          return coralRoller.getRollerVelocity() > 1 || algaeRoller.getRollerVelocity() > 1;
+          return coralRoller.getRollerVelocity() < 1 || algaeRoller.getRollerVelocity() < 1;
         };
 
     /*
