@@ -1,5 +1,6 @@
 package frc.robot.elevator;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -66,7 +67,7 @@ public class Lifter extends SubsystemBase {
     globalConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(NEOConstants.kDefaultCurrentLimit)
+        .smartCurrentLimit((int)NEOConstants.kDefaultCurrentLimit.in(Amps))
         .inverted(false);
 
     leaderConfig

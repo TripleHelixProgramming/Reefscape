@@ -2,6 +2,11 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -11,31 +16,40 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.game.FeederStation;
 import frc.game.Reef;
+import frc.robot.Constants.MotorConstants.NEOVortexConstants;
 
 public final class Constants {
 
   public static final class MotorConstants {
     public static final class NEOConstants {
       public static final AngularVelocity kFreeSpeed = RPM.of(5676);
-      public static final int kDefaultCurrentLimit = 80;
+      public static final Current kDefaultCurrentLimit = Amps.of(80);
     }
 
     public static final class NEO550Constants {
       public static final AngularVelocity kFreeSpeed = RPM.of(11000);
-      public static final int kDefaultCurrentLimit = 20;
+      public static final Current kDefaultCurrentLimit = Amps.of(20);
     }
 
     public static final class NEOVortexConstants {
-      public static final int kDefaultCurrentLimit = 80;
+      public static final Current kDefaultCurrentLimit = Amps.of(80);
     }
   }
 
@@ -52,6 +66,9 @@ public final class Constants {
   public static final class RobotConstants {
     public static final double kNominalVoltage = 12.0;
     public static final Time kPeriod = Seconds.of(TimedRobot.kDefaultPeriod);
+    public static final Mass kMass = Kilograms.of(52);
+    public static final MomentOfInertia kMomentOfIntertia =
+        MomentOfInertia.ofBaseUnits(6.0, KilogramSquareMeters);
   }
 
   public static final class DriveConstants {
@@ -94,7 +111,6 @@ public final class Constants {
     public static final AngularVelocity kMaxRotationalVelocity =
         RadiansPerSecond.of(5.0); // max 5.0
     public static final LinearVelocity kMinTranslationVelocity = MetersPerSecond.of(1.0);
-    public static final LinearVelocity kMaxDriveToPoseTranslationVelocity = MetersPerSecond.of(1.0);
 
     // The locations for the modules must be relative to the center of the robot.
     // Positive x values represent moving toward the front of the robot
@@ -106,6 +122,13 @@ public final class Constants {
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(0.5)), // rear left
             new Translation2d(kWheelBase.times(-0.5), kTrackWidth.times(-0.5)) // rear right
             );
+
+    public static final RobotConfig kRobotConfig =
+        new RobotConfig(
+            RobotConstants.kMass,
+            RobotConstants.kMomentOfIntertia,
+            ModuleConstants.moduleConfig,
+            kTrackWidth);
 
     public static final Pose2d[] kReefTargetPoses = {
       new Pose2d(1.0, 3.0, Rotation2d.fromDegrees(0.0)),
@@ -143,15 +166,6 @@ public final class Constants {
       public static final double kD = 0.0; // 2023 Competition Robot
     }
 
-    public static final class DriveToPoseControllerGains {
-      public static final double kTraP = 2.0;
-      public static final double kTraI = 0.0;
-      public static final double kTraD = 0.0;
-      public static final double kRotP = 3.0;
-      public static final double kRotI = 0.0;
-      public static final double kRotD = 0.0;
-    }
-
     // Not adjusted
     // public static final double kMaxModuleAngularSpeedRadiansPerSecond = 0.05 * Math.PI;
     // public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared =
@@ -160,13 +174,13 @@ public final class Constants {
     // public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.254,
     // 0.137);
 
-    public static final double kWheelDiameterMeters = 0.047; // 1.87 in. avg diamter 2024 bot
+    public static final Distance kWheelDiameter = Inches.of(1.87);
 
     // By default, the drive encoder in position mode measures rotations at the drive motor
     // Convert to meters at the wheel
     public static final double kDriveGearRatio = 6.75; // 2023 Competion Robot
     public static final double kDrivePositionConversionFactor =
-        (kWheelDiameterMeters * Math.PI) / kDriveGearRatio;
+        (kWheelDiameter.in(Meters) * Math.PI) / kDriveGearRatio;
 
     // By default, the drive encoder in velocity mode measures RPM at the drive motor
     // Convert to meters per second at the wheel
@@ -177,6 +191,18 @@ public final class Constants {
     // Convert to rotations at the module azimuth
     public static final double kTurnGearRatio = 12.8; // 2023 Competion Robot
     public static final double kTurnPositionConversionFactor = 1.0 / kTurnGearRatio;
+
+    public static final double kCoefficientOfFriction = 0.6;
+
+    private static ModuleConfig moduleConfig =
+        new ModuleConfig(
+            kWheelDiameter,
+            AutoConstants.kMaxTranslationVelocity,
+            kCoefficientOfFriction,
+            DCMotor.getNeoVortex(4),
+            kDriveGearRatio,
+            NEOVortexConstants.kDefaultCurrentLimit,
+            4);
   }
 
   public static final class OIConstants {
@@ -207,23 +233,39 @@ public final class Constants {
     // max length is 8
     public static final int[] kAutonomousModeSelectorPorts = {0, 1, 2};
 
-    // public static final double kMaxSpeedMetersPerSecond = 3.0;
-    // public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
-    // public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    // public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+    private static final LinearVelocity kMaxTranslationVelocity = MetersPerSecond.of(1.0);
+    private static final LinearAcceleration kMaxTranslationAcceleration =
+        MetersPerSecondPerSecond.of(1.0);
+    private static final AngularVelocity kMaxAngularVelocity = RadiansPerSecond.of(5.0);
+    private static final AngularAcceleration kMaxAngularAcceleration =
+        RadiansPerSecondPerSecond.of(5.0);
 
-    public static final class TranslationControllerGains {
-      public static final double kP = 4.0;
+    public static final class TrajectoryFollowingConstants {
+      public static final double kTranslationP = 4.0;
+      public static final double kRotationP = 7.0;
+      public static final PathFollowingController kPathFollowingController =
+          new PPHolonomicDriveController(
+              new PIDConstants(kTranslationP, 0.0, 0.0), new PIDConstants(kRotationP, 0.0, 0.0));
+      public static final PathConstraints kPathFollowingConstraints =
+          new PathConstraints(
+              AutoConstants.kMaxTranslationVelocity,
+              AutoConstants.kMaxTranslationAcceleration,
+              AutoConstants.kMaxAngularVelocity,
+              AutoConstants.kMaxAngularAcceleration);
     }
 
-    public static final class RotationControllerGains {
-      public static final double kP = 7.0;
+    public static final class SimplePoseControllerConstants {
+      public static final double kTranslationP = 2.0;
+      public static final double kRotationP = 3.0;
+      public static Constraints kTranslationConstraints =
+          new TrapezoidProfile.Constraints(
+              AutoConstants.kMaxTranslationVelocity.baseUnitMagnitude(),
+              AutoConstants.kMaxTranslationAcceleration.baseUnitMagnitude());
+      public static Constraints kRotationConstraints =
+          new TrapezoidProfile.Constraints(
+              AutoConstants.kMaxAngularVelocity.baseUnitMagnitude(),
+              AutoConstants.kMaxAngularAcceleration.baseUnitMagnitude());
     }
-
-    // Constraint for the motion profilied robot angle controller
-    // public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-    //     new TrapezoidProfile.Constraints(
-    //         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
   public static final class ClimberConstants {
@@ -267,14 +309,5 @@ public final class Constants {
 
     public static final Color algaeColor = Color.kGreen;
     public static final Color coralColor = Color.kCoral;
-  }
-
-  public static final class DriveToPoseConstants {
-    public static final PathConstraints kAlignConstraints =
-        new PathConstraints(
-            DriveConstants.kMaxDriveToPoseTranslationVelocity,
-            MetersPerSecondPerSecond.of(1.0),
-            DriveConstants.kMaxRotationalVelocity,
-            RadiansPerSecondPerSecond.of(0.5));
   }
 }

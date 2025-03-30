@@ -3,10 +3,8 @@ package frc.robot.drivetrain.commands;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ModuleConstants.DriveToPoseControllerGains;
+import frc.robot.Constants.AutoConstants.SimplePoseControllerConstants;
 import frc.robot.drivetrain.Drivetrain;
 import java.util.function.Supplier;
 
@@ -16,25 +14,22 @@ public class DriveToPoseCommand extends Command {
 
   private final ProfiledPIDController xController =
       new ProfiledPIDController(
-          DriveToPoseControllerGains.kTraP,
-          DriveToPoseControllerGains.kTraI,
-          DriveToPoseControllerGains.kTraD,
-          new TrapezoidProfile.Constraints(
-              DriveConstants.kMaxDriveToPoseTranslationVelocity.baseUnitMagnitude(), 5));
+          SimplePoseControllerConstants.kTranslationP,
+          0.0,
+          0.0,
+          SimplePoseControllerConstants.kTranslationConstraints);
   private final ProfiledPIDController yController =
       new ProfiledPIDController(
-          DriveToPoseControllerGains.kTraP,
-          DriveToPoseControllerGains.kTraI,
-          DriveToPoseControllerGains.kTraD,
-          new TrapezoidProfile.Constraints(
-              DriveConstants.kMaxDriveToPoseTranslationVelocity.baseUnitMagnitude(), 5));
+          SimplePoseControllerConstants.kTranslationP,
+          0.0,
+          0.0,
+          SimplePoseControllerConstants.kTranslationConstraints);
   private final ProfiledPIDController thetaController =
       new ProfiledPIDController(
-          DriveToPoseControllerGains.kRotP,
-          DriveToPoseControllerGains.kRotI,
-          DriveToPoseControllerGains.kRotD,
-          new TrapezoidProfile.Constraints(
-              DriveConstants.kMaxRotationalVelocity.baseUnitMagnitude(), 9));
+          SimplePoseControllerConstants.kTranslationP,
+          0.0,
+          0.0,
+          SimplePoseControllerConstants.kRotationConstraints);
 
   public DriveToPoseCommand(Drivetrain drivetrain, Supplier<Pose2d> targetPosition) {
     swerve = drivetrain;

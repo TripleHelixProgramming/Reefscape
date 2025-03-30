@@ -1,5 +1,7 @@
 package frc.robot.drivetrain;
 
+import static edu.wpi.first.units.Units.Amps;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -70,13 +72,13 @@ public enum SwerveModule {
       .voltageCompensation(RobotConstants.kNominalVoltage)
       .inverted(false)
       .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(NEOVortexConstants.kDefaultCurrentLimit);
+      .smartCurrentLimit((int)NEOVortexConstants.kDefaultCurrentLimit.in(Amps));
 
     m_turningMotorConfig
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .inverted(false)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(NEOConstants.kDefaultCurrentLimit);
+        .smartCurrentLimit((int)NEOConstants.kDefaultCurrentLimit.in(Amps));
 
     m_driveMotorConfig.closedLoop
         .p(DriveControllerGains.kP)

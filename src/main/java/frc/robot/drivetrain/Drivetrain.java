@@ -26,8 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.AutoConstants.RotationControllerGains;
-import frc.robot.Constants.AutoConstants.TranslationControllerGains;
+import frc.robot.Constants.AutoConstants.TrajectoryFollowingConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.VisionConstants;
@@ -52,11 +51,11 @@ public class Drivetrain extends SubsystemBase {
   private final SwerveDriveOdometry odometry;
 
   private final PIDController xController =
-      new PIDController(TranslationControllerGains.kP, 0.0, 0.0);
+      new PIDController(TrajectoryFollowingConstants.kTranslationP, 0.0, 0.0);
   private final PIDController yController =
-      new PIDController(TranslationControllerGains.kP, 0.0, 0.0);
+      new PIDController(TrajectoryFollowingConstants.kTranslationP, 0.0, 0.0);
   private final PIDController thetaController =
-      new PIDController(RotationControllerGains.kP, 0.0, 0.0);
+      new PIDController(TrajectoryFollowingConstants.kRotationP, 0.0, 0.0);
 
   private final Canandgyro canandgyro = new Canandgyro(0);
   private Rotation2d headingOffset = Rotation2d.kZero;

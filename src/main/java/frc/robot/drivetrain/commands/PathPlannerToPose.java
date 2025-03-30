@@ -1,29 +1,15 @@
 package frc.robot.drivetrain.commands;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import frc.lib.PoseLogger;
+import frc.robot.Constants.AutoConstants.TrajectoryFollowingConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.DriveToPoseConstants;
-import frc.robot.Constants.ModuleConstants;
 import frc.robot.drivetrain.Drivetrain;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -35,25 +21,6 @@ import java.util.function.Supplier;
  * <p>PathPlannerToPose is a singleton class because it configures AutoBuiler.
  */
 public class PathPlannerToPose {
-  private static ModuleConfig modConfig =
-      new ModuleConfig(
-          Meters.of(0.05),
-          DriveConstants.kMaxDriveToPoseTranslationVelocity,
-          0.6,
-          DCMotor.getNeoVortex(4),
-          ModuleConstants.kDriveGearRatio,
-          Current.ofBaseUnits(80.0, Amps),
-          4);
-  private static RobotConfig config =
-      new RobotConfig(
-          Kilograms.of(52),
-          MomentOfInertia.ofBaseUnits(6.0, KilogramSquareMeters),
-          modConfig,
-          DriveConstants.kTrackWidth);
-
-  private static PathFollowingController controller =
-      new PPHolonomicDriveController(
-          new PIDConstants(1.0, 0.0, 0.0), new PIDConstants(3.0, 0.0, 0.0));
 
   private static PathPlannerToPose instance;
 
@@ -103,7 +70,7 @@ public class PathPlannerToPose {
             // endPose.transformBy(new Transform2d(Meters.of(-0.5), Meters.of(0.0),
             // Rotation2d.kZero)),
             targetPose);
-    var constraints = DriveToPoseConstants.kAlignConstraints;
+    var constraints = TrajectoryFollowingConstants.kPathFollowingConstraints;
     var path =
         new PathPlannerPath(
             waypoints, constraints, null, new GoalEndState(0.0, targetPose.getRotation()));
@@ -115,8 +82,8 @@ public class PathPlannerToPose {
         robotPoseSupplier,
         drivetrain::getChassisSpeeds,
         drivetrain::setRobotRelativeChassisSpeedsWithFF,
-        controller,
-        config,
+        TrajectoryFollowingConstants.kPathFollowingController,
+        DriveConstants.kRobotConfig,
         () -> false,
         drivetrain);
   }

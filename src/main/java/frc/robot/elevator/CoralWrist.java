@@ -1,5 +1,6 @@
 package frc.robot.elevator;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -51,7 +52,7 @@ public class CoralWrist extends SubsystemBase {
     config
         .inverted(true)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(NEO550Constants.kDefaultCurrentLimit)
+        .smartCurrentLimit((int)NEO550Constants.kDefaultCurrentLimit.in(Amps))
         .voltageCompensation(RobotConstants.kNominalVoltage);
 
     config.closedLoop

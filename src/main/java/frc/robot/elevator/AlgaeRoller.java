@@ -1,5 +1,7 @@
 package frc.robot.elevator;
 
+import static edu.wpi.first.units.Units.Amps;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -37,7 +39,7 @@ public class AlgaeRoller extends SubsystemBase {
     config
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(NEO550Constants.kDefaultCurrentLimit)
+        .smartCurrentLimit((int)NEO550Constants.kDefaultCurrentLimit.in(Amps))
         .inverted(false);
 
     config.limitSwitch

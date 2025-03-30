@@ -1,5 +1,7 @@
 package frc.robot.climber;
 
+import static edu.wpi.first.units.Units.Amps;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -38,7 +40,7 @@ public class Climber extends SubsystemBase {
         .voltageCompensation(RobotConstants.kNominalVoltage)
         .inverted(false)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(NEOVortexConstants.kDefaultCurrentLimit);
+        .smartCurrentLimit(((int)NEOVortexConstants.kDefaultCurrentLimit.in(Amps)));
 
     motorConfig.closedLoop
         .p(ClimberConstants.kP)
