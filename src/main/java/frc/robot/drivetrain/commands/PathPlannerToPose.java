@@ -37,7 +37,7 @@ public class PathPlannerToPose {
       instance = new PathPlannerToPose(drivetrain);
     } else if (instance.drivetrain != drivetrain) {
       throw new IllegalStateException(
-          "PathPlannerToPose already initialized with different drivetrain or currentPoseSupplier");
+          "PathPlannerToPose already initialized with different drivetrain");
     }
     return instance;
   }
