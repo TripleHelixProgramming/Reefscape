@@ -6,6 +6,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -71,13 +72,16 @@ public class PathPlannerToPose {
     var constraints = TrajectoryFollowingConstants.kPathFollowingConstraints;
     var path =
         new PathPlannerPath(
-            waypoints, constraints, null, new GoalEndState(0.0, targetPose.getRotation()));
+            waypoints,
+            constraints,
+            new IdealStartingState(0, fromPose.getRotation()),
+            new GoalEndState(0.0, targetPose.getRotation()));
 
     PathFollowingController controller =
-          new PPHolonomicDriveController(
-              new PIDConstants(TrajectoryFollowingConstants.kTranslationP, 0.0, 0.0), 
-              new PIDConstants(TrajectoryFollowingConstants.kRotationP, 0.0, 0.0));
-    
+        new PPHolonomicDriveController(
+            new PIDConstants(TrajectoryFollowingConstants.kTranslationP, 0.0, 0.0),
+            new PIDConstants(TrajectoryFollowingConstants.kRotationP, 0.0, 0.0));
+
     path.preventFlipping = true;
 
     return new FollowPathCommand(
