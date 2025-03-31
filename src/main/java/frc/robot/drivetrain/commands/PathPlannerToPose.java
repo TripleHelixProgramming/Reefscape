@@ -1,6 +1,6 @@
 package frc.robot.drivetrain.commands;
 
-import com.pathplanner.lib.auto.AutoBuilder;
+// import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -47,8 +47,8 @@ public class PathPlannerToPose {
 
   private PathPlannerToPose(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
-    AutoBuilder.configureCustom(
-        AutoBuilder::followPath, drivetrain::getPose, drivetrain::resetOdometry, true);
+    // AutoBuilder.configureCustom(
+    //     AutoBuilder::followPath, drivetrain::getPose, drivetrain::resetOdometry, true);
   }
 
   /**
