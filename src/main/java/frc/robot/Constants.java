@@ -243,9 +243,6 @@ public final class Constants {
     public static final class TrajectoryFollowingConstants {
       public static final double kTranslationP = 4.0;
       public static final double kRotationP = 7.0;
-      public static final PathFollowingController kPathFollowingController =
-          new PPHolonomicDriveController(
-              new PIDConstants(kTranslationP, 0.0, 0.0), new PIDConstants(kRotationP, 0.0, 0.0));
       public static final PathConstraints kPathFollowingConstraints =
           new PathConstraints(
               AutoConstants.kMaxTranslationVelocity,

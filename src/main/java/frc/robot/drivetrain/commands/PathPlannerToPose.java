@@ -2,6 +2,9 @@ package frc.robot.drivetrain.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -70,6 +73,11 @@ public class PathPlannerToPose {
         new PathPlannerPath(
             waypoints, constraints, null, new GoalEndState(0.0, targetPose.getRotation()));
 
+    PathFollowingController controller =
+          new PPHolonomicDriveController(
+              new PIDConstants(TrajectoryFollowingConstants.kTranslationP, 0.0, 0.0), 
+              new PIDConstants(TrajectoryFollowingConstants.kRotationP, 0.0, 0.0));
+    
     path.preventFlipping = true;
 
     return new FollowPathCommand(
@@ -77,7 +85,7 @@ public class PathPlannerToPose {
         drivetrain::getPose,
         drivetrain::getChassisSpeeds,
         drivetrain::setRobotRelativeChassisSpeedsWithFF,
-        TrajectoryFollowingConstants.kPathFollowingController,
+        controller,
         DriveConstants.kRobotConfig,
         () -> false,
         drivetrain);
