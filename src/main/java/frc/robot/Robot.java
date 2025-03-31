@@ -352,12 +352,19 @@ public class Robot extends TimedRobot {
 
     // Outtake grippers
     var outtaking = driver.HIn();
+    outtaking.onTrue(new InstantCommand(() -> rememberOutputPose()));
     lifter.atProcessor.and(outtaking)
         .whileTrue(algaeRoller.outtakeToProcessor());
-    lifter.atProcessor.negate().and(outtaking)
+    lifter.atAlgaeElse.and(outtaking)
         .whileTrue(algaeRoller.outtakeToBarge());
-    outtaking
-        .onTrue(new InstantCommand(() -> rememberOutputPose()));
+    lifter.atCoralL1.and(outtaking)
+        .whileTrue(coralRoller.outtakeToL1());
+    lifter.atCoralL2.and(outtaking)
+        .whileTrue(coralRoller.outtakeToL2());
+    lifter.atCoralL3.and(outtaking)
+        .whileTrue(coralRoller.outtakeToL3());
+    lifter.atCoralElse.and(outtaking)
+        .whileTrue(coralRoller.outtakeToL4());
   }
 
   private void configureOperatorButtonBindings() {
