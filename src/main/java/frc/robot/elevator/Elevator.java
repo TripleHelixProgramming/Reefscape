@@ -57,8 +57,8 @@ public class Elevator {
           lifter.setHeight(LifterState.CoralL4).schedule();
           coralWrist.setAngle(CoralWristState.L4).schedule();
           algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
-          coralRoller.getCurrentCommand().cancel();
-          algaeRoller.getCurrentCommand().cancel();
+          coralRoller.stop().schedule();
+          algaeRoller.stop().schedule();
         });
   }
 
@@ -68,8 +68,8 @@ public class Elevator {
           lifter.setHeight(LifterState.CoralL3).schedule();
           coralWrist.setAngle(CoralWristState.L3).schedule();
           algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
-          coralRoller.getCurrentCommand().cancel();
-          algaeRoller.getCurrentCommand().cancel();
+          coralRoller.stop().schedule();
+          algaeRoller.stop().schedule();
         });
   }
 
@@ -79,8 +79,8 @@ public class Elevator {
           lifter.setHeight(LifterState.CoralL2).schedule();
           coralWrist.setAngle(CoralWristState.L2).schedule();
           algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
-          coralRoller.getCurrentCommand().cancel();
-          algaeRoller.getCurrentCommand().cancel();
+          coralRoller.stop().schedule();
+          algaeRoller.stop().schedule();
         });
   }
 
@@ -90,8 +90,8 @@ public class Elevator {
           lifter.setHeight(LifterState.CoralL1).schedule();
           coralWrist.setAngle(CoralWristState.L1).schedule();
           algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
-          coralRoller.getCurrentCommand().cancel();
-          algaeRoller.getCurrentCommand().cancel();
+          coralRoller.stop().schedule();
+          algaeRoller.stop().schedule();
         });
   }
 
@@ -102,7 +102,7 @@ public class Elevator {
           coralWrist.setAngle(CoralWristState.Intake).schedule();
           algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
           coralRoller.intake().schedule();
-          algaeRoller.getCurrentCommand().cancel();
+          algaeRoller.stop().schedule();
         });
   }
 
@@ -112,7 +112,7 @@ public class Elevator {
           lifter.setHeight(LifterState.AlgaeBarge).schedule();
           coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
           algaeWrist.setAngle(AlgaeWristState.Barge).schedule();
-          coralRoller.getCurrentCommand().cancel();
+          coralRoller.stop().schedule();
         });
   }
 
@@ -122,7 +122,7 @@ public class Elevator {
           lifter.setHeight(LifterState.AlgaeL3).schedule();
           coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
           algaeWrist.setAngle(AlgaeWristState.L3).schedule();
-          coralRoller.getCurrentCommand().cancel();
+          coralRoller.stop().schedule();
           algaeRoller.intake().schedule();
         });
   }
@@ -133,7 +133,7 @@ public class Elevator {
           lifter.setHeight(LifterState.AlgaeL2).schedule();
           coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
           algaeWrist.setAngle(AlgaeWristState.L2).schedule();
-          coralRoller.getCurrentCommand().cancel();
+          coralRoller.stop().schedule();
           algaeRoller.intake().schedule();
         });
   }
@@ -144,7 +144,7 @@ public class Elevator {
           lifter.setHeight(LifterState.AlgaeProcessor).schedule();
           coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
           algaeWrist.setAngle(AlgaeWristState.Processor).schedule();
-          coralRoller.getCurrentCommand().cancel();
+          coralRoller.stop().schedule();
         });
   }
 
@@ -154,7 +154,7 @@ public class Elevator {
           lifter.setHeight(LifterState.AlgaeIntakeFloor).schedule();
           coralWrist.setAngle(CoralWristState.AlgaeMode).schedule();
           algaeWrist.setAngle(AlgaeWristState.Floor).schedule();
-          coralRoller.getCurrentCommand().cancel();
+          coralRoller.stop().schedule();
           algaeRoller.intake().schedule();
         });
   }
