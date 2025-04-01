@@ -53,11 +53,10 @@ public class BlueProcess3PieceAuto extends AutoMode {
         Commands.sequence(
             Commands.waitSeconds(0.1),
             coralRoller.outtakeToL4().withTimeout(0.2),
-            Commands.parallel(
-                blueL4FToSource.cmd(),
-                Commands.sequence(
-                    Commands.waitSeconds(0.1),
-                    elevator.coralIntakeCG()))));
+            Commands.sequence(
+                Commands.waitSeconds(0.1),
+                elevator.coralIntakeCG().withTimeout(1.0),
+                blueL4FToSource.cmd())));
 
     blueL4FToSource.done().onTrue(
         Commands.sequence(
