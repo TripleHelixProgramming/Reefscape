@@ -43,12 +43,14 @@ public class BlueProcess3PieceAuto extends AutoMode {
   public AutoRoutine getAutoRoutine() {
 
     // spotless:off
-    blueProcess3PieceRoutine.active().onTrue(blueCenterToL4F.cmd());
+    blueProcess3PieceRoutine.active()
+        .onTrue(blueCenterToL4F.cmd())
+        .onTrue(Commands.sequence(
+            Commands.waitSeconds(1.5),
+            elevator.coralL4PositionCG()));
 
     blueCenterToL4F.done().onTrue(
         Commands.sequence(
-            Commands.waitSeconds(0.1),
-            elevator.coralL4PositionCG(),
             Commands.waitSeconds(0.1),
             coralRoller.outtakeToL4().withTimeout(0.2),
             Commands.parallel(
@@ -59,13 +61,13 @@ public class BlueProcess3PieceAuto extends AutoMode {
 
     blueL4FToSource.done().onTrue(
         Commands.sequence(
-            coralRoller.intake().withTimeout(0.2),
-            blueSourceToL4D.cmd()));
+            coralRoller.intake().until(coralRoller.hasCoral),
+            blueSourceToL4D.cmd(),
+            Commands.waitSeconds(2.5),
+            elevator.coralL4PositionCG()));
 
     blueSourceToL4D.done().onTrue(
         Commands.sequence(
-            Commands.waitSeconds(0.1),
-            elevator.coralL4PositionCG(),
             Commands.waitSeconds(0.1),
             coralRoller.outtakeToL4().withTimeout(0.2),
             Commands.parallel(
@@ -77,7 +79,7 @@ public class BlueProcess3PieceAuto extends AutoMode {
 
     blueL4DToSource.done().onTrue(
         Commands.sequence(
-            coralRoller.intake().withTimeout(0.2),
+            coralRoller.intake().until(coralRoller.hasCoral),
             elevator.coralL4PositionCG()));
 
     blueSourceToL4C.done().onTrue(
