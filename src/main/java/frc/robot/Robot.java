@@ -413,14 +413,8 @@ public class Robot extends TimedRobot {
     operator.rightTrigger().onTrue(new ConditionalCommand(
         elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
-    // Intake coral and algae
-    operator.rightBumper()
-        .whileTrue(algaeRoller.intake());
-    operator.rightBumper()
-        .whileTrue(coralRoller.intake());
-
     // Jiggle coral
-    operator.start().whileTrue(coralRoller.jiggle().repeatedly());
+    operator.rightBumper().whileTrue(coralRoller.jiggle().repeatedly());
 
     // Force joystick operation of the elevator
     Trigger elevatorTriggerHigh = operator.axisGreaterThan(Axis.kLeftY.value, 0.9, loop).debounce(0.1);
