@@ -184,10 +184,7 @@ public class Robot extends TimedRobot {
     leds.replaceDefaultCommandImmediately(
         leds.createAutoOptionDisplayCommand(
                 autoSelector,
-                () ->
-                    vision.getEstimatedGlobalPose().isPresent()
-                        ? vision.getEstimatedGlobalPose().get().estimatedPose.toPose2d()
-                        : null,
+                swerve::getPose,
                 allianceSelector.getAgreementInAllianceColor())
             .ignoringDisable(true));
 
