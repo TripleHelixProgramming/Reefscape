@@ -12,7 +12,7 @@ import java.util.Optional;
 public class Config {
 
   private static Config defaultConfig =
-      new Config(Preferences.getString("defaultConfig", "default"));
+      new Config(Preferences.getString("defaultConfig", "dcmp"));
 
   public static Config getDefault() {
     return defaultConfig;
