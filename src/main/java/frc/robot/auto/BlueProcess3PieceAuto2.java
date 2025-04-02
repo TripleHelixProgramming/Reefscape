@@ -42,6 +42,10 @@ public class BlueProcess3PieceAuto2 extends AutoMode {
 
   /**
    * Attempts to score a coral at L4 height when the provided trajectory finishes.
+   * 
+   * <p>As the robot approaches the scoring position, the elevator is raised.  The
+   * coral is jiggled slightly, and then ejected.  After ejecting, the elevator is
+   * lowered back to coral intake height
    *
    * @param scoreTrajectory The active trajectory leading to the scoring position
    * @param finalApprochTime The time in the trajectory when the elevator should raise
@@ -49,12 +53,11 @@ public class BlueProcess3PieceAuto2 extends AutoMode {
    */
   protected void scoreToL4Then(
       AutoTrajectory scoreTrajectory, double finalApprochTime, Command nextAction) {
+
     scoreTrajectory.atTime(finalApprochTime).onTrue(elevator.coralL4PositionCG());
-
     scoreTrajectory.doneDelayed(0.1).onTrue(coralRoller.intake().withTimeout(0.2));
-
     scoreTrajectory.doneDelayed(0.4).onTrue(coralRoller.outtakeToL4().withTimeout(0.2));
-
+    scoreTrajectory.doneDelayed(0.6).onTrue(elevator.coralIntakeCG());
     scoreTrajectory.doneDelayed(0.6).onTrue(nextAction);
   }
 
