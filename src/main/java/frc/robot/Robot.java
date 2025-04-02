@@ -183,9 +183,7 @@ public class Robot extends TimedRobot {
     swerve.calibrateOdometry();
     leds.replaceDefaultCommandImmediately(
         leds.createAutoOptionDisplayCommand(
-                autoSelector,
-                swerve::getPose,
-                allianceSelector.getAgreementInAllianceColor())
+                autoSelector, swerve::getPose, allianceSelector.getAgreementInAllianceColor())
             .ignoringDisable(true));
 
     // autoSelector.getChangedAutoSelection().onChange(leds.createAutoSelectionEffectCommand().withTimeout(Seconds.of(3)));
