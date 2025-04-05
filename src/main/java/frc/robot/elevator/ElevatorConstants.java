@@ -100,7 +100,7 @@ public class ElevatorConstants {
     public static final double kVelocityConversionFactor = kPositionConversionFactor / 60.0;
 
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
-    public static final Voltage kOuttakeToL1Voltage = Volts.of(-1.0);
+    public static final Voltage kOuttakeToL1Voltage = Volts.of(-1.5);
     public static final Voltage kOuttakeToL2Voltage = Volts.of(-5.0);
     public static final Voltage kOuttakeToL3Voltage = Volts.of(-5.0);
     public static final Voltage kOuttakeToL4Voltage = Volts.of(-5.0);
@@ -155,7 +155,7 @@ public class ElevatorConstants {
       Initial(90),
       Min(15),
       Max(135),
-      L1(65),
+      L1(90),
       L2(65),
       L3(65),
       // TODO: reevaluate

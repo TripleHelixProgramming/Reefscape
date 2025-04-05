@@ -4,34 +4,33 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 import java.util.Optional;
 
-public class BlueProcess3PieceAuto2 extends AutoMode {
+public class BlueProcess2PieceAuto extends AutoMode {
 
   CoralRoller coralRoller;
   Elevator elevator;
 
-  public BlueProcess3PieceAuto2(Drivetrain drivetrain, Elevator elevatorSystem) {
+  public BlueProcess2PieceAuto(Drivetrain drivetrain, Elevator elevatorSystem) {
     super(drivetrain);
     elevator = elevatorSystem;
     coralRoller = elevator.getCoralRoller();
   }
 
   AutoRoutine blueProcess3PieceRoutine =
-      super.getAutoFactory().newRoutine("blueProcess3PieceRoutine");
+      super.getAutoFactory().newRoutine("blueProcess2PieceRoutine");
 
   AutoTrajectory blueCenterToL4F = blueProcess3PieceRoutine.trajectory("blueCenterToL4F");
   AutoTrajectory blueL4FToSource = blueProcess3PieceRoutine.trajectory("blueL4FToSource");
   AutoTrajectory blueSourceToL4D = blueProcess3PieceRoutine.trajectory("blueSourceToL4D");
-  AutoTrajectory blueL4DToSource = blueProcess3PieceRoutine.trajectory("blueL4DToSource");
-  AutoTrajectory blueSourceToL4C = blueProcess3PieceRoutine.trajectory("blueSourceToL4C");
 
   @Override
   public String getName() {
-    return "BlueProcess3PieceAuto2";
+    return "BlueProcess2PieceAuto";
   }
 
   @Override
@@ -53,6 +52,7 @@ public class BlueProcess3PieceAuto2 extends AutoMode {
       AutoTrajectory scoreTrajectory, double finalApprochTime, Command nextAction) {
 
     scoreTrajectory.atTime(finalApprochTime).onTrue(elevator.coralL4PositionCG());
+    // scoreTrajectory.doneDelayed(0.1).onTrue(coralRoller.intake().withTimeout(0.2));
     scoreTrajectory.doneDelayed(0.1).onTrue(coralRoller.outtakeToL4().withTimeout(0.2));
     scoreTrajectory.doneDelayed(0.2).onTrue(elevator.coralIntakeCG());
     scoreTrajectory.doneDelayed(0.2).onTrue(nextAction);
@@ -82,11 +82,7 @@ public class BlueProcess3PieceAuto2 extends AutoMode {
 
     // Grab some coral then score at L4D
     grabSomeCoralThen(blueL4FToSource, blueSourceToL4D.cmd());
-    scoreToL4Then(blueSourceToL4D, 1.0, blueL4DToSource.cmd());
-
-    // Grab some coral then score at L4C
-    grabSomeCoralThen(blueL4DToSource, blueSourceToL4C.cmd());
-    scoreToL4Then(blueSourceToL4C, 1.0, elevator.coralL1PositionCG());
+    scoreToL4Then(blueSourceToL4D, 1.0, Commands.none());
 
     return blueProcess3PieceRoutine;
   }

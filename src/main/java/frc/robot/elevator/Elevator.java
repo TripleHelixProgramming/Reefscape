@@ -106,6 +106,17 @@ public class Elevator {
         });
   }
 
+  public Command coralIntakePositionCG() {
+    return new InstantCommand(
+        () -> {
+          lifter.setHeight(LifterState.CoralIntake).schedule();
+          coralWrist.setAngle(CoralWristState.Intake).schedule();
+          algaeWrist.setAngle(AlgaeWristState.CoralMode).schedule();
+          coralRoller.stop().schedule();
+          algaeRoller.stop().schedule();
+        });
+  }
+
   public Command algaeBargePositionCG() {
     return new InstantCommand(
         () -> {
