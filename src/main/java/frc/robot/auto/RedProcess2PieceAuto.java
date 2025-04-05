@@ -34,7 +34,7 @@ public class RedProcess2PieceAuto extends L4MultiAuto {
 
     // Grab some coral then score at L4D
     grabSomeCoralThen(redL4FToSource, redSourceToL4D.cmd());
-    scoreToL4Then(redSourceToL4D, 2.0, coralRoller.stop());
+    scoreToL4Then(redSourceToL4D, 2.5, coralRoller.stop());
 
     return redProcess3PieceRoutine;
   }
