@@ -7,9 +7,9 @@ import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 
 public abstract class L4MultiAuto extends AutoMode {
-  private final String name;
-    private final CoralRoller coralRoller;
-    private final Elevator elevator;
+    protected final String name;
+    protected final CoralRoller coralRoller;
+    protected final Elevator elevator;
 
     public L4MultiAuto(String name, Drivetrain drivetrain, Elevator elevatorSystem) {
         super(drivetrain);

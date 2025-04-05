@@ -44,7 +44,7 @@ public class BlueProcess3PieceAuto2 extends L4MultiAuto {
 
     // Grab some coral then score at L4C
     grabSomeCoralThen(blueL4DToSource, blueSourceToL4C.cmd());
-    scoreToL4Then(blueSourceToL4C, 1.3, elevator.coralL1PositionCG());
+    scoreToL4Then(blueSourceToL4C, 1.3, coralRoller.stop());
 
     return blueProcess3PieceRoutine;
   }

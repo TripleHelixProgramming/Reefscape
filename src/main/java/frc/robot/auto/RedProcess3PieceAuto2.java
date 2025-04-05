@@ -3,7 +3,6 @@ package frc.robot.auto;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.elevator.Elevator;
 import java.util.Optional;
@@ -41,7 +40,7 @@ public class RedProcess3PieceAuto2 extends L4MultiAuto {
 
     // Grab some coral then score at L4C
     grabSomeCoralThen(redL4DToSource, redSourceToL4C.cmd());
-    scoreToL4Then(redSourceToL4C, 1.3, Commands.none());
+    scoreToL4Then(redSourceToL4C, 1.3, coralRoller.stop());
 
     return redProcess3PieceRoutine;
   }
