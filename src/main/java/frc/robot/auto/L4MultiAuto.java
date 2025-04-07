@@ -7,23 +7,23 @@ import frc.robot.elevator.CoralRoller;
 import frc.robot.elevator.Elevator;
 
 public abstract class L4MultiAuto extends AutoMode {
-    protected final String name;
-    protected final CoralRoller coralRoller;
-    protected final Elevator elevator;
+  protected final String name;
+  protected final CoralRoller coralRoller;
+  protected final Elevator elevator;
 
-    public L4MultiAuto(String name, Drivetrain drivetrain, Elevator elevatorSystem) {
-        super(drivetrain);
-        this.name = name;
-        elevator = elevatorSystem;
-        coralRoller = elevator.getCoralRoller();
-    }
+  public L4MultiAuto(String name, Drivetrain drivetrain, Elevator elevatorSystem) {
+    super(drivetrain);
+    this.name = name;
+    elevator = elevatorSystem;
+    coralRoller = elevator.getCoralRoller();
+  }
 
-    @Override
-    public String getName() {
-      return name;
-    }
-  
-    /**
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  /**
    * Attempts to score a coral at L4 height when the provided trajectory finishes.
    *
    * <p>As the robot approaches the scoring position, the elevator is raised. The coral is jiggled
@@ -50,13 +50,7 @@ public abstract class L4MultiAuto extends AutoMode {
    * @param nextAction an action to perform after the coral is grabbed
    */
   protected void grabSomeCoralThen(AutoTrajectory sourceTrajectory, Command nextAction) {
-    sourceTrajectory
-        .done()
-        .onTrue(coralRoller.intake().until(coralRoller.hasCoral));
-    sourceTrajectory
-        .doneDelayed(1.0)
-        .onTrue(nextAction);
+    sourceTrajectory.done().onTrue(coralRoller.intake().until(coralRoller.hasCoral));
+    sourceTrajectory.doneDelayed(1.0).onTrue(nextAction);
   }
-
-
 }

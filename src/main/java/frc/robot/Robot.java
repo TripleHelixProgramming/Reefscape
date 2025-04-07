@@ -215,8 +215,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    autoSelector.get().ifPresent(auto -> 
-      auto.getInitialPose().ifPresent(pose -> swerve.resetOdometry(pose)));
+    autoSelector
+        .get()
+        .ifPresent(auto -> auto.getInitialPose().ifPresent(pose -> swerve.resetOdometry(pose)));
     swerve.setDefaultCommand(swerve.createStopCommand());
     lifter.setDefaultCommand(lifter.remainAtCurrentHeight());
     leds.replaceDefaultCommandImmediately(
@@ -256,7 +257,7 @@ public class Robot extends TimedRobot {
   Gamepiece getLoadedGamepiece() {
     if (coralRoller.hasCoral.getAsBoolean()) {
       return Gamepiece.CORAL;
-    } 
+    }
     if (algaeRoller.hasAlgae.getAsBoolean()) {
       return Gamepiece.ALGAE;
     }
