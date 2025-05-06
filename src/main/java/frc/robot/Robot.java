@@ -38,11 +38,11 @@ import frc.robot.LEDs.LEDs;
 import frc.robot.auto.BlueL4Auto;
 import frc.robot.auto.BlueMoveAuto;
 import frc.robot.auto.BlueNoProcess3PieceAuto;
-import frc.robot.auto.BlueProcess3PieceAuto;
+import frc.robot.auto.BlueProcess2PieceAuto;
 import frc.robot.auto.RedL4Auto;
 import frc.robot.auto.RedMoveAuto;
 import frc.robot.auto.RedNoProcess3PieceAuto;
-import frc.robot.auto.RedProcess3PieceAuto;
+import frc.robot.auto.RedProcess2PieceAuto;
 import frc.robot.climber.Climber;
 import frc.robot.drivetrain.Drivetrain;
 import frc.robot.drivetrain.commands.DriveToPoseCommand;
@@ -215,7 +215,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    swerve.calibrateOdometry();
+    autoSelector
+        .get()
+        .ifPresent(auto -> auto.getInitialPose().ifPresent(pose -> swerve.resetOdometry(pose)));
     swerve.setDefaultCommand(swerve.createStopCommand());
     lifter.setDefaultCommand(lifter.remainAtCurrentHeight());
     leds.replaceDefaultCommandImmediately(
@@ -253,10 +255,11 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {}
 
   Gamepiece getLoadedGamepiece() {
+    if (coralRoller.hasCoral.getAsBoolean()) {
+      return Gamepiece.CORAL;
+    }
     if (algaeRoller.hasAlgae.getAsBoolean()) {
       return Gamepiece.ALGAE;
-    } else if (coralRoller.hasCoral.getAsBoolean()) {
-      return Gamepiece.CORAL;
     }
     return null;
   }
@@ -409,7 +412,8 @@ public class Robot extends TimedRobot {
     //     elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
 
     operator.rightTrigger().onTrue(new ConditionalCommand(
-        elevator.algaeFloorIntakeCG(), elevator.coralIntakeCG(), algaeMode));
+        elevator.algaeFloorIntakeCG(), elevator.coralIntakePositionCG(), algaeMode));
+    operator.rightTrigger().and(algaeMode.negate()).whileTrue(coralRoller.intake());
 
     // Jiggle coral
     operator.rightBumper().whileTrue(coralRoller.jiggle().repeatedly());
@@ -475,9 +479,9 @@ public class Robot extends TimedRobot {
     autoSelector.addAuto(
         new AutoOption(Alliance.Blue, 2, new BlueNoProcess3PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
-        new AutoOption(Alliance.Red, 3, new RedProcess3PieceAuto(swerve, elevator)));
+        new AutoOption(Alliance.Red, 3, new RedProcess2PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
-        new AutoOption(Alliance.Blue, 3, new BlueProcess3PieceAuto(swerve, elevator)));
+        new AutoOption(Alliance.Blue, 3, new BlueProcess2PieceAuto(swerve, elevator)));
     autoSelector.addAuto(
         new AutoOption(Alliance.Blue, 4, new BlueMoveAuto(swerve)));
     autoSelector.addAuto(
